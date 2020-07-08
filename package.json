@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lintfix": "vue-cli-service lint --fix"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -30,6 +31,8 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
     "node-sass": "^4.12.0",
+    "pug": "^3.0.0",
+    "pug-plain-loader": "^1.0.0",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
   }
