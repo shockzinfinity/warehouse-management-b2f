@@ -20,5 +20,7 @@ yarn build
 yarn lint
 ```
 
+### TODO: Initial vue project config list
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
