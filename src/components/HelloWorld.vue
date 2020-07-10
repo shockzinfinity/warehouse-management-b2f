@@ -23,6 +23,7 @@
             target="_blank"
           >Discord Community</a>
         </p>
+        <v-btn>tetete</v-btn>
       </v-col>
 
       <v-col
