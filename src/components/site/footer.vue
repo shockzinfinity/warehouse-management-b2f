@@ -25,14 +25,13 @@ export default {
   methods: {
     openDialog () {
       this.dialog = true
+      this.text = this.footer
     },
     async save () {
       try {
         await this.$firebase.database().ref().child('site').update({
           footer: this.text
         })
-      } catch (e) {
-        console.log(e.message)
       } finally {
         this.dialog = false
       }

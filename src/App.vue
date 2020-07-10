@@ -52,6 +52,7 @@ export default {
     }
   }),
   created () {
+    console.log('subscribe on create method')
     this.subscribe()
   },
   mounted () {

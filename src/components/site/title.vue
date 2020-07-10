@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-toolbar-title {{ title }}
+  v-toolbar-title {{ text }}
     v-btn(icon @click="openDialog") <v-icon>mdi-grease-pencil</v-icon>
     v-dialog(v-model="dialog" max-width="400")
       v-card
@@ -23,6 +23,7 @@ export default {
   methods: {
     openDialog () {
       this.dialog = true
+      this.text = this.title
     },
     async save () {
       try {
