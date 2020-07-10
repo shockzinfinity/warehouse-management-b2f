@@ -4,7 +4,7 @@
       v-app-bar-nav-icon(@click="drawer = !drawer")
       site-title(:title="site.title")
       v-spacer
-    v-navigation-drawer(app v-model="drawer")
+    v-navigation-drawer(app v-model="drawer" width="400")
       site-menu(:items="site.menu")
     v-main
       router-view
