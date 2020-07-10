@@ -2,16 +2,16 @@
   v-app
     v-app-bar(app color="primary" dark)
       v-app-bar-nav-icon(@click="drawer = !drawer")
-      site-title(:title="title")
+      site-title(:title="site.title")
       v-spacer
       v-btn(icon @click="save") <v-icon>mdi-check</v-icon>
       v-btn(icon @click="read") <v-icon>mdi-numeric</v-icon>
       v-btn(icon @click="readOne") <v-icon>mdi-numeric-0-box-multiple</v-icon>
     v-navigation-drawer(app v-model="drawer")
-      site-menu
+      site-menu(:items="site.menu")
     v-main
       router-view
-    site-footer(:footer="footer")
+    site-footer(:footer="site.footer")
 </template>
 
 <script>
@@ -27,15 +27,31 @@ export default {
     SiteMenu
   },
   data: () => ({
-    title: '나의 타이틀입니다.',
-    footer: '푸터입니다.',
     drawer: false,
-    items: []
+    site: {
+      title: '나의 타이틀입니다.',
+      footer: '푸터입니다.',
+      menu: []
+    }
   }),
+  created () {
+    this.subscribe()
+  },
   mounted () {
     // console.log('$firebase', this.$firebase)
   },
   methods: {
+    subscribe () {
+      this.$firebase.database().ref().child('site').on('value', (sn) => {
+        const v = sn.val()
+        if (!v) {
+          this.$firebase.database().ref().child('site').set(this.site)
+        }
+        this.site = v
+      }, e => {
+        console.log(e.message)
+      })
+    },
     save () {
       console.log('save')
       this.$firebase.database().ref().child('abcd').set({
