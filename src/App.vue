@@ -4,6 +4,9 @@
       v-app-bar-nav-icon(@click="drawer = !drawer")
       site-title(:title="title")
       v-spacer
+      v-btn(icon @click="save") <v-icon>mdi-check</v-icon>
+      v-btn(icon @click="read") <v-icon>mdi-numeric</v-icon>
+      v-btn(icon @click="readOne") <v-icon>mdi-numeric-0-box-multiple</v-icon>
     v-navigation-drawer(app v-model="drawer")
       site-menu
     v-main
@@ -30,6 +33,25 @@ export default {
     items: []
   }),
   mounted () {
+    // console.log('$firebase', this.$firebase)
+  },
+  methods: {
+    save () {
+      console.log('save')
+      this.$firebase.database().ref().child('abcd').set({
+        title: 'abcd', text: 'ttttttt'
+      })
+    },
+    read () {
+      this.$firebase.database().ref().child('abcd').on('value', (sn) => {
+        console.log(sn)
+        console.log(sn.val())
+      })
+    },
+    async readOne () {
+      const sn = await this.$firebase.database().ref().child('abcd').once('value')
+      console.log(sn.val())
+    }
   }
 }
 </script>
