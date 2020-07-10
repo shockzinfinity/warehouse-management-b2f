@@ -5,6 +5,7 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import './plugins/firebase'
+import './error'
 
 Vue.config.productionTip = false
 

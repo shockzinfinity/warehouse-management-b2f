@@ -28,29 +28,9 @@
 
 <script>
 export default {
+  props: ['items'],
   data () {
     return {
-      items: [
-        {
-          title: 'home',
-          icon: 'mdi-home',
-          subItems: [
-            { title: 'Dashboard', to: '/' },
-            { title: 'About', to: '/about' }
-          ]
-        },
-        {
-          title: 'xxx',
-          active: true,
-          icon: 'mdi-badge-account-alert',
-          subItems: [
-            {
-              title: 'xxx',
-              to: '/xxx'
-            }
-          ]
-        }
-      ]
     }
   }
 }

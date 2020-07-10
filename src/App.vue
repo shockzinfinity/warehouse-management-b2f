@@ -4,9 +4,6 @@
       v-app-bar-nav-icon(@click="drawer = !drawer")
       site-title(:title="site.title")
       v-spacer
-      v-btn(icon @click="save") <v-icon>mdi-check</v-icon>
-      v-btn(icon @click="read") <v-icon>mdi-numeric</v-icon>
-      v-btn(icon @click="readOne") <v-icon>mdi-numeric-0-box-multiple</v-icon>
     v-navigation-drawer(app v-model="drawer")
       site-menu(:items="site.menu")
     v-main
@@ -31,7 +28,27 @@ export default {
     site: {
       title: '나의 타이틀입니다.',
       footer: '푸터입니다.',
-      menu: []
+      menu: [
+        {
+          title: 'home',
+          icon: 'mdi-home',
+          subItems: [
+            { title: 'Dashboard', to: '/' },
+            { title: 'About', to: '/about' }
+          ]
+        },
+        {
+          title: 'xxx',
+          active: true,
+          icon: 'mdi-badge-account-alert',
+          subItems: [
+            {
+              title: 'xxx',
+              to: '/xxx'
+            }
+          ]
+        }
+      ]
     }
   }),
   created () {
@@ -46,6 +63,7 @@ export default {
         const v = sn.val()
         if (!v) {
           this.$firebase.database().ref().child('site').set(this.site)
+          return
         }
         this.site = v
       }, e => {
