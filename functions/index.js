@@ -1,13 +1,22 @@
 const functions = require('firebase-functions')
 var admin = require('firebase-admin')
 
+// for prod
 // var serviceAccount = require('./ctk-warehouse-management-firebase-adminsdk-saiw3-72dc70832f.json')
+
+// for dev
 var serviceAccount = require('./warehouse-management-b2f-firebase-adminsdk-agjta-51bbbde243.json')
 
+// for prod
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: functions.config().admin.prod.db_url
+// })
+
+// for dev
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  // databaseURL: 'https://ctk-warehouse-management.firebaseio.com'
-  databaseURL: 'https://warehouse-management-b2f.firebaseio.com'
+  databaseURL: functions.config().admin.dev.db_url
 })
 
 const db = admin.database()
@@ -18,7 +27,8 @@ exports.createUser = functions.auth.user().onCreate(async (user) => {
     email,
     displayName,
     photoURL,
-    createdAt: new Date()
+    createdAt: new Date().getMilliseconds(),
+    level: email === functions.config().admin.dev.email ? 0 : 5
   }
   db.ref('users').child(uid).set(u)
 })

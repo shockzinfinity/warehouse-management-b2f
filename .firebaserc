@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "warehouse-management-b2f"
+    "default": "warehouse-management-b2f",
+    "prod": "ctk-warehouse-management"
   }
 }
