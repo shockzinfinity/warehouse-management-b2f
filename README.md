@@ -29,6 +29,17 @@ yarn lint
 ```
 firebase deploy --only database
 firebase deploy --only firestore
+firebase deploy --only funtions
+firebase deploy --only funtions:createUser functions:deleteUser ...
+```
+
+### default firebase account switching
+
+```
+firebase login serviceaccount@email.com
+firebase use --add warehouse-management-b2f
+firebase use warehouse-management-b2f
+
 ```
 
 ### Customize configuration

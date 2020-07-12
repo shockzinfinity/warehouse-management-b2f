@@ -4,7 +4,8 @@ import store from '@/store'
 
 import 'firebase/auth'
 import 'firebase/firebase-database'
-import firebaseConfig from '../../firebaseConfig'
+// import firebaseConfig from '../../firebaseConfig.prod'
+import firebaseConfig from '../../firebaseConfig.dev'
 
 firebase.initializeApp(firebaseConfig)
 
