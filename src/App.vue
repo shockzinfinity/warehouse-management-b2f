@@ -4,6 +4,7 @@
       v-app-bar-nav-icon(@click="drawer = !drawer")
       site-title(:title="site.title")
       v-spacer
+      site-sign
     v-navigation-drawer(app v-model="drawer" width="400")
       site-menu(:items="site.menu")
     v-main
@@ -15,13 +16,15 @@
 import SiteTitle from '@/components/site/title'
 import SiteFooter from '@/components/site/footer'
 import SiteMenu from '@/components/site/menu'
+import SiteSign from '@/components/site/sign'
 
 export default {
   name: 'App',
   components: {
     SiteTitle,
     SiteFooter,
-    SiteMenu
+    SiteMenu,
+    SiteSign
   },
   data: () => ({
     drawer: false,
