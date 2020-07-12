@@ -22,6 +22,7 @@
                 v-btn(icon @click="openDialogItem(i)") <v-icon>mdi-pencil</v-icon>
                 v-btn(icon @click="moveItem(items, i, -1)" v-if="i > 0") <v-icon>mdi-chevron-double-up</v-icon>
                 v-btn(icon @click="moveItem(items, i, 1)" v-if="i < items.length - 1") <v-icon>mdi-chevron-double-down</v-icon>
+                v-btn(icon @click="removeItem(items, i)") <v-icon>mdi-delete</v-icon>
         v-list-item(
           v-for="(subItem, j) in item.subItems"
           :key="j"
@@ -33,6 +34,7 @@
                 v-btn(icon @click="openDialogSubItem(i, j)") <v-icon>mdi-pencil</v-icon>
                 v-btn(icon @click="moveItem(item.subItems, j, -1)" v-if="j > 0") <v-icon>mdi-chevron-double-up</v-icon>
                 v-btn(icon @click="moveItem(item.subItems, j, 1)" v-if="j < item.subItems.length - 1") <v-icon>mdi-chevron-double-down</v-icon>
+                v-btn(icon @click="removeItem(items.subItems, j)") <v-icon>mdi-delete</v-icon>
           v-list-item-action(v-if="$store.state.editable")
             v-btn(icon :to="subItem.to" exact) <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
         v-list-item(@click="openDialogSubItem(i, -1)" v-if="$store.state.editable")
@@ -134,11 +136,18 @@ export default {
     },
     async saveSubItem () {
       if (this.selectedSubItemIndex < 0) {
-        if (!this.items[this.selectedItemIndex].subItems) this.items[this.selectedItemIndex].subItems = []
-        this.items[this.selectedItemIndex].subItems.push({ title: this.formSubItem.title, to: this.formSubItem.to })
+        if (!this.items[this.selectedItemIndex].subItems) { this.items[this.selectedItemIndex].subItems = [] }
+        this.items[this.selectedItemIndex].subItems.push({
+          title: this.formSubItem.title,
+          to: this.formSubItem.to
+        })
       } else {
-        this.items[this.selectedItemIndex].subItems[this.selectedSubItemIndex].title = this.formSubItem.title
-        this.items[this.selectedItemIndex].subItems[this.selectedSubItemIndex].to = this.formSubItem.to
+        this.items[this.selectedItemIndex].subItems[
+          this.selectedSubItemIndex
+        ].title = this.formSubItem.title
+        this.items[this.selectedItemIndex].subItems[
+          this.selectedSubItemIndex
+        ].to = this.formSubItem.to
       }
 
       this.save()
@@ -146,7 +155,12 @@ export default {
     async save () {
       try {
         this.loading = true
-        await this.$firebase.database().ref().child('site').child('menu').set(this.items)
+        await this.$firebase
+          .database()
+          .ref()
+          .child('site')
+          .child('menu')
+          .set(this.items)
       } finally {
         this.dialogItem = false
         this.dialogSubItem = false
@@ -158,6 +172,11 @@ export default {
       // items.splice(i + arrow, 0, item)
       items.splice(i + arrow, 0, ...items.splice(i, 1))
 
+      this.save()
+    },
+    removeItem (items, index) {
+      items.splice(index, 1)
+      
       this.save()
     }
   }

@@ -64,6 +64,7 @@ $ firebase deploy --only functions
 ```bash
 key.prod.json
 key.dev.json
+firebase.js
 functions/index.js
 firebaseConfig.prod.js
 firebaseConfig.dev.js
