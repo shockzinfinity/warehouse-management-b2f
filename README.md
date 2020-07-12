@@ -23,7 +23,7 @@ $ yarn build
 $ firebase deploy --only database
 $ firebase deploy --only firestore
 $ firebase deploy --only funtions
-$ firebase deploy --only funtions:createUser functions:deleteUser ...
+$ firebase deploy --only funtions:createUser,functions:deleteUser ...
 ```
 
 ### Default firebase account switching
