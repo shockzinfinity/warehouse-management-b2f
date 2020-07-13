@@ -25,6 +25,14 @@ const routes = [
     // this generates a separate chunk (board.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "board" */ '../views/board/')
+  },
+  {
+    path: '/storage',
+    name: 'Storage',
+    // route level code-splitting
+    // this generates a separate chunk (storage.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "storage" */ '../views/storage/')
   }
 ]
 

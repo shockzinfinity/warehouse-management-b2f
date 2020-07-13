@@ -26,6 +26,33 @@ $ firebase deploy --only funtions
 $ firebase deploy --only funtions:createUser,functions:deleteUser ...
 ```
 
+### Firebase Storage CORS setting
+
+[Gooble Cloud SDK](https://cloud.google.com/sdk/install)
+
+```bash
+# First, install Gooble Cloud SDK
+$ gcloud init
+```
+
+```json
+[
+  {
+    "origin": ["*"],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
+  }
+]
+```
+
+```bash
+$ gsutil cors set cors.json gs://<your-bucket>
+```
+
+#### if gsutil python command not found
+
+![add system env](./doc/addPythonSystemPath.png)
+
 ### Default firebase account switching
 
 #### add new env var in .firebaserc

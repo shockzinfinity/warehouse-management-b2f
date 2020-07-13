@@ -5,6 +5,7 @@ import store from '@/store'
 import 'firebase/auth'
 import 'firebase/firebase-database'
 import 'firebase/firebase-firestore'
+import 'firebase/firebase-storage'
 
 // for prod
 // import firebaseConfig from '../../firebaseConfig.prod'
