@@ -9,6 +9,7 @@
     "lintfix": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "@toast-ui/vue-editor": "^2.2.0",
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
     "firebase": "^7.16.0",
