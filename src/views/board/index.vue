@@ -5,6 +5,8 @@
       :headers="headers"
       :items="items"
       :items-per-page="5"
+      :options.sync="options"
+      :server-items-length="serverItemsLength"
     )
       template(v-slot:item.id="{ item }")
         v-btn(icon @click="openDialog(item)") <v-icon>mdi-pencil</v-icon>
@@ -40,35 +42,57 @@ export default {
       },
       dialog: false,
       selectedItem: null,
-      unsubscribe: null
+      unsubscribe: null,
+      unsubscribeCount: null,
+      serverItemsLength: 0,
+      options: {
+
+      }
     }
   },
   created () {
     // this.read()
-    this.subscribe()
   },
   destroyed () {
-    if (this.unsubscribe) {
-      this.unsubscribe()
+    if (this.unsubscribe) this.unsubscribe()
+    if (this.unsubscribeCount) this.unsubscribeCount()
+  },
+  watch: {
+    options: {
+      handler (n, o) {
+        console.log('old', o)
+        console.log('new', n)
+        this.subscribe()
+      },
+      deep: true
     }
   },
   methods: {
     subscribe () {
-      this.unsubscribe = this.$firebase.firestore().collection('boards').onSnapshot(sn => {
-        if (sn.empty) {
-          this.items = []
-          return
-        }
-
-        // console.log('here')
-        this.items = sn.docs.map(v => {
-          const item = v.data()
-          return {
-            id: v.id,
-            title: item.title,
-            content: item.content
+      this.unsubscribe = this.$firebase
+        .firestore()
+        .collection('boards')
+        .limit(this.options.itemsPerPage)
+        .onSnapshot(sn => {
+          if (sn.empty) {
+            this.items = []
+            return
           }
+
+          // console.log('here')
+          this.items = sn.docs.map(v => {
+            const item = v.data()
+            return {
+              id: v.id,
+              title: item.title,
+              content: item.content
+            }
+          })
         })
+
+      this.unsubscribeCount = this.$firebase.firestore().collection('meta').doc('boards').onSnapshot(doc => {
+        if (!doc.exists) return
+        this.serverItemsLength = doc.data().count
       })
     },
     openDialog (item) {
@@ -83,11 +107,17 @@ export default {
       }
     },
     add () {
-      this.$firebase.firestore().collection('boards').add(this.form)
+      this.$firebase
+        .firestore()
+        .collection('boards')
+        .add(this.form)
       this.dialog = false
     },
     async read () {
-      const sn = await this.$firebase.firestore().collection('boards').get()
+      const sn = await this.$firebase
+        .firestore()
+        .collection('boards')
+        .get()
       sn.docs.forEach(v => {
         console.log(v.id)
         console.log(v.data())
@@ -105,11 +135,19 @@ export default {
       // console.log(this.items)
     },
     update () {
-      this.$firebase.firestore().collection('boards').doc(this.selectedItem.id).update(this.form)
+      this.$firebase
+        .firestore()
+        .collection('boards')
+        .doc(this.selectedItem.id)
+        .update(this.form)
       this.dialog = false
     },
     remove (item) {
-      this.$firebase.firestore().collection('boards').doc(item.id).delete()
+      this.$firebase
+        .firestore()
+        .collection('boards')
+        .doc(item.id)
+        .delete()
     }
   }
 }
