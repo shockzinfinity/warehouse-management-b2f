@@ -7,10 +7,12 @@
       :items-per-page="5"
       :options.sync="options"
       :server-items-length="serverItemsLength"
+      must-sort
     )
       template(v-slot:item.id="{ item }")
         v-btn(icon @click="openDialog(item)") <v-icon>mdi-pencil</v-icon>
         v-btn(icon @click="remove(item)") <v-icon>mdi-delete</v-icon>
+      template(v-slot:item.createdAt="{ item }") {{ item.createdAt.toLocaleString() }}
     v-card-actions
       //- v-btn(@click="read") <v-icon>mdi-page-next-outline</v-icon>
       v-btn(@click="openDialog(null)") <v-icon>mdi-pencil</v-icon>
@@ -27,13 +29,16 @@
 </template>
 
 <script>
+import { head, last } from 'lodash'
+
 export default {
   data () {
     return {
       headers: [
+        { value: 'createdAt', text: '작성일' },
         { value: 'title', text: '제목' },
         { value: 'content', text: '내용' },
-        { value: 'id', text: 'Id' }
+        { value: 'id', text: 'Id', sortable: false }
       ],
       items: [],
       form: {
@@ -46,8 +51,10 @@ export default {
       unsubscribeCount: null,
       serverItemsLength: 0,
       options: {
-
-      }
+        sortBy: ['createdAt'],
+        sortDesc: [true]
+      },
+      docs: []
     }
   },
   created () {
@@ -60,40 +67,63 @@ export default {
   watch: {
     options: {
       handler (n, o) {
-        console.log('old', o)
-        console.log('new', n)
-        this.subscribe()
+        // console.log('old', o)
+        // console.log('new', n)
+        const arrow = n.page - o.page
+        this.subscribe(arrow)
       },
       deep: true
     }
   },
   methods: {
-    subscribe () {
-      this.unsubscribe = this.$firebase
-        .firestore()
-        .collection('boards')
-        .limit(this.options.itemsPerPage)
+    subscribe (arrow) {
+      this.unsubscribeCount = this.$firebase.firestore().collection('meta').doc('boards').onSnapshot(doc => {
+        if (!doc.exists) return
+        this.serverItemsLength = doc.data().count
+      })
+      const order = head(this.options.sortBy)
+      const sort = head(this.options.sortDesc) ? 'desc' : 'asc'
+      const limit = this.options.itemsPerPage
+
+      const ref = this.$firebase.firestore().collection('boards').orderBy(order, sort)
+
+      let query
+      switch (arrow) {
+        case -1: query = ref.endBefore(head(this.docs))
+          break
+        case 1: query = ref.startAfter(last(this.docs))
+          break
+        default: query = ref
+          break
+      }
+
+      if (limit >= 0) {
+        query = query.limit(limit)
+      } else {
+        if (arrow < 0) {
+          query = query.limitToLast(limit)
+        }
+      }
+
+      this.unsubscribe = query
         .onSnapshot(sn => {
           if (sn.empty) {
             this.items = []
             return
           }
-
-          // console.log('here')
+          this.docs = sn.docs
+          // console.log(head(sn.docs).data())
+          // console.log(last(sn.docs).data())
           this.items = sn.docs.map(v => {
             const item = v.data()
             return {
               id: v.id,
               title: item.title,
-              content: item.content
+              content: item.content,
+              createdAt: item.createdAt.toDate()
             }
           })
         })
-
-      this.unsubscribeCount = this.$firebase.firestore().collection('meta').doc('boards').onSnapshot(doc => {
-        if (!doc.exists) return
-        this.serverItemsLength = doc.data().count
-      })
     },
     openDialog (item) {
       this.selectedItem = item
@@ -107,32 +137,14 @@ export default {
       }
     },
     add () {
+      const item = { ...this.form }
+      item.createdAt = new Date()
+
       this.$firebase
         .firestore()
         .collection('boards')
-        .add(this.form)
+        .add(item)
       this.dialog = false
-    },
-    async read () {
-      const sn = await this.$firebase
-        .firestore()
-        .collection('boards')
-        .get()
-      sn.docs.forEach(v => {
-        console.log(v.id)
-        console.log(v.data())
-      })
-
-      this.items = sn.docs.map(v => {
-        const item = v.data()
-        return {
-          id: v.id,
-          title: item.title,
-          content: item.content
-        }
-      })
-
-      // console.log(this.items)
     },
     update () {
       this.$firebase
