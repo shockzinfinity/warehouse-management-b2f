@@ -17,7 +17,7 @@
       template(v-slot:item.user.displayName="{item}")
         display-user(:user="item.user")
     v-dialog(v-model="dialog" v-if="selectedItem" fullscreen)
-      display-content(:item="selectedItem" @close="dialog = false")
+      display-content(:item="selectedItem" :document="document" @close="dialog = false")
 </template>
 
 <script>

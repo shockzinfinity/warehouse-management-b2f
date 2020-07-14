@@ -9,17 +9,10 @@
           v-btn(icon @click="save" :disabled="!user") <v-icon>mdi-content-save</v-icon>
         v-card-text
           v-text-field(v-model="form.title" outlined label="제목")
-          editor(v-if="!articleId" :initialValue="form.content" ref="editor" :options="{ hideModeSwitch: true }")
-          template(v-else)
-            editor(v-if="form.content" :initialValue="form.content" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
-            v-container(v-else)
-              v-row(justify="center" align="center")
-                v-progress-circular(indeterminate)
+          editor(:initialValue="form.content" ref="editor")
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   props: ['document', 'action'],
   data () {
@@ -48,24 +41,27 @@ export default {
     }
   },
   created () {
-    this.fetch()
+    this.subscribe()
   },
   destroyed () {
+    if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
-    async fetch () {
-      // console.log(this.articleId)
+    subscribe () {
+      console.log(this.articleId)
       this.ref = this.$firebase.firestore().collection('boards').doc(this.document)
 
       // if (this.articleId === 'new') return
       if (!this.articleId) return
-      const doc = await this.ref.collection('articles').doc(this.articleId).get()
-      this.exists = doc.exists
-      if (!this.exists) return
-      const item = doc.data()
-      this.form.title = item.title
-      const { data } = await axios.get(item.url)
-      this.form.content = data
+
+      if (this.unsubscribe) this.unsubscribe()
+      this.unsubscribe = this.ref.collection('articles').doc(this.articleId).onSnapshot(doc => {
+        this.exists = doc.exists
+        if (this.exists) {
+          const item = doc.data()
+          this.form.title = item.title
+        }
+      })
     },
     async save () {
       this.loading = true
