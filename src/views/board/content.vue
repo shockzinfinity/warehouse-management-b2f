@@ -5,16 +5,23 @@
         v-toolbar-title(v-text="info.title")
         v-spacer
         v-btn(icon @click="write") <v-icon>mdi-pencil</v-icon>
+        v-btn(icon @click="articleWrite") <v-icon>mdi-plus</v-icon>
       v-card-text(v-if="info.createdAt")
         v-alert(color="info" outlined dismissible)
           div(style="white-space: pre-line") {{ info.description }}
           .text-right.font-italic.caption 작성일: {{ info.createdAt.toDate().toLocaleString() }}
           .text-right.font-italic.caption 수정일: {{ info.updatedAt.toDate().toLocaleString() }}
-      v-card-text articles
+          .text-right.font-italic.caption 게시물 수: {{ info.count }}
+      board-article(:info="info" :document="document")
 </template>
 
 <script>
+import BoardArticle from './article/index'
+
 export default {
+  components: {
+    BoardArticle
+  },
   props: ['document'],
   data () {
     return {
@@ -22,7 +29,8 @@ export default {
       info: {
         category: '',
         title: '',
-        description: ''
+        description: '',
+        count: 0
       },
       loading: false
     }
@@ -48,7 +56,10 @@ export default {
       })
     },
     async write () {
-      this.$router.push(this.$route.path + '/write')
+      this.$router.push(this.$route.path + '/board-write')
+    },
+    async articleWrite () {
+      this.$router.push({ path: this.$route.path + '/article-write', query: { articleId: '' } })
     }
   }
 }

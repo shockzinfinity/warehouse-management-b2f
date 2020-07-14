@@ -5,12 +5,11 @@
         v-toolbar(color="accent" dense flat dark)
           v-toolbar-title 게시판 글 작성
           v-spacer
-          v-btn(icon @click="$router.push('/board' + document)") <v-icon>mdi-arrow-left</v-icon>
+          v-btn(icon @click="$router.push('/board/' + document)") <v-icon>mdi-arrow-left</v-icon>
           v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
         v-card-text
-          v-text-field(v-model="form.category" outlined label="종류")
           v-text-field(v-model="form.title" outlined label="제목")
-          v-textarea(v-model="form.description" outlined label="설명")
+          editor(:initialValue="form.content" ref="editor")
 </template>
 
 <script>
@@ -20,13 +19,17 @@ export default {
     return {
       unsubscribe: null,
       form: {
-        category: '',
         title: '',
-        description: ''
+        content: ''
       },
       loading: false,
       exists: false,
       ref: null
+    }
+  },
+  computed: {
+    articleId () {
+      return this.$route.query.articleId
     }
   },
   watch: {
@@ -42,37 +45,54 @@ export default {
   },
   methods: {
     subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
+      console.log(this.articleId)
       this.ref = this.$firebase.firestore().collection('boards').doc(this.document)
-      this.unsubscribe = this.ref.onSnapshot(doc => {
+
+      // if (this.articleId === 'new') return
+      if (!this.articleId) return
+
+      if (this.unsubscribe) this.unsubscribe()
+      this.unsubscribe = this.ref.collection('articles').doc(this.articleId).onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
           const item = doc.data()
-          this.form.category = item.category
           this.form.title = item.title
-          this.form.description = item.description
         }
       })
     },
     async save () {
-      const form = {
-        category: this.form.category,
-        title: this.form.title,
-        description: this.form.description,
-        updatedAt: new Date()
-      }
       this.loading = true
       try {
-        if (!this.exists) {
-          form.createdAt = new Date()
-          form.count = 0
-          await this.ref.set(form)
-        } else {
-          this.ref.update(form)
+        const createdAt = new Date() // primary key
+        const id = createdAt.getTime().toString()
+        const md = this.$refs.editor.invoke('getMarkdown') // to storage
+        const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(id + '.md').putString(md)
+        const url = await sn.ref.getDownloadURL()
+        const doc = {
+          title: this.form.title,
+          updatedAt: createdAt,
+          url
         }
-        this.$router.push('/board/' + this.document)
+
+        // 한 트랜잭션으로 묶기 (article 과 count)
+        const batch = await this.$firebase.firestore().batch()
+
+        if (!this.articleId) {
+          // create
+          doc.createdAt = createdAt
+          doc.commentCount = 0
+          // 컬렉션 생성 및 카운트 증가
+          batch.set(this.ref.collection('articles').doc(id), doc)
+          batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(1) })
+        } else {
+          // update
+          batch.update(this.ref.collection('articles').doc(this.articleId), doc)
+        }
+
+        await batch.commit()
       } finally {
         this.loading = false
+        this.$router.push('/board/' + this.document)
       }
     }
   }
