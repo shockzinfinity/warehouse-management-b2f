@@ -43,6 +43,38 @@ const routes = [
     component: () => import(/* webpackChunkName: "editor" */ '../views/editor/')
   },
   {
+    path: '/rack/:rackId',
+    name: 'rack-rackId',
+    // route level code-splitting
+    // this generates a separate chunk (rack-rackId.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "rack-rackId" */ '../views/rack-renderer')
+  },
+  {
+    path: '/rack/:rackId/:boxId',
+    name: 'rack-rackId-boxId',
+    // route level code-splitting
+    // this generates a separate chunk (rack-rackId-boxId.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "rack-rackId-boxId" */ '../views/rack-renderer')
+  },
+  {
+    path: '/rack/:rackId/:boxId/:sampleId',
+    name: 'rack-rackId-boxId-sampleId',
+    // route level code-splitting
+    // this generates a separate chunk (rack-rackId-boxId-sampleId.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "rack-rackId-boxId-sampleId" */ '../views/rack-renderer')
+  },
+  {
+    path: '/rack/:rackId/:boxId/:sampleId/:action',
+    name: 'rack-rackId-boxId-sampleId-action',
+    // route level code-splitting
+    // this generates a separate chunk (rack-rackId-boxId-sampleId-action.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "rack-rackId-boxId-sampleId-action" */ '../views/rack-renderer')
+  },
+  {
     path: '/:collection/:document',
     name: 'collection-document',
     // route level code-splitting
