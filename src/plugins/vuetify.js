@@ -2,8 +2,6 @@ import Vue from 'vue'
 import Vuetify, { VSnackbar, VBtn, VIcon } from 'vuetify/lib'
 import VuetifyToast from 'vuetify-toast-snackbar'
 
-const VuetifyObj = new Vuetify({})
-
 Vue.use(Vuetify, {
   components: {
     VSnackbar,
@@ -11,6 +9,8 @@ Vue.use(Vuetify, {
     VIcon
   }
 })
+
+const VuetifyObj = new Vuetify({})
 Vue.use(VuetifyToast, {
   x: 'right', // default
   y: 'bottom', // default
@@ -39,5 +39,6 @@ Vue.use(VuetifyToast, {
   $vuetify: VuetifyObj.framework
 })
 
-export default new Vuetify({
-})
+// export default new Vuetify({
+// })
+export default VuetifyObj
