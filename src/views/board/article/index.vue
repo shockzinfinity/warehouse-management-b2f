@@ -1,25 +1,36 @@
 <template lang="pug">
-  v-data-table(
-    :headers="headers"
-    :items="items"
-    :server-items-length="info.count"
-    :options.sync="options"
-    :items-per-page="5"
-    :footer-props="{'items-per-page-options': [5, 10, 20, 30]}"
-    must-sort
-    item-key="id"
-  )
-    template(v-slot:item.createdAt="{item}")
-      display-time(:time="item.createdAt")
+  div
+    v-data-table(
+      :headers="headers"
+      :items="items"
+      :server-items-length="info.count"
+      :options.sync="options"
+      :items-per-page="5"
+      :footer-props="{'items-per-page-options': [5, 10, 20, 30]}"
+      must-sort
+      item-key="id"
+    )
+      template(v-slot:item.createdAt="{item}")
+        display-time(:time="item.createdAt")
+      template(v-slot:item.title="{item}")
+        a(@click="openDialog(item)") {{ item.title }}
+      template(v-slot:item.user.displayName="{item}")
+        display-user(:user="item.user")
+    v-dialog(v-model="dialog" v-if="selectedItem" fullscreen)
+      display-content(:item="selectedItem" @close="dialog = false")
 </template>
 
 <script>
 import { head, last } from 'lodash'
 import DisplayTime from '@/components/display-time'
+import DisplayUser from '@/components/display-user'
+import DisplayContent from '@/components/display-content'
 
 export default {
   components: {
-    DisplayTime
+    DisplayTime,
+    DisplayUser,
+    DisplayContent
   },
   props: ['info', 'document'],
   data () {
@@ -27,7 +38,7 @@ export default {
       headers: [
         { value: 'createdAt', text: '작성일' },
         { value: 'title', text: '제목' },
-        { value: 'user', text: '작성자' },
+        { value: 'user.displayName', text: '작성자' },
         { value: 'readCount', text: '조회수' },
         { value: 'commentCount', text: '댓글' }
       ],
@@ -37,7 +48,9 @@ export default {
       options: {
         sortBy: ['createdAt'],
         sortDesc: [true]
-      }
+      },
+      dialog: false,
+      selectedItem: null
     }
   },
   watch: {
@@ -59,6 +72,11 @@ export default {
         this.subscribe(arrow)
       },
       deep: true
+    },
+    dialog (n, o) {
+      if (!n) {
+        this.selectedItem = null
+      }
     }
   },
   created () {
@@ -99,6 +117,10 @@ export default {
           return item
         })
       })
+    },
+    openDialog (item) {
+      this.selectedItem = item
+      this.dialog = true
     }
   }
 }

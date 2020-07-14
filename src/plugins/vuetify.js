@@ -2,6 +2,9 @@ import Vue from 'vue'
 import Vuetify, { VSnackbar, VBtn, VIcon } from 'vuetify/lib'
 import VuetifyToast from 'vuetify-toast-snackbar'
 
+import en from 'vuetify/es5/locale/en'
+import ko from 'vuetify/es5/locale/ko'
+
 Vue.use(Vuetify, {
   components: {
     VSnackbar,
@@ -10,7 +13,12 @@ Vue.use(Vuetify, {
   }
 })
 
-const VuetifyObj = new Vuetify({})
+const VuetifyObj = new Vuetify({
+  lang: {
+    locales: { en, ko },
+    current: 'ko'
+  }
+})
 Vue.use(VuetifyToast, {
   x: 'right', // default
   y: 'bottom', // default
