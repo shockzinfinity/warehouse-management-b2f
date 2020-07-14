@@ -19,15 +19,19 @@
       v-spacer
       span.font-italic.caption 수정일: 
         display-time(:time="item.updatedAt")
+    v-divider
+    display-comment(:docRef="this.ref.collection('articles').doc(this.item.id)")
 </template>
 
 <script>
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
+import DisplayComment from '@/components/display-comment'
 
 export default {
   components: {
-    DisplayTime
+    DisplayTime,
+    DisplayComment
   },
   props: ['document', 'item'],
   data () {
