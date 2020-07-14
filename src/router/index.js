@@ -41,6 +41,30 @@ const routes = [
     // this generates a separate chunk (editor.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "editor" */ '../views/editor/')
+  },
+  {
+    path: '/:collection/:document',
+    name: 'collection-document',
+    // route level code-splitting
+    // this generates a separate chunk (collection-document.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "collection-document" */ '../views/renderer')
+  },
+  {
+    path: '/:collection/:document/:action',
+    name: 'collection-document-action',
+    // route level code-splitting
+    // this generates a separate chunk (collection-document-action.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "collection-document-action" */ '../views/renderer')
+  },
+  {
+    path: '*',
+    name: '404',
+    // route level code-splitting
+    // this generates a separate chunk (404.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "404" */ '../views/404')
   }
 ]
 
