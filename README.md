@@ -77,8 +77,15 @@ $ firebase use warehouse-management-b2f
 # for prod
 $ firebase functions:config:set admin.prod.email=serviceaccount@email.com admin.prod.db_url=https://ctk-warehouse-management.firebaseio.com
 
+# in functions/index.js
+level: email === functions.config().admin.prod.email ? 0 : 5
+
 # for dev
 $ firebase functions:config:set admin.dev.email=serviceaccount@email.com admin.dev.db_url=https://warehouse-management-b2f.firebaseio.com
+
+# in functions/index.js
+level: email === functions.config().admin.dev.email ? 0 : 5
+
 
 $ firebase functions:config:get
 $ firebase deploy --only functions

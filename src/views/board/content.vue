@@ -4,8 +4,9 @@
       v-toolbar(color="accent" dense flat dark)
         v-toolbar-title(v-text="info.title")
         v-spacer
-        v-btn(icon @click="write") <v-icon>mdi-pencil</v-icon>
-        v-btn(icon @click="articleWrite") <v-icon>mdi-plus</v-icon>
+        template(v-if="user")
+          v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
+          v-btn(icon @click="articleWrite" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
       v-card-text(v-if="info.createdAt")
         v-alert(color="info" outlined dismissible)
           div(style="white-space: pre-line") {{ info.description }}
@@ -38,6 +39,11 @@ export default {
   watch: {
     document () {
       this.subscribe()
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.state.user
     }
   },
   created () {
