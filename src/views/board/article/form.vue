@@ -9,7 +9,7 @@
           v-btn(icon @click="save" :disabled="!user") <v-icon>mdi-content-save</v-icon>
         v-card-text
           v-text-field(v-model="form.title" outlined label="제목")
-          editor(v-if="!articleId" :initialValue="form.content" ref="editor" :options="{ hideModeSwitch: true }")
+          editor(v-if="!articleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
           template(v-else)
             editor(v-if="form.content" :initialValue="form.content" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
             v-container(v-else)
