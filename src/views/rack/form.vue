@@ -1,15 +1,15 @@
 <template lang="pug">
-  v-container(fluid)
+  v-container(fluid)  
     v-form
       v-card(:loading="loading")
         v-toolbar(color="accent" dense flat dark)
-          v-toolbar-title 게시판 정보 작성
+          v-toolbar-title 랙 정보 작성
           v-spacer
-          v-btn(icon @click="$router.push('/board/' + document)") <v-icon>mdi-arrow-left</v-icon>
+          v-btn(icon @click="$router.push('/rack/' + document)") <v-icon>mdi-arrow-left</v-icon>
           v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
         v-card-text
-          v-text-field(v-model="form.category" outlined label="종류")
-          v-text-field(v-model="form.title" outlined label="제목")
+          v-text-field(v-model="form.position" outlined label="위치")
+          v-text-field(v-model="form.title" outlined label="이름")
           v-textarea(v-model="form.description" outlined label="설명")
 </template>
 
@@ -20,9 +20,9 @@ export default {
     return {
       unsubscribe: null,
       form: {
-        category: '',
-        title: '',
-        description: ''
+        position: '',
+        description: '',
+        title: ''
       },
       loading: false,
       exists: false,
@@ -43,12 +43,12 @@ export default {
   methods: {
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
-      this.ref = this.$firebase.firestore().collection('boards').doc(this.document)
+      this.ref = this.$firebase.firestore().collection('racks').doc(this.document)
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
           const item = doc.data()
-          this.form.category = item.category
+          this.form.position = item.position
           this.form.title = item.title
           this.form.description = item.description
         }
@@ -56,21 +56,22 @@ export default {
     },
     async save () {
       const form = {
-        category: this.form.category,
+        position: this.form.position,
         title: this.form.title,
         description: this.form.description,
         updatedAt: new Date()
       }
       this.loading = true
+
       try {
         if (!this.exists) {
           form.createdAt = new Date()
-          form.count = 0
+          form.boxCount = 0
           await this.ref.set(form)
         } else {
           this.ref.update(form)
         }
-        this.$router.push('/board/' + this.document)
+        this.$router.push('/rack/' + this.document)
       } finally {
         this.loading = false
       }
