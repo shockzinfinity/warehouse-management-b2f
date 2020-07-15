@@ -13,11 +13,16 @@
           .text-right.font-italic.caption 정보 작성일: {{ boxInfo.createdAt.toDate().toLocaleString() }}
           .text-right.font-italic.caption 정보 수정일: {{ boxInfo.updatedAt.toDate().toLocaleString() }}
           .text-right.font-italic.caption 포함 샘플 수: {{ boxInfo.sampleCount }}
-      v-card-text 샘플 리스트
+      box-sample(:info="boxInfo" :document="document")
 </template>
 
 <script>
+import BoxSample from './sample/index'
+
 export default {
+  components: {
+    BoxSample
+  },
   props: ['document'],
   data () {
     return {
