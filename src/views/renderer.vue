@@ -9,6 +9,7 @@
   rack-form(v-else-if="collection === 'rack' && action === 'rack-write'" :document="document" :action="action")
 
   box-index(v-else-if="collection === 'box' && document === 'list'")
+  box-form(v-else-if="collection === 'box' && document === 'newBox'" :document="document")
   box-content(v-else-if="collection === 'box' && !action" :document="document")
   box-form(v-else-if="collection === 'box' && action === 'box-write'" :document="document" :action="action")
   box-sample-form(v-else-if="collection === 'box' && action === 'sample-write'" :document="document" :action="action")

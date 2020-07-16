@@ -28,7 +28,7 @@ export default {
     return {
       unsubscribe: null,
       boxInfo: {
-        parentRack: '',
+        parentRackId: '',
         description: '',
         title: '',
         sampleCount: 0
@@ -67,7 +67,6 @@ export default {
     async sampleWrite () {
       this.$router.push({ path: this.$route.path + '/sample-write', query: { sampleId: '' } })
     }
-
   }
 }
 </script>

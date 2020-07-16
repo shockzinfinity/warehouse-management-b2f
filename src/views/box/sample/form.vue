@@ -5,7 +5,7 @@
         v-toolbar(color="accent" dense flat dark)
           v-toolbar-title 샘플 정보 작성
           v-spacer
-          v-btn(icon @click="$router.push('/sample/' + document)") <v-icon>mdi-arrow-left</v-icon>
+          v-btn(icon @click="$router.push('/box/' + document)") <v-icon>mdi-arrow-left</v-icon>
           v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
         v-card-text
           v-text-field(v-model="form.parentBox" outlined label="포함되어 있는 상자")

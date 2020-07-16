@@ -6,6 +6,7 @@
         v-spacer
         template(v-if="user")
           v-btn(icon @click="rackWrite" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
+          v-btn(icon @click="boxWrite" :disabled="user.level > 0") <v-icon>mdi-shape-plus</v-icon>
       v-card-text(v-if="rackInfo.createdAt")
         v-alert(color="info" outlined dismissible)
           div(style="white-space: pre-line") {{ rackInfo.description }}
@@ -42,6 +43,7 @@ export default {
   },
   created () {
     this.subscribe()
+    console.log(this.$route.params.collection)
   },
   destroyed () {
     if (this.unsubscribe) this.unsubscribe()
@@ -53,10 +55,14 @@ export default {
       this.unsubscribe = ref.onSnapshot(doc => {
         if (!doc.exists) return this.rackWrite()
         this.rackInfo = doc.data()
+        console.log(this.rackInfo)
       })
     },
     async rackWrite () {
       this.$router.push({ path: this.$route.path + '/rack-write' })
+    },
+    async boxWrite () {
+      this.$router.push({ path: '/box/newBox', query: { rackId: this.rackInfo.rackId, rackTitle: this.rackInfo.title } })
     }
   }
 }

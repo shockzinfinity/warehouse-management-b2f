@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import cryptRandomString from 'crypto-random-string'
+
 export default {
   props: ['document', 'action'],
   data () {
@@ -65,6 +67,7 @@ export default {
 
       try {
         if (!this.exists) {
+          form.rackId = cryptRandomString({ length: 10 })
           form.createdAt = new Date()
           form.boxCount = 0
           await this.ref.set(form)
