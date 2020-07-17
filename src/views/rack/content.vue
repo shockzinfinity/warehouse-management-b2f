@@ -13,11 +13,16 @@
           .text-right.font-italic.caption 정보 작성일: {{ rackInfo.createdAt.toDate().toLocaleString() }}
           .text-right.font-italic.caption 정보 수정일: {{ rackInfo.updatedAt.toDate().toLocaleString() }}
           .text-right.font-italic.caption 박스 수: {{ rackInfo.boxCount }}
-      v-card-text Box list
+      box-list(:info="rackInfo" :document="document")
 </template>
 
 <script>
+import BoxList from '@/components/box-list'
+
 export default {
+  components: {
+    BoxList
+  },
   props: ['document'],
   data () {
     return {
@@ -43,7 +48,7 @@ export default {
   },
   created () {
     this.subscribe()
-    console.log(this.$route.params.collection)
+    // console.log(this.$route.params.collection)
   },
   destroyed () {
     if (this.unsubscribe) this.unsubscribe()

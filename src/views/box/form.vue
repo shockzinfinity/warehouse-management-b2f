@@ -38,6 +38,9 @@ export default {
     },
     rackTitle () {
       return this.$route.query.rackTitle
+    },
+    user () {
+      return this.$store.state.user
     }
   },
   watch: {
@@ -92,22 +95,44 @@ export default {
       this.loading = true
 
       try {
-        if (!this.exists) {
-          if (this.document === 'newBox') {
-            this.ref = this.$firebase.firestore().collection('boxes').doc(form.title)
+        const batch = await this.$firebase.firestore().batch()
+        let parentRackTitle
+        await this.$firebase.firestore().collection('racks').where('rackId', '==', this.form.parentRackId).get().then(docs => {
+          if (!docs.empty) {
+            docs.forEach(d => {
+              console.log(d.data())
+              parentRackTitle = d.data().title
+            })
           }
-          form.parentRackId = this.rackId
-          form.id = cryptoRandomString({ length: 10 })
+        })
+
+        if (!this.exists) {
+          // if (this.document === 'newBox') {
+          this.ref = this.$firebase.firestore().collection('boxes').doc(form.title)
+          // }
+          form.boxId = cryptoRandomString({ length: 10 })
           form.createdAt = new Date()
           form.sampleCount = 0
-          await this.ref.set(form)
-          this.$router.push('/rack/' + this.rackTitle)
+          form.user = {
+            email: this.user.email,
+            photoURL: this.user.photoURL,
+            displayName: this.user.displayName
+          }
+          batch.set(this.ref, form)
+          batch.update(this.$firebase.firestore().collection('racks').doc(parentRackTitle), { boxCount: this.$firebase.firestore.FieldValue.increment(1) })
         } else {
-          this.ref.update(form)
-          this.$router.push('/box/' + form.title)
+          // this.ref.update(form)
+          batch.update(this.ref, form)
         }
+        await batch.commit()
       } finally {
         this.loading = false
+
+        if (this.document === 'newBox') {
+          this.$router.push('/rack/' + this.rackTitle)
+        } else {
+          this.$router.push('/box/' + form.title)
+        }
       }
     }
   }

@@ -5,29 +5,33 @@
         v-for="rack in racks"
         :key="rack.id"
       )
-        v-card.mx-auto(max-width="344")
-          v-img.white--text.align-end(
-            src="../../assets/images/rack.preview.jpg"
-            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-            height="194"
-          )
-            v-card-title.display-1(v-text="rack.title")
-            v-card-text {{ rack.rackId }}
+        v-card.mx-auto(max-width="312")
+          a(@click="rackLink(rack)" style="text-decoration: none;")
+            v-img.white--text.align-end(
+              src="../../assets/images/rack.preview.jpg"
+              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+              height="194"
+            )
+              v-card-title.display-1(v-text="rack.title")
+              v-card-text.font-italic id: {{ rack.rackId }}
           v-card-text
             v-row
-              v-col(cols="5") POSITION:
-              v-col(cols="7") {{ rack.position }}
+              v-col(cols="4") POSITION:
+              v-col(cols="8") {{ rack.position }}
             v-row
-              v-col(cols="12") {{ rack.description }}
+              v-col(cols="12") {{ ellipseContent(rack.description) }}
             v-row
-              v-col(cols="5") createdAt:
-              v-col(cols="7" align="right") {{ rack.createdAt.toLocaleString() }}
+              v-col(cols="4") created:
+              v-col(cols="8" align="right") {{ rack.createdAt.toLocaleString() }}
             v-row
-              v-col(cols="5") updatedAt:
-              v-col(cols="7" align="right") {{ rack.updatedAt.toLocaleString() }}
+              v-col(cols="4") updated:
+              v-col(cols="8" align="right") {{ rack.updatedAt.toLocaleString() }}
             v-row
-              v-col(cols="5") box Count:
-              v-col.display-3(cols="7" align="right") {{ rack.boxCount }}
+              v-col(cols="4") boxes:
+              v-col.display-3(cols="8" align="right") {{ rack.boxCount }}
+            v-row
+              v-col(cols="4") samples:
+              v-col.display-3(cols="8" align="right") 0
           v-card-actions
             v-spacer
             v-btn(icon) <v-icon>mdi-heart</v-icon>
@@ -69,6 +73,15 @@ export default {
     },
     rackWrite () {
 
+    },
+    rackLink (rack) {
+      this.$router.push('/rack/' + rack.title)
+    },
+    ellipseContent (txt) {
+      const ellipseText =
+        txt.length < 65 ? txt : txt.slice(0, 40) + '...'
+
+      return ellipseText
     }
   }
 }

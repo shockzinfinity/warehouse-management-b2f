@@ -16,8 +16,6 @@
         a(@click="openDialog(item)") {{ item.title }}
       template(v-slot:item.user.displayName="{item}")
         display-user(:user="item.user")
-    //- v-dialog(v-model="dialog" v-if="selectedItem" fullscreen)
-      //- display-sample(:item="selectedItem" :document="document" @close="dialog = false")
 </template>
 
 <script>
@@ -32,7 +30,7 @@ export default {
     DisplayUser
     // DisplaySample
   },
-  props: ['info', 'document', 'rackId'],
+  props: ['info', 'document'],
   data () {
     return {
       headers: [
@@ -53,7 +51,7 @@ export default {
     }
   },
   watch: {
-    document () {
+    info () {
       this.subscribe(0)
     },
     options: {
@@ -86,20 +84,22 @@ export default {
   },
   methods: {
     subscribe (arrow) {
+      if (!this.info.rackId) return
       if (this.unsubscribe) this.unsubscribe()
 
       const order = head(this.options.sortBy)
       const sort = head(this.options.sortDesc) ? 'desc' : 'asc'
       const limit = this.options.itemsPerPage
-      const ref = this.$firebase.firestore().collection('boxes').doc(this.document).where('parentRackId', '==', this.rackId).orderBy(order, sort)
-      let query
+      const ref = this.$firebase.firestore().collection('boxes')
+      let query = ref.where('parentRackId', '==', this.info.rackId).orderBy(order, sort)
+      console.log(this.info.rackId)
 
       switch (arrow) {
-        case -1: query = ref.endBefore(head(this.docs)).limitToLast(limit)
+        case -1: query = query.endBefore(head(this.docs)).limitToLast(limit)
           break
-        case 1: query = ref.startAfter(last(this.docs)).limit(limit)
+        case 1: query = query.startAfter(last(this.docs)).limit(limit)
           break
-        default: query = ref.limit(limit)
+        default: query = query.limit(limit)
           break
       }
       this.unsubscribe = query.onSnapshot(sn => {
@@ -110,7 +110,7 @@ export default {
         this.docs = sn.docs
         this.items = sn.docs.map(doc => {
           const item = doc.data()
-          item.id = doc.id
+          item.boxId = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           return item
