@@ -51,7 +51,7 @@ export default {
       // TODO: regex 이용
       // bx-1364ab1e82
       const type = 'bx'
-      const code = '1364ab1e82'
+      const code = 'f360a13660'
       switch (type) {
         case 'rk':
           this.type = 'rack'

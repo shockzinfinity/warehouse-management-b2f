@@ -16,7 +16,7 @@ export default {
   data () {
     return {
       prefix: 'bx',
-      qrValue: '1364ab1e82'
+      qrValue: 'f360a13660'
     }
   },
   methods: {
