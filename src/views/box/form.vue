@@ -17,7 +17,10 @@
 import cryptoRandomString from 'crypto-random-string'
 
 export default {
-  props: ['document', 'action'],
+  props: {
+    document: String,
+    action: String
+  },
   data () {
     return {
       unsubscribe: null,
@@ -33,12 +36,6 @@ export default {
     }
   },
   computed: {
-    rackId () {
-      return this.$route.query.rackId
-    },
-    rackTitle () {
-      return this.$route.query.rackTitle
-    },
     user () {
       return this.$store.state.user
     }
@@ -50,10 +47,7 @@ export default {
   },
   created () {
     this.subscribe()
-    console.log(this.rackId)
-  },
-  mounted () {
-    if (this.rackId) this.form.parentRackId = this.rackId
+    // console.log(this.parentRackId)
   },
   destroyed () {
     if (this.unsubscribe) this.unsubscribe()
@@ -62,12 +56,10 @@ export default {
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
 
-      if (this.document === 'newBox') {
-        this.exists = false
-        return
-      }
-
-      this.ref = this.$firebase.firestore().collection('boxes').doc(this.document)
+      this.ref = this.$firebase
+        .firestore()
+        .collection('boxes')
+        .doc(this.document)
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
@@ -79,15 +71,11 @@ export default {
       })
     },
     goBack () {
-      if (this.document === 'newBox') {
-        this.$router.push('/rack/' + this.rackTitle)
-        return
-      }
       this.$router.push('/box/' + this.document)
     },
     async save () {
       const form = {
-        // parentRackId: this.form.parentRackId,
+        parentRackId: this.form.parentRackId,
         title: this.form.title,
         description: this.form.description,
         updatedAt: new Date()
@@ -95,20 +83,29 @@ export default {
       this.loading = true
 
       try {
+        if (!this.form.parentRackId) return
         const batch = await this.$firebase.firestore().batch()
         let parentRackTitle
-        await this.$firebase.firestore().collection('racks').where('rackId', '==', this.form.parentRackId).get().then(docs => {
-          if (!docs.empty) {
-            docs.forEach(d => {
-              console.log(d.data())
-              parentRackTitle = d.data().title
-            })
-          }
-        })
+        await this.$firebase
+          .firestore()
+          .collection('racks')
+          .where('rackId', '==', this.form.parentRackId)
+          .get()
+          .then(docs => {
+            if (!docs.empty) {
+              docs.forEach(d => {
+                // console.log(d.id, '=>', d.data())
+                parentRackTitle = d.id
+              })
+            }
+          })
 
         if (!this.exists) {
           // if (this.document === 'newBox') {
-          this.ref = this.$firebase.firestore().collection('boxes').doc(form.title)
+          this.ref = this.$firebase
+            .firestore()
+            .collection('boxes')
+            .doc(form.title)
           // }
           form.boxId = cryptoRandomString({ length: 10 })
           form.createdAt = new Date()
@@ -119,7 +116,13 @@ export default {
             displayName: this.user.displayName
           }
           batch.set(this.ref, form)
-          batch.update(this.$firebase.firestore().collection('racks').doc(parentRackTitle), { boxCount: this.$firebase.firestore.FieldValue.increment(1) })
+          batch.update(
+            this.$firebase
+              .firestore()
+              .collection('racks')
+              .doc(parentRackTitle),
+            { boxCount: this.$firebase.firestore.FieldValue.increment(1) }
+          )
         } else {
           // this.ref.update(form)
           batch.update(this.ref, form)
@@ -127,12 +130,7 @@ export default {
         await batch.commit()
       } finally {
         this.loading = false
-
-        if (this.document === 'newBox') {
-          this.$router.push('/rack/' + this.rackTitle)
-        } else {
-          this.$router.push('/box/' + form.title)
-        }
+        this.goBack()
       }
     }
   }

@@ -3,7 +3,7 @@
     v-data-table(
       :headers="headers"
       :items="items"
-      :server-items-length="info.count"
+      :server-items-length="info.sampleCount"
       :options.sync="options"
       :items-per-page="5"
       :footer-props="{'items-per-page-options': [5, 10, 20, 30]}"
@@ -116,6 +116,7 @@ export default {
           item.updatedAt = item.updatedAt.toDate()
           return item
         })
+        // console.log('items', this.items)
       })
     },
     openDialog (item) {

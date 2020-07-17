@@ -13,7 +13,7 @@
       template(v-slot:item.createdAt="{item}")
         display-time(:time="item.createdAt")
       template(v-slot:item.title="{item}")
-        a(@click="openDialog(item)") {{ item.title }}
+        a(@click="openBox(item)") {{ item.title }}
       template(v-slot:item.user.displayName="{item}")
         display-user(:user="item.user")
 </template>
@@ -30,7 +30,10 @@ export default {
     DisplayUser
     // DisplaySample
   },
-  props: ['info', 'document'],
+  props: {
+    info: Object,
+    document: String
+  },
   data () {
     return {
       headers: [
@@ -92,7 +95,7 @@ export default {
       const limit = this.options.itemsPerPage
       const ref = this.$firebase.firestore().collection('boxes')
       let query = ref.where('parentRackId', '==', this.info.rackId).orderBy(order, sort)
-      console.log(this.info.rackId)
+      // console.log(this.info.rackId)
 
       switch (arrow) {
         case -1: query = query.endBefore(head(this.docs)).limitToLast(limit)
@@ -110,16 +113,17 @@ export default {
         this.docs = sn.docs
         this.items = sn.docs.map(doc => {
           const item = doc.data()
-          item.boxId = doc.id
+          item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           return item
         })
       })
     },
-    openDialog (item) {
+    openBox (item) {
       this.selectedItem = item
-      this.dialog = true
+      console.log(item)
+      this.$router.push('/box/' + item.id)
     }
   }
 }

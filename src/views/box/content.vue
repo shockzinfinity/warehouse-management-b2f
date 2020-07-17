@@ -59,6 +59,7 @@ export default {
       this.unsubscribe = ref.onSnapshot(doc => {
         if (!doc.exists) return this.boxWrite()
         this.boxInfo = doc.data()
+        this.boxInfo.id = doc.id
       })
     },
     async boxWrite () {

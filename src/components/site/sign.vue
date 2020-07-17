@@ -37,7 +37,7 @@ export default {
         // const sn = await this.$firebase.auth().signInWithPopup(provider)
         // console.log('user info: ', sn.user)
         await this.$firebase.auth().signInWithPopup(provider)
-        console.log('store user info', this.$store.state.fireUser)
+        // console.log('store user info', this.$store.state.fireUser)
       } finally {
         this.loading = false
       }

@@ -8,7 +8,7 @@
           v-btn(icon @click="$router.push('/box/' + document)") <v-icon>mdi-arrow-left</v-icon>
           v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
         v-card-text
-          v-text-field(v-model="form.parentBox" outlined label="포함되어 있는 상자")
+          v-text-field(v-model="form.parentBoxId" outlined label="포함되어 있는 상자")
           v-text-field(v-model="form.title" outlined label="이름")
           editor(v-if="!sampleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
           template(v-else)
@@ -27,7 +27,7 @@ export default {
     return {
       unsubscribe: null,
       form: {
-        parentBox: '',
+        parentBoxId: '',
         title: '',
         content: ''
       },
@@ -40,9 +40,15 @@ export default {
     sampleId () {
       return this.$route.query.sampleId
     },
+    boxId () {
+      return this.$route.query.boxId
+    },
     user () {
       return this.$store.state.user
     }
+  },
+  mounted () {
+    this.form.parentBoxId = this.boxId
   },
   watch: {
     document () {
@@ -94,7 +100,7 @@ export default {
             displayName: this.user.displayName
           }
           batch.set(this.ref.collection('samples').doc(id), doc)
-          batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(1) })
+          batch.update(this.ref, { sampleCount: this.$firebase.firestore.FieldValue.increment(1) })
         } else {
           batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
         }
