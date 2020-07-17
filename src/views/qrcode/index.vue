@@ -1,15 +1,21 @@
 <template lang="pug">
   div
-    vue-qrcode(value="https://naver.com" ref="qr")
+    qrcode(
+      :value="qrValue"
+      ref="qr"
+      :type="'image/png'"
+      :errorCorrectionLevel="'M'"
+      :margin="1"
+      :scale="4")
     v-btn(@click="save") save
 </template>
 
 <script>
-import VueQrcode from 'vue-qrcode'
-
 export default {
-  components: {
-    VueQrcode
+  data () {
+    return {
+      qrValue: 'https://naver.com'
+    }
   },
   methods: {
     async save () {
