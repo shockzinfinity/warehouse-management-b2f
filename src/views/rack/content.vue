@@ -115,6 +115,7 @@ export default {
       box.user = this.user
       box.boxId = cryptoRandomString({ length: 10 })
       box.parentRackId = this.rackInfo.rackId
+      box.sampleCount = 0
 
       const boxRef = this.$firebase.firestore().collection('boxes').doc(this.boxToAdd.title)
       const rackRef = this.$firebase.firestore().collection('racks').doc(this.document)

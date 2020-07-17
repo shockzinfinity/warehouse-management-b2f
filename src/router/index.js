@@ -51,6 +51,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "qrcode" */ '../views/qrcode/')
   },
   {
+    path: '/confirm',
+    name: 'Confirm',
+    // route level code-splitting
+    // this generates a separate chunk (confirm.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "confirm" */ '../views/confirm')
+  },
+  {
     path: '/:collection/:document',
     name: 'collection-document',
     // route level code-splitting

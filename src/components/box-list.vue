@@ -122,7 +122,7 @@ export default {
     },
     openBox (item) {
       this.selectedItem = item
-      console.log(item)
+      // console.log(item)
       this.$router.push('/box/' + item.id)
     }
   }
