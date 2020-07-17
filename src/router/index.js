@@ -43,6 +43,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "editor" */ '../views/editor/')
   },
   {
+    path: '/qrcode',
+    name: 'QrCode',
+    // route level code-splitting
+    // this generates a separate chunk (qrcode.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "qrcode" */ '../views/qrcode/')
+  },
+  {
     path: '/:collection/:document',
     name: 'collection-document',
     // route level code-splitting
