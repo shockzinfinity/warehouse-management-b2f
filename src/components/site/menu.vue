@@ -2,10 +2,12 @@
   div
     v-list-item(three-line)
       v-list-item-content
-        v-list-item-title.title Menu
-        v-list-item-subtitle 0.0.1
+        v-list-item-title.title Warehouse-B2F
+        v-list-item-subtitle Since 2020.7.18
       v-list-item-action
         v-btn(@click="$store.commit('setEdit', !$store.state.editable)" icon) <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'"></v-icon>
+      v-list-item-action
+        v-btn(@click="" icon) <v-icon>mdi-wrench</v-icon>
     v-divider
     v-list(nav)
       v-list-group(
@@ -18,7 +20,7 @@
         template(v-slot:activator)
           v-list-item-content
             v-list-item-title {{ item.title }}
-              span(v-if="$store.state.editable")
+              span(v-if="$store.state.editable && user && user.level <= 9")
                 v-btn(icon @click="openDialogItem(i)") <v-icon>mdi-pencil</v-icon>
                 v-btn(icon @click="moveItem(items, i, -1)" v-if="i > 0") <v-icon>mdi-chevron-double-up</v-icon>
                 v-btn(icon @click="moveItem(items, i, 1)" v-if="i < items.length - 1") <v-icon>mdi-chevron-double-down</v-icon>
@@ -30,18 +32,18 @@
         )
           v-list-item-content
             v-list-item-title(:class="$store.state.editable ? 'pl-4' : ''") {{ subItem.title }}
-              span(v-if="$store.state.editable")
+              span(v-if="$store.state.editable && user && user.level <= 9")
                 v-btn(icon @click="openDialogSubItem(i, j)") <v-icon>mdi-pencil</v-icon>
                 v-btn(icon @click="moveItem(item.subItems, j, -1)" v-if="j > 0") <v-icon>mdi-chevron-double-up</v-icon>
                 v-btn(icon @click="moveItem(item.subItems, j, 1)" v-if="j < item.subItems.length - 1") <v-icon>mdi-chevron-double-down</v-icon>
                 v-btn(icon @click="removeItem(item.subItems, j)") <v-icon>mdi-delete</v-icon>
           v-list-item-action(v-if="$store.state.editable")
             v-btn(icon :to="subItem.to" exact) <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
-        v-list-item(@click="openDialogSubItem(i, -1)" v-if="$store.state.editable")
+        v-list-item(@click="openDialogSubItem(i, -1)" v-if="$store.state.editable && user && user.level <= 9")
           v-list-item-icon(:class="$store.state.editable ? 'pl-4' : ''") <v-icon>mdi-plus</v-icon>
           v-list-item-content
             v-list-item-title 추가하기
-      v-list-item(@click="openDialogItem(-1)" v-if="$store.state.editable")
+      v-list-item(@click="openDialogItem(-1)" v-if="$store.state.editable && user && user.level <= 9")
         v-list-item-icon <v-icon>mdi-plus</v-icon>
         v-list-item-content
           v-list-item-title 추가하기
@@ -64,6 +66,9 @@
                 required
               )
           v-text-field(v-model="formItem.title" labe="아이템 이름" outlined hide-details)
+          v-row
+            v-col(cols="12")
+              v-switch.mx-2(v-model="adminItem" ref="itemSw" label="Admin Item")
     v-dialog(v-model="dialogSubItem" max-width="400")
       v-card
         v-card-title 서브 아이템 수정
@@ -73,6 +78,8 @@
         v-card-text
           v-text-field(v-model="formSubItem.title" label="메뉴 이름" outlined required)
           v-text-field(v-model="formSubItem.to" label="경로" outlined required)
+        v-card-text
+          v-switch.mx-2(v-model="adminSubitem" ref="subItemSw" label="Admin Subitem")
 </template>
 
 <script>
@@ -83,19 +90,32 @@ export default {
       loading: false,
       dialogItem: false,
       dialogSubItem: false,
+      adminItem: false,
+      adminSubitem: false,
       formItem: {
         icon: '',
-        title: ''
+        title: '',
+        level: 9
       },
       formSubItem: {
         title: '',
-        to: ''
+        to: '',
+        level: 9
       },
       selectedItemIndex: 0,
       selectedSubItemIndex: 0
     }
   },
+  computed: {
+    user () {
+      return this.$store.state.user
+    }
+  },
   methods: {
+    isAdminItem (level) {
+      if (level >= 9) return false
+      else return true
+    },
     openDialogItem (index) {
       // 메인 메뉴 아이템 추가
 
@@ -107,16 +127,19 @@ export default {
       } else {
         this.formItem.icon = this.items[index].icon
         this.formItem.title = this.items[index].title
+        this.adminItem = this.isAdminItem(this.items[index].level)
       }
 
       this.dialogItem = true
     },
     async saveItem () {
       if (this.selectedItemIndex < 0) {
+        this.formItem.level = this.adminItem ? 0 : 9
         this.items.push(this.formItem)
       } else {
         this.items[this.selectedItemIndex].icon = this.formItem.icon
         this.items[this.selectedItemIndex].title = this.formItem.title
+        this.items[this.selectedItemIndex].level = this.adminItem ? 0 : 9
       }
 
       this.save()
@@ -131,6 +154,7 @@ export default {
       } else {
         this.formSubItem.title = this.items[index].subItems[subIndex].title
         this.formSubItem.to = this.items[index].subItems[subIndex].to
+        this.adminSubitem = this.isAdminItem(this.items[index].subItems[subIndex].level)
       }
       this.dialogSubItem = true
     },
@@ -139,7 +163,8 @@ export default {
         if (!this.items[this.selectedItemIndex].subItems) { this.items[this.selectedItemIndex].subItems = [] }
         this.items[this.selectedItemIndex].subItems.push({
           title: this.formSubItem.title,
-          to: this.formSubItem.to
+          to: this.formSubItem.to,
+          level: this.adminSubitem ? 0 : 9
         })
       } else {
         this.items[this.selectedItemIndex].subItems[
@@ -148,6 +173,9 @@ export default {
         this.items[this.selectedItemIndex].subItems[
           this.selectedSubItemIndex
         ].to = this.formSubItem.to
+        this.items[this.selectedItemIndex].subItems[
+          this.selectedSubItemIndex
+        ].level = this.adminSubitem ? 0 : 9
       }
 
       this.save()

@@ -29,7 +29,7 @@ export default {
   data: () => ({
     drawer: false,
     site: {
-      title: '나의 타이틀입니다.',
+      title: '',
       footer: '푸터입니다.',
       menu: [
         {
@@ -55,7 +55,7 @@ export default {
     }
   }),
   created () {
-    console.log('subscribe on create method')
+    console.log('site started')
     this.subscribe()
   },
   mounted () {
@@ -70,26 +70,28 @@ export default {
           return
         }
         this.site = v
+        // console.log(this.site.title)
+        // console.log(this.site.footer)
       }, e => {
         console.log(e.message)
       })
-    },
-    save () {
-      console.log('save')
-      this.$firebase.database().ref().child('abcd').set({
-        title: 'abcd', text: 'ttttttt'
-      })
-    },
-    read () {
-      this.$firebase.database().ref().child('abcd').on('value', (sn) => {
-        console.log(sn)
-        console.log(sn.val())
-      })
-    },
-    async readOne () {
-      const sn = await this.$firebase.database().ref().child('abcd').once('value')
-      console.log(sn.val())
     }
+    // save () {
+    //   console.log('save')
+    //   this.$firebase.database().ref().child('abcd').set({
+    //     title: 'abcd', text: 'ttttttt'
+    //   })
+    // },
+    // read () {
+    //   this.$firebase.database().ref().child('abcd').on('value', (sn) => {
+    //     console.log(sn)
+    //     console.log(sn.val())
+    //   })
+    // },
+    // async readOne () {
+    //   const sn = await this.$firebase.database().ref().child('abcd').once('value')
+    //   console.log(sn.val())
+    // }
   }
 }
 </script>

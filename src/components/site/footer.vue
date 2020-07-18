@@ -2,7 +2,8 @@
   v-footer(app color="primary" dark absolute :footer="footer")
     v-spacer
     div &copy; {{ new Date().getFullYear() + ' ' + footer }}
-    v-btn(icon @click="openDialog") <v-icon>mdi-grease-pencil</v-icon>
+    template(v-if="user")
+      v-btn(icon @click="openDialog" :disabled="user.level > 0") <v-icon>mdi-grease-pencil</v-icon>
     v-dialog(v-model="dialog" max-width="400")
       v-card
         v-card-title 푸터수정
@@ -19,7 +20,12 @@ export default {
   data () {
     return {
       dialog: false,
-      text: this.footer
+      text: ''
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.state.user
     }
   },
   methods: {

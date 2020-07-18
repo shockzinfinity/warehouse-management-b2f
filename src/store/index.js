@@ -8,6 +8,7 @@ export default new Vuex.Store({
     editable: true,
     fireUser: null,
     user: null
+    
   },
   mutations: {
     setEdit (state, edit) {
