@@ -6,6 +6,7 @@
         v-card.mx-auto
           v-img.white--text.cover-full.align-end(
             :src="info.coverUrl"
+            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
             max-width="600"
             max-height="600"
           )

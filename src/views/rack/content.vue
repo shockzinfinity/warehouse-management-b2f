@@ -8,11 +8,17 @@
           v-btn(icon @click="rackWrite" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
           v-btn(icon @click="openDialog" :disabled="user.level > 0") <v-icon>mdi-shape-plus</v-icon>
       v-card-text(v-if="rackInfo.createdAt")
+        //- v-alert(color="info" outlined dismissible)
+        //-   div(style="white-space: pre-line;") {{ rackInfo.description }}
+        //-   .text-right.font-italic.caption 정보 작성일: {{ rackInfo.createdAt.toDate().toLocaleString() }}
+        //-   .text-right.font-italic.caption 정보 수정일: {{ rackInfo.updatedAt.toDate().toLocaleString() }}
+        //-   .text-right.font-italic.caption 박스 수: {{ rackInfo.boxCount }}
         v-alert(color="info" outlined dismissible)
-          div(style="white-space: pre-line") {{ rackInfo.description }}
-          .text-right.font-italic.caption 정보 작성일: {{ rackInfo.createdAt.toDate().toLocaleString() }}
-          .text-right.font-italic.caption 정보 수정일: {{ rackInfo.updatedAt.toDate().toLocaleString() }}
-          .text-right.font-italic.caption 박스 수: {{ rackInfo.boxCount }}
+          v-img.mx-auto(:src="rackInfo.coverUrl" max-width="400px")
+          v-card-subtitle {{ rackInfo.description }}
+            .text-right.font-italic.caption 정보 작성일: {{ rackInfo.createdAt.toDate().toLocaleString() }}
+            .text-right.font-italic.caption 정보 수정일: {{ rackInfo.updatedAt.toDate().toLocaleString() }}
+            .text-right.font-italic.caption 박스 수: {{ rackInfo.boxCount }}
       box-list(:info="rackInfo" :document="document")
     v-dialog(v-model="dialog")
       v-card(:loading="loading")

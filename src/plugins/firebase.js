@@ -34,6 +34,7 @@ firebase.auth().onAuthStateChanged(fu => {
   if (!fu) {
     store.commit('setUser', null)
     store.commit('setIsAdmin', false)
+    store.commit('setEditable', false)
     store.commit('setLevel', 9)
     if (unsubscribe) unsubscribe()
     return

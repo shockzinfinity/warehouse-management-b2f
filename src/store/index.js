@@ -23,7 +23,6 @@ export default new Vuex.Store({
     },
     setIsAdmin (state, isAdmin) {
       state.isAdmin = isAdmin
-      state.editable = isAdmin
     },
     setLevel (state, level) {
       state.userLevel = level

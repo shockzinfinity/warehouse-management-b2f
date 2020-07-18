@@ -8,7 +8,7 @@
         v-card.mx-auto(max-width="312")
           a(@click="rackLink(rack)" style="text-decoration: none;")
             v-img.white--text.align-end(
-              src="../../assets/images/rack.preview.jpg"
+              :src="rack.coverUrl"
               gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
               height="194"
             )
