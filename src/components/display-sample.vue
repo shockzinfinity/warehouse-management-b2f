@@ -8,6 +8,16 @@
       v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
       v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
       v-btn(icon @click="$emit('close')") <v-icon>mdi-close</v-icon>
+
+    number-spinner(
+      label="custom label"
+      :minimum="0"
+      :maximum="11"
+      :step="1"
+      v-model="spinnerModel"
+    )
+    p Value from spinner: {{ spinnerModel }}
+    hr
     v-card-text
       viewer(v-if="content" :initialValue="content")
       v-container(v-else)
@@ -29,15 +39,18 @@
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
+import NumberSpinner from '@/components/NumberSpinner'
 
 export default {
   components: {
     DisplayTime,
-    DisplayComment
+    DisplayComment,
+    NumberSpinner
   },
   props: ['document', 'item'],
   data () {
     return {
+      spinnerModel: 10,
       content: '',
       ref: this.$firebase.firestore().collection('boxes').doc(this.document)
     }
