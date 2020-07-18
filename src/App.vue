@@ -30,25 +30,15 @@ export default {
     drawer: false,
     site: {
       title: '',
-      footer: '푸터입니다.',
+      footer: '',
       menu: [
         {
           title: 'home',
           icon: 'mdi-home',
+          level: 9,
           subItems: [
-            { title: 'Dashboard', to: '/' },
-            { title: 'About', to: '/about' }
-          ]
-        },
-        {
-          title: 'xxx',
-          active: true,
-          icon: 'mdi-badge-account-alert',
-          subItems: [
-            {
-              title: 'xxx',
-              to: '/xxx'
-            }
+            { title: 'Dashboard', to: '/', level: 9 },
+            { title: 'About', to: '/about', level: 9 }
           ]
         }
       ]

@@ -3,10 +3,10 @@
     v-list-item(three-line)
       v-list-item-content
         v-list-item-title.title Warehouse-B2F
-        v-list-item-subtitle Since 2020.7.18
-      v-list-item-action
+        v-list-item-subtitle Ver. 0.20.7.18 &copy; shockz.io
+      v-list-item-action(v-model="$store.state.isAdmin")
         v-btn(@click="$store.commit('setEdit', !$store.state.editable)" icon) <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'"></v-icon>
-      v-list-item-action
+      //- v-list-item-action
         v-btn(@click="" icon) <v-icon>mdi-wrench</v-icon>
     v-divider
     v-list(nav)
@@ -20,7 +20,7 @@
         template(v-slot:activator)
           v-list-item-content
             v-list-item-title {{ item.title }}
-              span(v-if="$store.state.editable && user && user.level <= 9")
+              span(v-if="$store.state.editable")
                 v-btn(icon @click="openDialogItem(i)") <v-icon>mdi-pencil</v-icon>
                 v-btn(icon @click="moveItem(items, i, -1)" v-if="i > 0") <v-icon>mdi-chevron-double-up</v-icon>
                 v-btn(icon @click="moveItem(items, i, 1)" v-if="i < items.length - 1") <v-icon>mdi-chevron-double-down</v-icon>
@@ -29,21 +29,22 @@
           v-for="(subItem, j) in item.subItems"
           :key="j"
           :to="$store.state.editable ? null : subItem.to"
+          :disabled="$store.state.userLevel > subItem.level"
         )
           v-list-item-content
             v-list-item-title(:class="$store.state.editable ? 'pl-4' : ''") {{ subItem.title }}
-              span(v-if="$store.state.editable && user && user.level <= 9")
+              span(v-if="$store.state.editable")
                 v-btn(icon @click="openDialogSubItem(i, j)") <v-icon>mdi-pencil</v-icon>
                 v-btn(icon @click="moveItem(item.subItems, j, -1)" v-if="j > 0") <v-icon>mdi-chevron-double-up</v-icon>
                 v-btn(icon @click="moveItem(item.subItems, j, 1)" v-if="j < item.subItems.length - 1") <v-icon>mdi-chevron-double-down</v-icon>
                 v-btn(icon @click="removeItem(item.subItems, j)") <v-icon>mdi-delete</v-icon>
           v-list-item-action(v-if="$store.state.editable")
             v-btn(icon :to="subItem.to" exact) <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
-        v-list-item(@click="openDialogSubItem(i, -1)" v-if="$store.state.editable && user && user.level <= 9")
+        v-list-item(@click="openDialogSubItem(i, -1)" v-if="$store.state.editable && $store.state.isAdmin")
           v-list-item-icon(:class="$store.state.editable ? 'pl-4' : ''") <v-icon>mdi-plus</v-icon>
           v-list-item-content
             v-list-item-title 추가하기
-      v-list-item(@click="openDialogItem(-1)" v-if="$store.state.editable && user && user.level <= 9")
+      v-list-item(@click="openDialogItem(-1)" v-if="$store.state.editable && $store.state.isAdmin")
         v-list-item-icon <v-icon>mdi-plus</v-icon>
         v-list-item-content
           v-list-item-title 추가하기

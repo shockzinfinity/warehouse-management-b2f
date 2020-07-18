@@ -19,7 +19,12 @@ let unsubscribe = null
 const subscribe = (fu) => {
   const ref = firebase.firestore().collection('users').doc(fu.uid)
   unsubscribe = ref.onSnapshot(doc => {
-    if (doc.exists) store.commit('setUser', doc.data())
+    if (doc.exists) {
+      const user = doc.data()
+      store.commit('setUser', user)
+      store.commit('setLevel', user.level)
+      if (user.level === 0) store.commit('setIsAdmin', user.level === 0)
+    }
   }, console.error)
 }
 
@@ -28,6 +33,8 @@ firebase.auth().onAuthStateChanged(fu => {
   store.commit('setFireUser', fu)
   if (!fu) {
     store.commit('setUser', null)
+    store.commit('setIsAdmin', false)
+    store.commit('setLevel', 9)
     if (unsubscribe) unsubscribe()
     return
   }
