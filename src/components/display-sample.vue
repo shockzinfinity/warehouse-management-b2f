@@ -5,6 +5,8 @@
       v-spacer
       v-btn(icon @click="sampleWrite") <v-icon>mdi-pencil</v-icon>
       v-btn(icon @click="remove") <v-icon>mdi-delete</v-icon>
+      v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
+      v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
       v-btn(icon @click="$emit('close')") <v-icon>mdi-close</v-icon>
     v-card-text
       viewer(v-if="content" :initialValue="content")
@@ -70,6 +72,12 @@ export default {
       await this.$firebase.storage().ref().child('boxes').child(this.document).child(this.item.id + '.md').delete()
 
       this.$emit('close')
+    },
+    incomming () {
+
+    },
+    outcomming () {
+      
     }
   }
 }

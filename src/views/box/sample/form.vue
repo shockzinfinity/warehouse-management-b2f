@@ -29,7 +29,8 @@ export default {
       form: {
         parentBoxId: '',
         title: '',
-        content: ''
+        content: '',
+        currentStock: 0
       },
       loading: false,
       exists: false,

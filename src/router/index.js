@@ -51,6 +51,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "qrcode" */ '../views/qrcode/')
   },
   {
+    path: '/uploadtest',
+    name: 'UploadTest',
+    // route level code-splitting
+    // this generates a separate chunk (uploadtest.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "uploadtest" */ '../views/uploadtest/')
+  },
+  {
     path: '/confirm',
     name: 'Confirm',
     // route level code-splitting
