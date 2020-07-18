@@ -17,9 +17,9 @@
           v-card-text
             v-row
               v-col(cols="4") POSITION:
-              v-col(cols="8") {{ rack.position }}
+              v-col(cols="8") {{ ellipseContent(rack.position, 10) }}
             v-row
-              v-col(cols="12") {{ ellipseContent(rack.description) }}
+              v-col(cols="12") {{ ellipseContent(rack.description, 40) }}
             v-row
               v-col(cols="4") created:
               v-col(cols="8" align="right") {{ rack.createdAt.toLocaleString() }}
@@ -77,9 +77,9 @@ export default {
     rackLink (rack) {
       this.$router.push('/rack/' + rack.title)
     },
-    ellipseContent (txt) {
+    ellipseContent (txt, length) {
       const ellipseText =
-        txt.length < 65 ? txt : txt.slice(0, 40) + '...'
+        txt.length < length ? txt : txt.slice(0, length) + '...'
 
       return ellipseText
     }

@@ -19,6 +19,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
+    path: '/warehouse',
+    name: 'Warehouse',
+    // route level code-splitting
+    // this generates a separate chunk (warehouse.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "warehouse" */ '../views/warehouse/')
+  },
+  {
     path: '/board',
     name: 'Board',
     // route level code-splitting
