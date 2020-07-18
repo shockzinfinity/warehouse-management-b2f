@@ -1,102 +1,57 @@
 <template lang="pug">
   v-container(fluid)
-    v-form
-      v-card(:loading="loading")
-        v-toolbar(color="accent" dense flat dark)
-          v-toolbar-title modify warehouse informations
-          v-spacer
-          v-btn(icon @click="$router.push('/')") <v-icon>mdi-arrow-left</v-icon>
-          v-btn(icon @click="save" :disabled="!$store.state.isAdmin") <v-icon>mdi-content-save</v-icon>
-        v-card-text
-          v-text-field(outlined label="창고명")
-          v-text-field(outlined label="설명")
-          v-text-field(outlined label="주소")
-        hr
-        v-card-subtitle.pb-0 cover image
-        v-card-text.text-center {{ fileName }}
-        v-card-actions.justify-center
-          v-spacer
-          v-btn(
-            color="primary"
-            @click.native="selectFiles"
-            v-if="!uploadEnd && !uploading"
-            :disabled="!$store.state.isAdmin"
-          ) change
-          v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
-        v-form(ref="form")
-          input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
-        v-progress-circular(
-          v-if="uploading && !uploadEnd"
-          :size="80" :width="15" :rotate="360" :value="progressUpload" color="primary"
-        ) {{ progressUpload }}%
-        img(v-if="uploadEnd" :src="downloadURL" width="80%")
+    v-row
+    v-col(cols="12")
+      v-row(align="center" style="height: 400px;")
+        v-card.mx-auto
+          v-img.white--text.cover-full.align-end(
+            :src="info.coverUrl"
+            max-width="600"
+            max-height="600"
+          )
+            v-card-title.pb-3.justify-end {{ info.title }}
+          v-card-subtitle.pb-0 This site is a management system for warehouse.
+          v-card-subtitle.pb-0 Address: {{ info.address }}
+          v-card-subtitle.pb-0 Description: {{ info.description }}
+          v-card-subtitle.pb-0 Current summary: 
+          v-card-text.text--primary
+          v-card-actions
+            v-spacer
+            v-btn(
+              v-if="$store.state.isAdmin"
+              color="orange"
+              @click="$router.push($route.path + '/modify')"
+            ) Modify Info
 </template>
 
 <script>
 export default {
   data () {
     return {
-      loading: false,
-      progressUpload: 0,
-      fileName: '',
-      uploadTask: '',
-      uploading: false,
-      uploadEnd: false,
-      downloadURL: ''
+      info: {
+        title: '',
+        description: '',
+        address: '',
+        coverUrl: ''
+      }
     }
+  },
+  created () {
+    this.subscribe()
   },
   methods: {
-    selectFiles () {
-      this.$refs.uploadInput.click()
-    },
-    detectFiles (e) {
-      const fileList = e.target.files || e.dataTransfer.files
-      Array.from(Array(fileList.length).keys()).map(x => {
-        this.upload(fileList[x])
-      })
-    },
-    upload (file) {
-      this.fileName = file.name
-      this.uploading = true
-      this.uploadTask = this.$firebase.storage().ref().child('warehouseInfo').child(file.name).put(file)
-    },
-    deleteImage () {
-      this.$firebase.storage().ref().child('warehouseInfo').child(this.fileName).delete()
-        .then(() => {
-          this.uploading = false
-          this.uploadEnd = false
-          this.downloadURL = ''
-        })
-        .catch(e => {
-          throw Error(e)
-        })
-      this.$refs.form.reset()
-    },
-    save () {
-      console.log('save')
-    }
-  },
-  watch: {
-    uploadTask () {
-      this.uploadTask.on('state_changed', sp => {
-        this.progressUpload = Math.floor(sp.bytesTransferred / sp.totalBytes * 100)
-      }, null, () => {
-        this.uploadTask.snapshot.ref.getDownloadURL().then(url => {
-          this.uploadEnd = true
-          this.downloadURL = url
-          this.$emit('downloadURL', url)
-        })
+    subscribe () {
+      this.$firebase.database().ref().child('warehouseInfo').on('value', sn => {
+        const w = sn.val()
+        if (!w) {
+          this.$firebase.database().ref().child('warehouseInfo').set(this.info)
+          return
+        }
+        this.info = w
+      }, e => {
+        console.log(e.message)
       })
     }
   }
 }
 </script>
-
-<style lang="sass" scoped>
-.progress-bar
-  margin: 10px 0
-
-input[type="file"]
-  position: absolute
-  clip: rect(0,0,0,0)
-</style>
