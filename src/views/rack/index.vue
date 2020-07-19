@@ -30,7 +30,7 @@
               v-col(cols="4") boxes:
               v-col.display-3(cols="8" align="right") {{ rack.boxCount }}
             v-row
-              v-col(cols="4") samples:
+              v-col(cols="4") samples SKU:
               v-col.display-3(cols="8" align="right") 0
           v-card-actions
             v-spacer

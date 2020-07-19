@@ -8,6 +8,7 @@ import './plugins/firebase'
 import './plugins/toast-editor'
 import './plugins/moment'
 import './plugins/vue-qrcode'
+import './plugins/vee-validate'
 import './error'
 
 Vue.config.productionTip = false

@@ -7,12 +7,16 @@
       :errorCorrectionLevel="'M'"
       :margin="1"
       :scale="4")
+    v-spacer
     v-btn(@click="save") save
     v-btn(@click="goRoute") routing
     v-btn(@click="generate") generate
+    v-btn(@click="testGen") test generate
 </template>
 
 <script>
+import QRCode from 'qrcode'
+
 export default {
   data () {
     return {
@@ -20,6 +24,9 @@ export default {
       qrValue: 'f360a13660',
       testVal: 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-f360a13660'
     }
+  },
+  components: {
+    QRCode
   },
   methods: {
     async save () {
@@ -42,6 +49,9 @@ export default {
         .then(url => {
           console.log(url)
         })
+    },
+    async testGen () {
+      console.log(await QRCode.toDataURL('temp'))
     }
   }
 }

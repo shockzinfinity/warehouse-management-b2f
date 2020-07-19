@@ -29,8 +29,8 @@
         v-form(ref="form")
           input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
         v-card-text
-          v-text-field(v-model="form.position" outlined label="위치")
-          v-text-field(v-model="form.title" outlined label="이름")
+          v-text-field(v-model="form.position" data-vv-name="position" v-validate="'required|min:3'" outlined label="위치")
+          v-text-field(v-model="form.title" data-vv-name="title" v-validate="'required|min:3'" outlined label="이름")
           v-textarea(v-model="form.description" outlined label="설명")
 </template>
 
@@ -124,6 +124,7 @@ export default {
       })
     },
     async save () {
+      this.$validator.validateAll()
       const form = {
         position: this.form.position,
         title: this.form.title,

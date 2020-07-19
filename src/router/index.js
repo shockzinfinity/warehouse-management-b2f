@@ -67,6 +67,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "uploadtest" */ '../views/uploadtest/')
   },
   {
+    path: '/form-validation',
+    name: 'FormValidationTest',
+    // route level code-splitting
+    // this generates a separate chunk (form-validation.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "form-validation" */ '../views/form-validation/')
+  },
+  {
     path: '/confirm',
     name: 'Confirm',
     // route level code-splitting
