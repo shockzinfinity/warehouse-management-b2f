@@ -1,8 +1,24 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import store from '@/store'
 
 Vue.use(VueRouter)
+
+const requireAuth = async (to, from, next) => {
+  try {
+    if (store.state.token) {
+      next()
+    } else {
+      next({
+        path: '/auth',
+        query: { redirect: to.fullPath }
+      })
+    }
+  } finally {
+  
+  }
+}
 
 const routes = [
   {
@@ -16,7 +32,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+    beforeEnter: requireAuth
   },
   {
     path: '/warehouse',
@@ -67,6 +84,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "uploadtest" */ '../views/uploadtest/')
   },
   {
+    path: '/uploadtest2',
+    name: 'UploadTest2',
+    // route level code-splitting
+    // this generates a separate chunk (uploadtest2.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "uploadtest2" */ '../views/uploadtest/test2')
+  },
+  {
     path: '/form-validation',
     name: 'FormValidationTest',
     // route level code-splitting
@@ -97,6 +122,14 @@ const routes = [
     // this generates a separate chunk (collection-document-action.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "collection-document-action" */ '../views/renderer')
+  },
+  {
+    path: '/auth',
+    name: 'auth',
+    // route level code-splitting
+    // this generates a separate chunk (auth.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "auth" */ '../views/auth/')
   },
   {
     path: '*',

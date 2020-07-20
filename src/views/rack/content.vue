@@ -14,7 +14,8 @@
         //-   .text-right.font-italic.caption 정보 수정일: {{ rackInfo.updatedAt.toDate().toLocaleString() }}
         //-   .text-right.font-italic.caption 박스 수: {{ rackInfo.boxCount }}
         v-alert(color="info" outlined dismissible)
-          v-img.mx-auto(:src="rackInfo.coverUrl" max-width="400px")
+          v-img.mx-auto(:src="rackInfo.coverUrl" max-width="200px")
+          v-img.mx-auto(:src="rackInfo.qrcodeUrl" max-width="200px")
           v-card-subtitle {{ rackInfo.description }}
             .text-right.font-italic.caption 정보 작성일: {{ rackInfo.createdAt.toDate().toLocaleString() }}
             .text-right.font-italic.caption 정보 수정일: {{ rackInfo.updatedAt.toDate().toLocaleString() }}
@@ -22,6 +23,7 @@
       box-list(:info="rackInfo" :document="document")
     v-dialog(v-model="dialog")
       v-card(:loading="loading")
+        cover-upload(type="box")
         v-form
           v-toolbar(color="accent" dense flat dark)
             v-toolbar-title 박스 추가
@@ -39,10 +41,14 @@
 <script>
 import BoxList from '@/components/box-list'
 import cryptoRandomString from 'crypto-random-string'
+import CoverUpload from '@/components/CoverUpload'
+import QRCode from 'qrcode'
 
 export default {
   components: {
-    BoxList
+    BoxList,
+    CoverUpload,
+    QRCode
   },
   props: ['document'],
   data () {

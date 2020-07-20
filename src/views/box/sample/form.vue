@@ -8,7 +8,8 @@
           v-btn(icon @click="$router.push('/box/' + document)") <v-icon>mdi-arrow-left</v-icon>
           v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
         v-card-text
-          v-text-field(v-model="form.parentBoxId" outlined label="포함되어 있는 상자")
+          .display-1 포함되어 있는 박스 : 
+            v-chip.ma-4(large color="accent") {{ document }} ( {{ form.parentBoxId }} )
           v-text-field(v-model="form.title" outlined label="이름")
           editor(v-if="!sampleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
           template(v-else)
@@ -34,7 +35,8 @@ export default {
       },
       loading: false,
       exists: false,
-      ref: null
+      ref: null,
+      parentRackId: ''
     }
   },
   computed: {
@@ -65,12 +67,22 @@ export default {
     async fetch () {
       this.ref = this.$firebase.firestore().collection('boxes').doc(this.document)
 
+      this.ref.get().then(doc => {
+        if (!doc.empty) {
+          // console.log('box', doc.data())
+          const item = doc.data()
+          this.form.parentBoxId = item.boxId
+          this.parentRackId = item.parentRackId
+        }
+      })
+
       if (!this.sampleId) return
       const doc = await this.ref.collection('samples').doc(this.sampleId).get()
       this.exists = doc.exists
       if (!this.exists) return
       const item = doc.data()
       this.form.title = item.title
+      this.parentRackId = item.parentRackId
       const { data } = await axios.get(item.url)
       this.form.content = data
     },
@@ -88,6 +100,15 @@ export default {
           url
         }
 
+        let rackTitle
+        if (this.parentRackId) {
+          const temp = await this.$firebase.firestore().collection('racks').where('rackId', '==', this.parentRackId).get()
+
+          if (!temp.empty) {
+            rackTitle = temp.docs[0].data().title
+          }
+        }
+
         const batch = await this.$firebase.firestore().batch()
 
         if (!this.sampleId) {
@@ -102,6 +123,11 @@ export default {
           }
           batch.set(this.ref.collection('samples').doc(id), doc)
           batch.update(this.ref, { sampleCount: this.$firebase.firestore.FieldValue.increment(1) })
+
+          // console.log('racktitle', rackTitle)
+          if (rackTitle && this.parentRackId) {
+            batch.update(this.$firebase.firestore().collection('racks').doc(rackTitle), { sampleSKU: this.$firebase.firestore.FieldValue.increment(1) })
+          }
         } else {
           batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
         }

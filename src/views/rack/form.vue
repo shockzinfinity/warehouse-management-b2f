@@ -1,43 +1,58 @@
 <template lang="pug">
   v-container(fluid)
-    v-form
-      v-card(:loading="loading")
-        v-toolbar(color="accent" dense flat dark)
-          v-toolbar-title 랙 정보 작성
-          v-spacer
-          v-btn(icon @click="$router.push('/rack/' + document)") <v-icon>mdi-arrow-left</v-icon>
-          v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
-        v-card-subtitle.pb-0 cover image
-        v-row
-          v-col(cols="12")
-            v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="form.coverUrl" width="50%")
-            v-card-text.text-center {{ fileName }}
-            v-progress-circular.mx-auto(
-              v-if="uploading && !uploadEnd"
-              :size="80" :width="15" :rotate="360" :value="progressUpload" color="primary"
-            ) {{ progressUpload }}%
-            v-img.mx-auto(v-if="uploadEnd" :src="downloadURL" width="50%")
-            v-card-actions.justify-center
+    v-layout(align-center justify-center)
+      validation-observer(ref="obs" v-slot="{ invalid, validated, passes, validate }")
+        v-form
+          v-card.elevation-12(:loading="loading")
+            v-toolbar(color="accent" dense flat dark)
+              v-toolbar-title 랙 정보 작성
               v-spacer
-              v-btn(
-                color="primary"
-                @click.native="selectFiles"
-                v-if="!uploadEnd && !uploading"
-                :disabled="!$store.state.isAdmin"
-              ) change
-              v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
-        v-form(ref="form")
-          input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
-        v-card-text
-          v-text-field(v-model="form.position" data-vv-name="position" v-validate="'required|min:3'" outlined label="위치")
-          v-text-field(v-model="form.title" data-vv-name="title" v-validate="'required|min:3'" outlined label="이름")
-          v-textarea(v-model="form.description" outlined label="설명")
+              v-btn(icon @click="$router.push('/rack/' + document)") <v-icon>mdi-arrow-left</v-icon>
+              v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
+            v-card-subtitle.pb-0 cover image
+            v-card-text
+              v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="form.coverUrl" width="50%")
+              v-card-text.text-center {{ fileName }}
+              v-progress-circular.mx-auto(
+                v-if="uploading && !uploadEnd"
+                :size="80" :width="15" :rotate="360" :value="progressUpload" color="primary"
+              ) {{ progressUpload }}%
+              v-img.mx-auto(v-if="uploadEnd" :src="downloadURL" width="50%")
+              v-card-actions.justify-center
+                v-spacer
+                v-btn(
+                  color="primary"
+                  @click.native="selectFiles"
+                  v-if="!uploadEnd && !uploading"
+                  :disabled="!$store.state.isAdmin"
+                ) change
+                v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
+              v-form(ref="form")
+                input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
+            v-card-subtitle.pb-0 QR code
+            v-card-text
+              v-img.mx-auto(v-if="exists && form.qrcodeUrl" :src="form.qrcodeUrl" width="50%")
+            v-card-text
+              v-text-field-with-validation(v-model="form.position" rules="required|max:50" :counter="50" outlined label="위치")
+              v-text-field-with-validation(v-model="form.title" rules="required|max:50" :counter="50" outlined label="이름")
+              v-textarea(v-model="form.description" outlined label="설명")
 </template>
 
 <script>
 import cryptRandomString from 'crypto-random-string'
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import VTextFieldWithValidation from '@/components/inputs/VTextFieldWithValidation'
+import VSelectWithValidation from '@/components/inputs/VSelectWithValidation'
+import QRCode from 'qrcode'
 
 export default {
+  components: {
+    ValidationObserver,
+    ValidationProvider,
+    VTextFieldWithValidation,
+    VSelectWithValidation,
+    QRCode
+  },
   props: ['document', 'action'],
   data () {
     return {
@@ -52,11 +67,13 @@ export default {
         position: '',
         description: '',
         title: '',
-        coverUrl: ''
+        coverUrl: '',
+        qrcodeUrl: ''
       },
       loading: false,
       exists: false,
-      ref: null
+      ref: null,
+      storageRef: null
     }
   },
   watch: {
@@ -94,10 +111,10 @@ export default {
     upload (file) {
       this.fileName = file.name
       this.uploading = true
-      this.uploadTask = this.$firebase.storage().ref().child('racks').child(this.document).child('cover').child(file.name).put(file)
+      this.uploadTask = this.storageRef.child('cover').child(file.name).put(file)
     },
     deleteImage () {
-      this.$firebase.storage().ref().child('racks').child(this.document).child('cover').child(this.fileName).delete()
+      this.storageRef.child('cover').child(this.fileName).delete()
         .then(() => {
           this.uploading = false
           this.uploadEnd = false
@@ -112,25 +129,32 @@ export default {
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
       this.ref = this.$firebase.firestore().collection('racks').doc(this.document)
+      this.storageRef = this.$firebase.storage().ref().child('racks').child(this.document)
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
           const item = doc.data()
+          this.form.rackId = item.rackId
           this.form.position = item.position
           this.form.title = item.title
           this.form.description = item.description
           this.form.coverUrl = item.coverUrl
+          this.form.qrcodeUrl = item.qrcodeUrl
         }
       })
     },
     async save () {
-      this.$validator.validateAll()
+      const validation = await this.$refs.obs.validate()
+      if (!validation) return
+
       const form = {
+        rackId: this.form.rackId,
         position: this.form.position,
         title: this.form.title,
         description: this.form.description,
         updatedAt: new Date(),
-        coverUrl: this.downloadURL
+        coverUrl: this.downloadURL ? this.downloadURL : this.form.coverUrl,
+        qrcodeUrl: this.form.qrcodeUrl
       }
       this.loading = true
 
@@ -139,15 +163,36 @@ export default {
           form.rackId = cryptRandomString({ length: 10 })
           form.createdAt = new Date()
           form.boxCount = 0
-          form.coverUrl = this.downloadURL
+
+          // console.log('create', form)
+
+          if (!form.qrcodeUrl) {
+            const qr = await this.codeGenration(form.rackId)
+            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            form.qrcodeUrl = await qrSn.ref.getDownloadURL()
+          }
+
           await this.ref.set(form)
         } else {
+          if (!this.form.qrcodeUrl) {
+            const qr = await this.codeGenration(form.rackId)
+            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            form.qrcodeUrl = await qrSn.ref.getDownloadURL()
+          }
+
+          // console.log(form.qrcodeUrl)
+          // console.log('update', this.form)
+
           this.ref.update(form)
         }
         this.$router.push('/rack/' + this.document)
       } finally {
         this.loading = false
       }
+    },
+    async codeGenration (rackId) {
+      const qrCodeAddress = 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=rk-' + rackId
+      return await QRCode.toDataURL(qrCodeAddress)
     }
   }
 }

@@ -14,6 +14,7 @@ import 'firebase/firebase-storage'
 import firebaseConfig from '../../firebaseConfig.dev'
 
 firebase.initializeApp(firebaseConfig)
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 
 let unsubscribe = null
 const subscribe = (fu) => {
@@ -29,16 +30,21 @@ const subscribe = (fu) => {
 }
 
 firebase.auth().onAuthStateChanged(fu => {
-  // console.log('fire user: ', fu)
   store.commit('setFireUser', fu)
+  // console.log('fire user: ', fu)
   if (!fu) {
+    // firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(() => {
+    //   console.log('session')
+    // })
+    // store.commit('setToken', fu.idToken)
     store.commit('setUser', null)
     store.commit('setIsAdmin', false)
-    store.commit('setEditable', false)
+    store.commit('setEdit', false)
     store.commit('setLevel', 9)
     if (unsubscribe) unsubscribe()
     return
   }
   subscribe(fu)
 })
+
 Vue.prototype.$firebase = firebase

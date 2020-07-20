@@ -31,7 +31,7 @@
               v-col.display-3(cols="8" align="right") {{ rack.boxCount }}
             v-row
               v-col(cols="4") samples SKU:
-              v-col.display-3(cols="8" align="right") 0
+              v-col.display-3(cols="8" align="right") {{ rack.sampleSKU }}
           v-card-actions
             v-spacer
             v-btn(icon) <v-icon>mdi-heart</v-icon>

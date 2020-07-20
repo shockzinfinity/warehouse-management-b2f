@@ -1,43 +1,57 @@
 <template lang="pug">
-  v-container(fluid)  
-    v-form
-      v-card(:loading="loading")
-        v-toolbar(color="accent" dense flat dark)
-          v-toolbar-title 박스 정보 작성
-          v-spacer
-          v-btn(icon @click="goBack") <v-icon>mdi-arrow-left</v-icon>
-          v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
-        v-card-subtitle.pb-0 cover image
-        v-row
-          v-col(cols="12")
-            v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="form.coverUrl" width="50%")
-            v-card-text.text-center {{ fileName }}
-            v-progress-circular.mx-auto(
-              v-if="uploading && !uploadEnd"
-              :size="80" :width="15" :rotate="360" :value="progressUpload" color="primary"
-            ) {{ progressUpload }}%
-            v-img.mx-auto(v-if="uploadEnd" :src="downloadURL" width="50%")
-            v-card-actions.justify-center
-              v-spacer
-              v-btn(
-                color="primary"
-                @click.native="selectFiles"
-                v-if="!uploadEnd && !uploading"
-                :disabled="!$store.state.isAdmin"
-              ) change
-              v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
-        v-form(ref="form")
-          input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
-        v-card-text
-          v-text-field(v-model="form.parentRackId" outlined label="포함되어 있는 랙")
-          v-text-field(v-model="form.title" outlined label="이름")
-          v-textarea(v-model="form.description" outlined label="설명")
+  v-container(fluid)
+    v-layout(align-center justify-center)
+    validation-observer(ref="obs" v-slot="{ invalid, validated, passes, validate }")
+      v-form
+        v-card.elevation-12(:loading="loading")
+          v-toolbar(color="accent" dense flat dark)
+            v-toolbar-title 박스 정보 작성
+            v-spacer
+            v-btn(icon @click="goBack") <v-icon>mdi-arrow-left</v-icon>
+            v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
+          v-card-subtitle.pb-0 cover image
+          v-row
+            v-col(cols="12")
+              v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="form.coverUrl" width="50%")
+              v-card-text.text-center {{ fileName }}
+              v-progress-circular.mx-auto(
+                v-if="uploading && !uploadEnd"
+                :size="80" :width="15" :rotate="360" :value="progressUpload" color="primary"
+              ) {{ progressUpload }}%
+              v-img.mx-auto(v-if="uploadEnd" :src="downloadURL" width="50%")
+              v-card-actions.justify-center
+                v-spacer
+                v-btn(
+                  color="primary"
+                  @click.native="selectFiles"
+                  v-if="!uploadEnd && !uploading"
+                  :disabled="!$store.state.isAdmin"
+                ) change
+                v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
+          v-form(ref="form")
+            input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
+          v-card-text
+            .display-1 포함되어 있는 랙 : 
+              v-chip.ma-4(large color="accent") {{ form.parentRackId }} ( {{ form.parentRackId }} )
+            v-text-field-with-validation(v-model="form.title" rules="required|max:50" :counter="50" outlined label="이름")
+            v-textarea(v-model="form.description" outlined label="설명")
 </template>
 
 <script>
 import cryptoRandomString from 'crypto-random-string'
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import VTextFieldWithValidation from '@/components/inputs/VTextFieldWithValidation'
+import VSelectWithValidation from '@/components/inputs/VSelectWithValidation'
+import QRCode from 'qrcode'
 
 export default {
+  components: {
+    ValidationObserver,
+    ValidationProvider,
+    VTextFieldWithValidation,
+    VSelectWithValidation,
+    QRCode
+  },
   props: {
     document: String,
     action: String
