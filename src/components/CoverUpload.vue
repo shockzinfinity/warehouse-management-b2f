@@ -10,31 +10,31 @@
         :disabled="!$store.state.isAdmin"
       ) change
       v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
-    v-row
-      v-col(cols="12")
-        v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="currentSrc")
-        v-card-text.text-center {{ fileName }}
-          v-progress-circular(
-            v-if="uploading && !uploadEnd"
-            :size="100"
-            :width="15"
-            :rotate="360"
-            :value="progressUpload"
-            color="primary"
-          ) {{ progressUpload }} %
-        v-img(
-          v-if="uploadEnd"
-          :src="downloadURL"
-          width="50%"
-        )
-        v-form(ref="form")
-          input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
+    v-card-text(v-if="!uploading && !uploadEnd && !downloadURL")
+      v-img.mx-auto(:src="currentSrc")
+    v-card-text.text-center {{ fileName }}
+      v-progress-circular(
+        v-if="uploading && !uploadEnd"
+        :size="100"
+        :width="15"
+        :rotate="360"
+        :value="progressUpload"
+        color="primary"
+      ) {{ progressUpload }} %
+    v-img(
+      v-if="uploadEnd"
+      :src="downloadURL"
+      width="50%"
+    )
+    v-form(ref="form")
+      input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
 </template>
 
 <script>
 export default {
   props: {
     currentSrc: { type: String, default: '' },
+    positionId: { type: String, default: '' },
     type: { type: String, default: '', required: true }
   },
   data () {
@@ -48,8 +48,25 @@ export default {
       storageRef: null
     }
   },
+  computed: {
+    typePosition () {
+      let retVal
+      switch (this.type) {
+        case 'rack':
+          retVal = 'racks'
+          break
+        case 'box':
+          retVal = 'boxes'
+          break
+        case 'sample':
+          retVal = 'samples'
+          break
+      }
+      return retVal
+    }
+  },
   created () {
-    console.log(this.type)
+    // console.log(this.type)
   },
   methods: {
     selectFiles () {
@@ -64,10 +81,10 @@ export default {
     upload (file) {
       this.fileName = file.name
       this.uploading = true
-      this.uploadTask = this.$firebase.storage().ref().child('uploadTest').child(file.name).put(file)
+      this.uploadTask = this.$firebase.storage().ref().child(this.typePosition).child('coverImages').child(this.positionId).child(file.name).put(file)
     },
     deleteImage () {
-      this.$firebase.storage().ref().child('uploadTest').child(this.fileName).delete()
+      this.$firebase.storage().ref().child(this.typePosition).child('coverImages').child(this.positionId).child(this.fileName).delete()
         .then(() => {
           this.uploading = false
           this.uploadEnd = false
@@ -90,6 +107,13 @@ export default {
           this.$emit('downloadURL', url)
         })
       })
+    },
+    positionId () {
+      this.uploading = false
+      this.uploadEnd = false
+      this.downloadURL = ''
+      this.currentSrc = ''
+      this.fileName = ''
     }
   }
 }
