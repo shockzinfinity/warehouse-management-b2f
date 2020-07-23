@@ -109,8 +109,8 @@ export default {
           const r = await axios.get(this.sampleInfo.url)
           this.sampleContent = r.data
         }
-        console.log('samplecontent', this.sampleContent)
-        console.log('sampleInfo', this.sampleInfo)
+        // console.log('samplecontent', this.sampleContent)
+        // console.log('sampleInfo', this.sampleInfo)
         // this.routeCode()
       } else {
         const temp = await ref.get()

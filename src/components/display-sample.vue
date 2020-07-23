@@ -104,7 +104,7 @@ export default {
       }
       const id = history.actionTime.getTime().toString()
       const batch = this.$firebase.firestore().batch()
-      console.log(this.stockInOut)
+      // console.log(this.stockInOut)
       batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
       batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(this.stockInOut) })
       // await this.ref.collection('samples').doc(this.item.id).update({
@@ -118,11 +118,11 @@ export default {
       // amount : stockInOut
       // action Time : Date()
       // user
-      console.log(this.stockInOut)
+      // console.log(this.stockInOut)
       const out = this.currentStock - this.stockInOut
       if (out < 0) {
-        console.log('current', this.currentStock)
-        console.log('outcomming', this.stockInOut)
+        // console.log('current', this.currentStock)
+        // console.log('outcomming', this.stockInOut)
         this.$emit('close')
         return
       }
