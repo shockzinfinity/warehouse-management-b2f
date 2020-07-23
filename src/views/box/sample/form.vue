@@ -12,9 +12,9 @@
             .display-1 포함되어 있는 박스 : 
               v-chip.ma-4(large color="accent") {{ document }} ( {{ form.parentBoxId }} )
             v-text-field-with-validation(v-model="form.title" rules="required|max:100" :counter="100" outlined label="이름")
-            editor(v-if="!sampleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
+            viewer(v-if="!sampleId" :initialValue="form.content")
             template(v-else)
-              editor(v-if="form.content" :initialValue="form.content" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
+              editor(v-if="form.content" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
               v-container(v-else)
                 v-row(justify="center" align="center")
                   v-progress-circular(indeterminate)
@@ -106,7 +106,7 @@ export default {
       try {
         const createdAt = new Date()
         const id = createdAt.getTime().toString()
-        console.log(this.$refs.editor)
+        // console.log(this.$refs.editor)
         const md = this.$refs.editor.invoke('getMarkdown')
         const sn = await this.$firebase.storage().ref().child('boxes').child(this.document).child(id + '.md').putString(md)
         const url = await sn.ref.getDownloadURL()
@@ -143,7 +143,7 @@ export default {
             const qr = await this.codeGenration(this.form.parentBoxId, id)
             const qrSn = await this.storageRef.child('qrCodes').child(id).child(doc.title + '.qr.png').putString(qr, 'data_url')
             doc.qrcodeUrl = await qrSn.ref.getDownloadURL()
-            console.log(doc.qrcodeUrl)
+            // console.log(doc.qrcodeUrl)
           }
 
           batch.set(this.ref.collection('samples').doc(id), doc)
@@ -158,7 +158,7 @@ export default {
             const qr = await this.codeGenration(this.form.parentBoxId, this.sampleId)
             const qrSn = await this.storageRef.child('qrCodes').child(this.sampleId).child(doc.title + '.qr.png').putString(qr, 'data_url')
             doc.qrcodeUrl = await qrSn.ref.getDownloadURL()
-            console.log(doc.qrcodeUrl)
+            // console.log(doc.qrcodeUrl)
           }
 
           batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
