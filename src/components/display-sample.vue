@@ -8,15 +8,11 @@
       v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
       v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
       v-btn(icon @click="$emit('close')") <v-icon>mdi-close</v-icon>
-
-    number-spinner(
-      label="custom label"
-      :minimum="0"
-      :maximum="11"
-      :step="1"
-      v-model="spinnerModel"
-    )
-    p Value from spinner: {{ spinnerModel }}
+    v-card-text
+      v-spacer
+      v-text-field(type="number" style="width: 100px" v-model="stockInOut" flat dense outlined)
+      v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
+      v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
     hr
     v-card-text
       viewer(v-if="content" :initialValue="content")
@@ -40,20 +36,25 @@
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
-import NumberSpinner from '@/components/NumberSpinner'
 
 export default {
   components: {
     DisplayTime,
-    DisplayComment,
-    NumberSpinner
+    DisplayComment
   },
   props: ['document', 'item'],
   data () {
     return {
       spinnerModel: 10,
       content: '',
-      ref: this.$firebase.firestore().collection('boxes').doc(this.document)
+      ref: this.$firebase.firestore().collection('boxes').doc(this.document),
+      stockInOut: 1,
+      currentStock: 0
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.state.user
     }
   },
   mounted () {
@@ -67,6 +68,8 @@ export default {
       await this.ref.collection('samples').doc(this.item.id).update({
         readCount: this.$firebase.firestore.FieldValue.increment(1)
       })
+      this.stockInOut = this.currentStock = this.item.currentStock
+      console.log(this.item.currentStock)
     },
     async sampleWrite () {
       // console.log(this.item.id)
@@ -88,11 +91,61 @@ export default {
 
       this.$emit('close')
     },
-    incomming () {
-
+    async incomming () {
+      const history = {
+        actionTime: new Date(),
+        type: 'in',
+        amount: this.stockInOut,
+        user: {
+          email: this.user.email,
+          photoURL: this.user.photoURL,
+          displayName: this.user.displayName
+        }
+      }
+      const id = history.actionTime.getTime().toString()
+      const batch = this.$firebase.firestore().batch()
+      console.log(this.stockInOut)
+      batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
+      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(this.stockInOut) })
+      // await this.ref.collection('samples').doc(this.item.id).update({
+      //   currentStock: this.$firebase.firestore.FieldValue.increment(this.stockInOut)
+      // })
+      await batch.commit()
+      this.$emit('close')
     },
-    outcomming () {
-      
+    async outcomming () {
+      // type : in/out
+      // amount : stockInOut
+      // action Time : Date()
+      // user
+      console.log(this.stockInOut)
+      const out = this.currentStock - this.stockInOut
+      if (out < 0) {
+        console.log('current', this.currentStock)
+        console.log('outcomming', this.stockInOut)
+        this.$emit('close')
+        return
+      }
+      const history = {
+        actionTime: new Date(),
+        type: 'in',
+        amount: this.stockInOut,
+        user: {
+          email: this.user.email,
+          photoURL: this.user.photoURL,
+          displayName: this.user.displayName
+        }
+      }
+      const id = history.actionTime.getTime().toString()
+      const batch = this.$firebase.firestore().batch()
+
+      batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
+      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(-this.stockInOut) })
+      // await this.ref.collection('samples').doc(this.item.id).update({
+      //   currentStock: this.$firebase.firestore.FieldValue.increment(-this.stockInOut)
+      // })
+      await batch.commit()
+      this.$emit('close')
     }
   }
 }
