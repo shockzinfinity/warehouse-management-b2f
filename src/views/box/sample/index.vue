@@ -32,7 +32,7 @@ export default {
     DisplayUser,
     DisplaySample
   },
-  props: ['info', 'document'],
+  props: ['info', 'document', 'viewSampleId'],
   data () {
     return {
       headers: [

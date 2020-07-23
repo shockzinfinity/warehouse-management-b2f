@@ -10,6 +10,7 @@
       v-card-text(v-if="boxInfo.createdAt")
         v-alert(color="info" outlined dismissible)
           v-img.mx-auto(:src="boxInfo.coverUrl" max-width="400px")
+          v-img.mx-auto(:src="boxInfo.qrcodeUrl" max-width="200px")
           v-card-subtitle {{ boxInfo.description }}
             .text-right.font-italic.caption 정보 작성일: {{ boxInfo.createdAt.toDate().toLocaleString() }}
             .text-right.font-italic.caption 정보 수정일: {{ boxInfo.updatedAt.toDate().toLocaleString() }}

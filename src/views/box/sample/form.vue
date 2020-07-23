@@ -1,29 +1,41 @@
 <template lang="pug">
-  v-container(fluid)  
-    v-form
-      v-card(:loading="loading")
-        v-toolbar(color="accent" dense flat dark)
-          v-toolbar-title 샘플 정보 작성
-          v-spacer
-          v-btn(icon @click="$router.push('/box/' + document)") <v-icon>mdi-arrow-left</v-icon>
-          v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
-        v-card-text
-          .display-1 포함되어 있는 박스 : 
-            v-chip.ma-4(large color="accent") {{ document }} ( {{ form.parentBoxId }} )
-          v-text-field(v-model="form.title" outlined label="이름")
-          editor(v-if="!sampleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
-          template(v-else)
-            editor(v-if="form.content" :initialValue="form.content" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
-            v-container(v-else)
-              v-row(justify="center" align="center")
-                v-progress-circular(indeterminate)
+  v-container(fluid)
+    validation-observer(ref="obs" v-slot="{ invalid, validated, passes, validate }")
+      v-form
+        v-card(:loading="loading")
+          v-toolbar(color="accent" dense flat dark)
+            v-toolbar-title 샘플 정보 작성
+            v-spacer
+            v-btn(icon @click="$router.push('/box/' + document)") <v-icon>mdi-arrow-left</v-icon>
+            v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
+          v-card-text
+            .display-1 포함되어 있는 박스 : 
+              v-chip.ma-4(large color="accent") {{ document }} ( {{ form.parentBoxId }} )
+            v-text-field-with-validation(v-model="form.title" rules="required|max:100" :counter="100" outlined label="이름")
+            editor(v-if="!sampleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
+            template(v-else)
+              editor(v-if="form.content" :initialValue="form.content" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
+              v-container(v-else)
+                v-row(justify="center" align="center")
+                  v-progress-circular(indeterminate)
 </template>
 
 <script>
 import axios from 'axios'
+import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import VTextFieldWithValidation from '@/components/inputs/VTextFieldWithValidation'
+import VSelectWithValidation from '@/components/inputs/VSelectWithValidation'
+import QRCode from 'qrcode'
 
 export default {
   props: ['document', 'action'],
+  components: {
+    ValidationObserver,
+    ValidationProvider,
+    VTextFieldWithValidation,
+    VSelectWithValidation,
+    QRCode
+  },
   data () {
     return {
       unsubscribe: null,
@@ -31,12 +43,14 @@ export default {
         parentBoxId: '',
         title: '',
         content: '',
-        currentStock: 0
+        currentStock: 0,
+        qrcodeUrl: ''
       },
       loading: false,
       exists: false,
       ref: null,
-      parentRackId: ''
+      parentRackId: '',
+      storageRef: null
     }
   },
   computed: {
@@ -60,6 +74,7 @@ export default {
   },
   created () {
     this.fetch()
+    this.storageRef = this.$firebase.storage().ref().child('samples')
   },
   destroyed () {
   },
@@ -97,7 +112,8 @@ export default {
         const doc = {
           title: this.form.title,
           updatedAt: createdAt,
-          url
+          url,
+          qrcodeUrl: this.form.qrcodeUrl
         }
 
         let rackTitle
@@ -121,6 +137,14 @@ export default {
             photoURL: this.user.photoURL,
             displayName: this.user.displayName
           }
+
+          if (!doc.qrcodeUrl) {
+            const qr = await this.codeGenration(this.form.parentBoxId, id)
+            const qrSn = await this.storageRef.child('qrCodes').child(id).child(doc.title + '.qr.png').putString(qr, 'data_url')
+            doc.qrcodeUrl = await qrSn.ref.getDownloadURL()
+            console.log(doc.qrcodeUrl)
+          }
+
           batch.set(this.ref.collection('samples').doc(id), doc)
           batch.update(this.ref, { sampleCount: this.$firebase.firestore.FieldValue.increment(1) })
 
@@ -129,6 +153,13 @@ export default {
             batch.update(this.$firebase.firestore().collection('racks').doc(rackTitle), { sampleSKU: this.$firebase.firestore.FieldValue.increment(1) })
           }
         } else {
+          if (!doc.qrcodeUrl) {
+            const qr = await this.codeGenration(this.form.parentBoxId, this.sampleId)
+            const qrSn = await this.storageRef.child('qrCodes').child(this.sampleId).child(doc.title + '.qr.png').putString(qr, 'data_url')
+            doc.qrcodeUrl = await qrSn.ref.getDownloadURL()
+            console.log(doc.qrcodeUrl)
+          }
+
           batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
         }
 
@@ -137,6 +168,10 @@ export default {
         this.loading = false
         this.$router.push('/box/' + this.document)
       }
+    },
+    async codeGenration (boxId, sampleId) {
+      const qrCodeAddress = 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=sp-' + boxId + sampleId
+      return await QRCode.toDataURL(qrCodeAddress)
     }
   }
 }

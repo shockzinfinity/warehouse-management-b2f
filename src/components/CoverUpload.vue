@@ -112,7 +112,7 @@ export default {
       this.uploading = false
       this.uploadEnd = false
       this.downloadURL = ''
-      this.currentSrc = ''
+      // this.currentSrc = ''
       this.fileName = ''
     }
   }

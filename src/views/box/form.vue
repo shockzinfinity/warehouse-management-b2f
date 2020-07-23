@@ -9,27 +9,9 @@
             v-spacer
             v-btn(icon @click="goBack") <v-icon>mdi-arrow-left</v-icon>
             v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
-          v-card-subtitle.pb-0 cover image
           v-row
             v-col(cols="12")
-              v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="form.coverUrl" width="50%")
-              v-card-text.text-center {{ fileName }}
-              v-progress-circular.mx-auto(
-                v-if="uploading && !uploadEnd"
-                :size="80" :width="15" :rotate="360" :value="progressUpload" color="primary"
-              ) {{ progressUpload }}%
-              v-img.mx-auto(v-if="uploadEnd" :src="downloadURL" width="50%")
-              v-card-actions.justify-center
-                v-spacer
-                v-btn(
-                  color="primary"
-                  @click.native="selectFiles"
-                  v-if="!uploadEnd && !uploading"
-                  :disabled="!$store.state.isAdmin"
-                ) change
-                v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
-          v-form(ref="form")
-            input(id="files" type="file" name="file" ref="uploadInput" accept="image/*" :multiple="false" @change="detectFiles($event)")
+              cover-upload(ref="cover" type="rack" @downloadURL="getDownloadURL" :currentSrc="form.coverUrl" :positionId="form.boxId")
           v-card-text
             .display-1 포함되어 있는 랙 : 
               v-chip.ma-4(large color="accent") {{ form.parentRackId }} ( {{ form.parentRackId }} )
@@ -43,6 +25,7 @@ import { ValidationObserver, ValidationProvider } from 'vee-validate'
 import VTextFieldWithValidation from '@/components/inputs/VTextFieldWithValidation'
 import VSelectWithValidation from '@/components/inputs/VSelectWithValidation'
 import QRCode from 'qrcode'
+import CoverUpload from '@/components/CoverUpload'
 
 export default {
   components: {
@@ -50,7 +33,8 @@ export default {
     ValidationProvider,
     VTextFieldWithValidation,
     VSelectWithValidation,
-    QRCode
+    QRCode,
+    CoverUpload
   },
   props: {
     document: String,
@@ -59,12 +43,6 @@ export default {
   data () {
     return {
       unsubscribe: null,
-      progressUpload: 0,
-      fileName: '',
-      uploadTask: '',
-      uploading: false,
-      uploadEnd: false,
-      downloadURL: '',
       form: {
         parentRackId: '',
         description: '',
@@ -74,7 +52,9 @@ export default {
       },
       loading: false,
       exists: false,
-      ref: null
+      ref: null,
+      boxCoverUrl: '',
+      storageRef: null
     }
   },
   computed: {
@@ -85,17 +65,6 @@ export default {
   watch: {
     document () {
       this.subscribe()
-    },
-    uploadTask () {
-      this.uploadTask.on('state_changed', sp => {
-        this.progressUpload = Math.floor(sp.bytesTransferred / sp.totalBytes * 100)
-      }, null, () => {
-        this.uploadTask.snapshot.ref.getDownloadURL().then(url => {
-          this.uploadEnd = true
-          this.downloadURL = url
-          this.$emit('downloadURL', url)
-        })
-      })
     }
   },
   created () {
@@ -106,33 +75,6 @@ export default {
     if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
-    selectFiles () {
-      this.$refs.uploadInput.click()
-    },
-    detectFiles (e) {
-      const fileList = e.target.files || e.dataTransfer.files
-      Array.from(Array(fileList.length).keys()).map(x => {
-        this.upload(fileList[x])
-      })
-    },
-    upload (file) {
-      this.fileName = file.name
-      this.uploading = true
-      this.uploadTask = this.$firebase.storage().ref().child('boxes').child(this.document).child('cover').child(file.name).put(file)
-    },
-    deleteImage () {
-      this.$firebase.storage().ref().child('boxes').child(this.document).child('cover').child(this.fileName).delete()
-        .then(() => {
-          this.uploading = false
-          this.uploadEnd = false
-          this.fileName = ''
-          this.downloadURL = ''
-        })
-        .catch(e => {
-          throw Error(e)
-        })
-      this.$refs.form.reset()
-    },
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
 
@@ -140,14 +82,17 @@ export default {
         .firestore()
         .collection('boxes')
         .doc(this.document)
+      this.storageRef = this.$firebase.storage().ref().child('boxes').child(this.document)
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
           const item = doc.data()
+          this.form.boxId = item.boxId
           this.form.parentRackId = item.parentRackId
           this.form.title = item.title
           this.form.description = item.description
           this.form.coverUrl = item.coverUrl
+          this.form.qrcodeUrl = item.qrcodeUrl
         }
       })
     },
@@ -157,10 +102,12 @@ export default {
     async save () {
       const form = {
         parentRackId: this.form.parentRackId,
+        boxId: this.form.boxId,
         title: this.form.title,
         description: this.form.description,
         updatedAt: new Date(),
-        coverUrl: this.downloadURL
+        coverUrl: this.form.coverUrl !== this.boxCoverUrl && this.boxCoverUrl ? this.boxCoverUrl : this.form.coverUrl,
+        qrcodeUrl: this.form.qrcodeUrl
       }
       this.loading = true
 
@@ -189,6 +136,7 @@ export default {
             .collection('boxes')
             .doc(form.title)
           // }
+
           form.boxId = cryptoRandomString({ length: 10 })
           form.createdAt = new Date()
           form.sampleCount = 0
@@ -197,6 +145,13 @@ export default {
             photoURL: this.user.photoURL,
             displayName: this.user.displayName
           }
+
+          if (!form.qrcodeUrl) {
+            const qr = await this.codeGenration(form.boxId)
+            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            form.qrcodeUrl = await qrSn.ref.getDownloadURL()
+          }
+
           batch.set(this.ref, form)
           batch.update(
             this.$firebase
@@ -206,6 +161,12 @@ export default {
             { boxCount: this.$firebase.firestore.FieldValue.increment(1) }
           )
         } else {
+          if (!form.qrcodeUrl) {
+            const qr = await this.codeGenration(form.boxId)
+            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            form.qrcodeUrl = await qrSn.ref.getDownloadURL()
+          }
+
           // this.ref.update(form)
           batch.update(this.ref, form)
         }
@@ -214,6 +175,13 @@ export default {
         this.loading = false
         this.goBack()
       }
+    },
+    getDownloadURL (url) {
+      this.boxCoverUrl = url
+    },
+    async codeGenration (boxId) {
+      const qrCodeAddress = 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-' + boxId
+      return await QRCode.toDataURL(qrCodeAddress)
     }
   }
 }
