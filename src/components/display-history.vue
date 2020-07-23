@@ -6,9 +6,8 @@
           v-list-item-action
             display-user(:user="item.user")
           v-list-item-content
-            v-list-item-subtitle(v-text="item.comment")
             v-list-item-subtitle
-              display-time(:time="item.createdAt")
+              display-time(:time="item.actionTime")
         v-divider(:key="i")
 </template>
 

@@ -12,7 +12,7 @@
             .display-1 포함되어 있는 박스 : 
               v-chip.ma-4(large color="accent") {{ document }} ( {{ form.parentBoxId }} )
             v-text-field-with-validation(v-model="form.title" rules="required|max:100" :counter="100" outlined label="이름")
-            viewer(v-if="!sampleId" :initialValue="form.content")
+            editor(v-if="!sampleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
             template(v-else)
               editor(v-if="form.content" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
               v-container(v-else)
@@ -69,6 +69,8 @@ export default {
   },
   watch: {
     document () {
+      console.log(this.document)
+      console.log(this.action)
       this.subscribe()
     }
   },
@@ -100,6 +102,7 @@ export default {
       this.parentRackId = item.parentRackId
       const { data } = await axios.get(item.url)
       this.form.content = data
+      console.log(this.form.content)
     },
     async save () {
       this.loading = true
@@ -107,14 +110,18 @@ export default {
         const createdAt = new Date()
         const id = createdAt.getTime().toString()
         // console.log(this.$refs.editor)
-        const md = this.$refs.editor.invoke('getMarkdown')
+        let md
+        if (this.exists) this.$refs.editor2.invoke('getMarkdown')
+        else md = this.$refs.editor.invoke('getMarkdown')
+        // const md = this.$refs.editor.invoke('getMarkdown')
         const sn = await this.$firebase.storage().ref().child('boxes').child(this.document).child(id + '.md').putString(md)
         const url = await sn.ref.getDownloadURL()
         const doc = {
           title: this.form.title,
           updatedAt: createdAt,
           url,
-          qrcodeUrl: this.form.qrcodeUrl
+          qrcodeUrl: this.form.qrcodeUrl,
+          currentStock: 0
         }
 
         let rackTitle

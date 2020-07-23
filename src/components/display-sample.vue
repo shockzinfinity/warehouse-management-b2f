@@ -29,18 +29,22 @@
         display-time(:time="item.updatedAt")
     v-img(:src="item.qrcodeUrl")
     v-divider
-    display-comment(:docRef="this.ref.collection('samples').doc(this.item.id)")
+    display-history(:docRef="ref.collection('samples').doc(item.id)")
+    v-divider
+    display-comment(:docRef="ref.collection('samples').doc(item.id)")
 </template>
 
 <script>
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
+import DisplayHistory from '@/components/display-history'
 
 export default {
   components: {
     DisplayTime,
-    DisplayComment
+    DisplayComment,
+    DisplayHistory
   },
   props: ['document', 'item'],
   data () {
@@ -104,9 +108,9 @@ export default {
       }
       const id = history.actionTime.getTime().toString()
       const batch = this.$firebase.firestore().batch()
-      // console.log(this.stockInOut)
+      console.log(this.stockInOut)
       batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
-      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(this.stockInOut) })
+      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(parseInt(this.stockInOut)) })
       // await this.ref.collection('samples').doc(this.item.id).update({
       //   currentStock: this.$firebase.firestore.FieldValue.increment(this.stockInOut)
       // })
@@ -140,7 +144,7 @@ export default {
       const batch = this.$firebase.firestore().batch()
 
       batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
-      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(-this.stockInOut) })
+      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(-parseInt(this.stockInOut)) })
       // await this.ref.collection('samples').doc(this.item.id).update({
       //   currentStock: this.$firebase.firestore.FieldValue.increment(-this.stockInOut)
       // })
