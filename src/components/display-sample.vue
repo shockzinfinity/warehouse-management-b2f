@@ -69,7 +69,7 @@ export default {
         readCount: this.$firebase.firestore.FieldValue.increment(1)
       })
       this.stockInOut = this.currentStock = this.item.currentStock
-      console.log(this.item.currentStock)
+      // console.log(this.item.currentStock)
     },
     async sampleWrite () {
       // console.log(this.item.id)
