@@ -31,6 +31,7 @@
       v-spacer
       span.font-italic.caption 수정일: 
         display-time(:time="item.updatedAt")
+    v-img(:src="item.qrcodeUrl")
     v-divider
     display-comment(:docRef="this.ref.collection('samples').doc(this.item.id)")
 </template>
@@ -68,7 +69,8 @@ export default {
       })
     },
     async sampleWrite () {
-      this.$router.push({ path: this.$route.path + '/sample-write', query: { articleId: this.item.id } })
+      // console.log(this.item.id)
+      this.$router.push({ path: this.$route.path + '/sample-write', query: { sampleId: this.item.id } })
     },
     async remove () {
       const batch = this.$firebase.firestore().batch()

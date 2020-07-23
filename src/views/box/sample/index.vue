@@ -114,6 +114,7 @@ export default {
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
+          // console.log(item)
           return item
         })
         // console.log('items', this.items)
