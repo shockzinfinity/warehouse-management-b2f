@@ -5,6 +5,11 @@
 <script>
 export default {
   // TODO: 로그인 완료 후에 redirect this.$router.replace('')
-  // TODO: 로그인 
+  // TODO: 로그인
+  computed: {
+    redirect () {
+      return this.$route.query.redirect
+    }
+  }
 }
 </script>

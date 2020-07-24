@@ -23,7 +23,7 @@ const LIMIT = 5
 
 export default {
   components: { DisplayTime, DisplayUser },
-  props: ['docRef'],
+  props: ['article', 'docRef'],
   data () {
     return {
       comment: '',
@@ -39,6 +39,7 @@ export default {
   },
   created () {
     this.subscribe()
+    // console.log(this.article)
   },
   destroyed () {
     if (this.unsubscribe) this.unsubscribe()

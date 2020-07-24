@@ -38,7 +38,7 @@
     hr
     display-history(:docRef="ref.collection('samples').doc(item.id)")
     hr
-    display-comment(:docRef="ref.collection('samples').doc(item.id)")
+    display-comment(:article="item" :docRef="ref.collection('samples').doc(item.id)")
 </template>
 
 <script>
