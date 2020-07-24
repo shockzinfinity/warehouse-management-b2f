@@ -9,7 +9,8 @@ export default new Vuex.Store({
     fireUser: null,
     user: null,
     isAdmin: false,
-    userLevel: 9
+    userLevel: 9,
+    token: ''
   }),
   getters: {
     isLogged: (state) => {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     },
     setLevel (state, level) {
       state.userLevel = level
+    },
+    setToken (state, token) {
+      state.token = 'Bearer ' + token
     }
   },
   actions: {

@@ -49,6 +49,7 @@ export default {
       }
     },
     signOut () {
+      this.$store.commit('setToken', '')
       this.$firebase.auth().signOut()
     },
     signInWithFacebook () {

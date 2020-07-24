@@ -12,12 +12,14 @@
             display-time(:time="item.createdAt")
       v-divider(:key="i")
     v-list-item
-      v-btn(@click="more" text color="primary" block) 더보기
+      v-btn(v-if="lastDoc" @click="more" text color="primary" block) more
 </template>
 
 <script>
+import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+const LIMIT = 5
 
 export default {
   components: { DisplayTime, DisplayUser },
@@ -27,7 +29,7 @@ export default {
       comment: '',
       items: [],
       unsubscribe: null,
-      limit: 5
+      lastDoc: null
     }
   },
   computed: {
@@ -42,20 +44,40 @@ export default {
     if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      this.unsubscribe = this.docRef.collection('comments').limit(this.limit).onSnapshot(sn => {
-        if (sn.empty) {
-          this.items = []
-          return
-        }
-        this.items = sn.docs.map(doc => {
+    snToItems (sn) {
+      this.lastDoc = last(sn.docs)
+
+      sn.docs.forEach(doc => {
+        const exists = this.items.some(item => doc.id === item.id)
+        if (!exists) {
           const item = doc.data()
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
-          return item
-        })
+          this.items.push(item)
+        }
+      })
+
+      this.items.sort((before, after) => {
+        const beforeId = Number(before.id)
+        const afterId = Number(after.id)
+        return afterId - beforeId
+      })
+    },
+    async more () {
+      if (!this.lastDoc) throw Error('No more comments.')
+      const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
+      this.snToItems(sn)
+    },
+    subscribe () {
+      if (this.unsubscribe) this.unsubscribe()
+      this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
+        if (sn.empty) {
+          this.items = []
+          return
+        }
+
+        this.snToItems(sn)
       })
     },
     async save () {
@@ -76,10 +98,6 @@ export default {
       batch.set(this.docRef.collection('comments').doc(id), doc)
       await batch.commit()
       this.comment = ''
-    },
-    more () {
-      this.limit += 5
-      this.subscribe()
     }
   }
 }

@@ -5,14 +5,21 @@
       v-spacer
       v-btn(icon @click="sampleWrite") <v-icon>mdi-pencil</v-icon>
       v-btn(icon @click="remove") <v-icon>mdi-delete</v-icon>
-      v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
-      v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
       v-btn(icon @click="$emit('close')") <v-icon>mdi-close</v-icon>
     v-card-text
-      v-spacer
-      v-text-field(type="number" style="width: 100px" v-model="stockInOut" flat dense outlined)
-      v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
-      v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
+      v-row.no-gutters
+        .cyan.fill-height &nbsp;
+    v-card-text
+      v-layout
+        v-flex
+          v-row.no-gutters
+            v-col.pb-2(lg="6" cols="sm")
+              v-img.mx-auto(:src="item.qrcodeUrl" max-width="200px")
+            v-col.pb-2(lg="6" cols="sm")
+              v-text-field(type="number" style="width: 150px" v-model="stockInOut" flat dense outlined)
+              v-spacer
+              v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
+              v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
     hr
     v-card-text
       viewer(v-if="content" :initialValue="content")
@@ -27,10 +34,9 @@
       v-spacer
       span.font-italic.caption 수정일: 
         display-time(:time="item.updatedAt")
-    v-img(:src="item.qrcodeUrl")
-    v-divider
+    hr
     display-history(:docRef="ref.collection('samples').doc(item.id)")
-    v-divider
+    hr
     display-comment(:docRef="ref.collection('samples').doc(item.id)")
 </template>
 
@@ -108,7 +114,7 @@ export default {
       }
       const id = history.actionTime.getTime().toString()
       const batch = this.$firebase.firestore().batch()
-      console.log(this.stockInOut)
+      // console.log(this.stockInOut)
       batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
       batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(parseInt(this.stockInOut)) })
       // await this.ref.collection('samples').doc(this.item.id).update({
@@ -132,7 +138,7 @@ export default {
       }
       const history = {
         actionTime: new Date(),
-        type: 'in',
+        type: 'out',
         amount: this.stockInOut,
         user: {
           email: this.user.email,
