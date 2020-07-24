@@ -6,31 +6,32 @@
         v-for="rack in racks"
         :key="rack.id"
       )
-        v-card.mx-auto(max-width="312")
+        v-card(max-width="312")
           a(@click="rackLink(rack)" style="text-decoration: none;")
             v-img.white--text.align-end(
               :src="rack.coverUrl"
               gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              height="194"
+              height="150px"
             )
-              v-card-title.display-1(v-text="rack.title")
+              v-card-title
+                h2(v-text="rack.title")
               v-card-text.font-italic id: {{ rack.rackId }}
           v-card-text
-            v-row
+            v-row.no-gutters
               v-col(cols="4") POSITION:
               v-col(cols="8") {{ ellipseContent(rack.position, 10) }}
             v-row
               v-col(cols="12") {{ ellipseContent(rack.description, 40) }}
-            v-row
+            v-row.no-gutters
               v-col(cols="4") created:
               v-col(cols="8" align="right") {{ rack.createdAt.toLocaleString() }}
-            v-row
+            v-row.no-gutters
               v-col(cols="4") updated:
               v-col(cols="8" align="right") {{ rack.updatedAt.toLocaleString() }}
-            v-row
+            v-row.no-gutters
               v-col(cols="4") boxes:
               v-col.display-3(cols="8" align="right") {{ rack.boxCount }}
-            v-row
+            v-row.no-gutters
               v-col(cols="4") samples SKU:
               v-col.display-3(cols="8" align="right") {{ rack.sampleSKU }}
           v-card-actions

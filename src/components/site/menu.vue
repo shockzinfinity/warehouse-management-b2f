@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     v-list-item(three-line)
-      v-list-item-content
+      v-list-item-content.ml-auto
         v-list-item-title.title Warehouse-B2F
         v-list-item-subtitle Ver. 0.20.7.18 &copy; shockz.io
       v-list-item-action(v-model="$store.state.isAdmin")
@@ -18,7 +18,7 @@
         :no-action="!$store.state.editable"
       )
         template(v-slot:activator)
-          v-list-item-content
+          v-list-item-content.ml-auto
             v-list-item-title {{ item.title }}
               span(v-if="$store.state.editable")
                 v-btn(icon @click="openDialogItem(i)") <v-icon>mdi-pencil</v-icon>
@@ -31,7 +31,7 @@
           :to="$store.state.editable ? null : subItem.to"
           :disabled="$store.state.userLevel > subItem.level"
         )
-          v-list-item-content
+          v-list-item-content.ml-auto
             v-list-item-title(:class="$store.state.editable ? 'pl-4' : ''") {{ subItem.title }}
               span(v-if="$store.state.editable")
                 v-btn(icon @click="openDialogSubItem(i, j)") <v-icon>mdi-pencil</v-icon>

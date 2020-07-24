@@ -8,17 +8,19 @@
           v-btn(icon @click="boxWrite" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
           v-btn(icon @click="sampleWrite" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
       v-card-text(v-if="boxInfo.createdAt")
-        v-alert(color="info" outlined dismissible)
-          v-img.mx-auto(:src="boxInfo.coverUrl" max-width="400px")
-          v-img.mx-auto(:src="boxInfo.qrcodeUrl" max-width="200px")
-          v-card-subtitle {{ boxInfo.description }}
-            .text-right.font-italic.caption 정보 작성일: {{ boxInfo.createdAt.toDate().toLocaleString() }}
-            .text-right.font-italic.caption 정보 수정일: {{ boxInfo.updatedAt.toDate().toLocaleString() }}
-            .text-right.font-italic.caption 포함 샘플 수: {{ boxInfo.sampleCount }}
-          //- div(style="white-space: pre-line") {{ boxInfo.description }}
-          //- .text-right.font-italic.caption 정보 작성일: {{ boxInfo.createdAt.toDate().toLocaleString() }}
-          //- .text-right.font-italic.caption 정보 수정일: {{ boxInfo.updatedAt.toDate().toLocaleString() }}
-          //- .text-right.font-italic.caption 포함 샘플 수: {{ boxInfo.sampleCount }}
+        v-layout
+          v-flex
+            v-row.no-gutters
+              v-col.pb-2(lg="6" cols="sm")
+                v-img.mx-auto(:src="boxInfo.coverUrl" max-width="200px")
+              v-col.pb-2(lg="6" cols="sm")
+                v-img.mx-auto(:src="boxInfo.qrcodeUrl" max-width="200px")
+            v-row
+              v-col
+                v-card-subtitle {{ boxInfo.description }}
+                  .text-right.font-italic.caption 정보작성일: {{ boxInfo.createdAt.toDate().toLocaleString() }}
+                  .text-right.font-italic.caption 정보수성일: {{ boxInfo.updatedAt.toDate().toLocaleString() }}
+                  .text-right.font-italic.caption 포함샘플수: {{ boxInfo.sampleCount }}
       box-sample(:info="boxInfo" :document="document")
 </template>
 
