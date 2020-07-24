@@ -1,14 +1,17 @@
 <template lang="pug">
   v-app
-    v-app-bar(app color="primary" dark)
+    v-app-bar(app color="primary" dark elevation="0")
       v-app-bar-nav-icon(@click="drawer = !drawer")
       site-title(:title="site.title")
       v-spacer
       site-sign
-    v-navigation-drawer(app v-model="drawer" width="400")
+    v-navigation-drawer(app v-model="drawer" floating width="400")
       site-menu(:items="site.menu")
     v-main
-      router-view
+      v-container.px-4.py-0.fill-height(fluid)
+        v-row.fill-height
+          v-col
+            router-view
     site-footer(:footer="site.footer")
 </template>
 

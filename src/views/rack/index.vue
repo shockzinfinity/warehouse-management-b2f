@@ -1,7 +1,8 @@
 <template lang="pug">
-  v-container(fluid)
-    v-row(dense)
-      v-col(
+  div
+    v-row
+      v-col.pb-2(
+        lg="4" cols="sm"
         v-for="rack in racks"
         :key="rack.id"
       )
