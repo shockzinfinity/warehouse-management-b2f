@@ -16,12 +16,13 @@
             v-col.pb-2(lg="6" cols="sm")
               v-img.mx-auto(:src="item.qrcodeUrl" max-width="200px")
             v-col.pb-2(lg="6" cols="sm")
-              v-text-field(type="number" style="width: 150px" v-model="stockInOut" flat dense outlined)
-              v-spacer
-              v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
-              v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
+              v-row
+                v-text-field(type="number" style="width: 150px" v-model="stockInOut" flat dense outlined label="Current stock")
+                v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
+                v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
     hr
     v-card-text
+      v-card-title 세부정보
       viewer(v-if="content" :initialValue="content")
       v-container(v-else)
         v-row(justify="center" align="center")
