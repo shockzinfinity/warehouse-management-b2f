@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 
 const requireAuth = async (to, from, next) => {
   try {
-    if (store.state.token) {
+    if (store.getters.isLogged) {
       next()
     } else {
       next({

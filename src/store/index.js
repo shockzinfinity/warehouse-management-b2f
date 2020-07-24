@@ -4,18 +4,19 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {
+  state: () => ({
     editable: false,
     fireUser: null,
     user: null,
-    token: '',
     isAdmin: false,
     userLevel: 9
+  }),
+  getters: {
+    isLogged: (state) => {
+      return state.fireUser !== null
+    }
   },
   mutations: {
-    setToken (state, token) {
-      if (token) state.token = 'Bearer ' + token
-    },
     setEdit (state, edit) {
       if (state.isAdmin) state.editable = edit // admin 만 가능
     },

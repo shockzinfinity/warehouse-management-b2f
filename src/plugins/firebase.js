@@ -14,7 +14,7 @@ import 'firebase/firebase-storage'
 import firebaseConfig from '../../firebaseConfig.dev'
 
 firebase.initializeApp(firebaseConfig)
-firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+// firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 
 let unsubscribe = null
 const subscribe = (fu) => {
@@ -33,10 +33,6 @@ firebase.auth().onAuthStateChanged(fu => {
   store.commit('setFireUser', fu)
   // console.log('fire user: ', fu)
   if (!fu) {
-    // firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(() => {
-    //   console.log('session')
-    // })
-    // store.commit('setToken', fu.idToken)
     store.commit('setUser', null)
     store.commit('setIsAdmin', false)
     store.commit('setEdit', false)
