@@ -39,8 +39,8 @@ export default {
 
         const result = await this.$firebase.auth().signInWithPopup(provider)
         this.$store.commit('setToken', result.credential.accessToken)
-        console.log(this.$store.state.token)
-        window.location.reload()
+        // console.log(this.$store.state.token)
+        // window.location.reload()
 
         // console.log(result.credential.accessToken)
         // console.log('store user info', this.$store.state.fireUser)
@@ -51,6 +51,7 @@ export default {
     signOut () {
       this.$store.commit('setToken', '')
       this.$firebase.auth().signOut()
+      this.$router.push('/')
     },
     signInWithFacebook () {
       throw Error('TODO')

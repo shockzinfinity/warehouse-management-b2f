@@ -5,7 +5,7 @@ import store from '@/store'
 
 Vue.use(VueRouter)
 
-const requireAuth = async (to, from, next) => {
+const requireAuth = () => (to, from, next) => {
   try {
     if (store.getters.isLogged) {
       next()
@@ -33,7 +33,7 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-    beforeEnter: requireAuth
+    beforeEnter: requireAuth()
   },
   {
     path: '/warehouse',
