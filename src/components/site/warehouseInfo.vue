@@ -13,5 +13,5 @@
         | with <a href="https://community.vuetifyjs.com">Vuetify</a>
     v-col.mb-5(cols="12")
       h2.headline.font-weight-bold.mb-3
-        | <a href="">What's next?</a>
+        router-link(to="/about") What's next
 </template>
