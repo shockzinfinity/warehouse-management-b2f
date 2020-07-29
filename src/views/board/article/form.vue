@@ -68,6 +68,7 @@ export default {
       this.form.content = data
     },
     async save () {
+      if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다.')
       this.loading = true
       try {
         const createdAt = new Date() // primary key

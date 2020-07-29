@@ -5,7 +5,7 @@
       site-title(:title="site.title")
       v-spacer
       site-sign
-      //- v-btn(@click="test") test
+      //- v-btn(@click="test2") test
     v-navigation-drawer(app v-model="drawer" floating width="400")
       site-menu(:items="site.menu")
     v-main
@@ -91,6 +91,16 @@ export default {
       //   .update({ level: 0, visitedAt: new Date(), visitCount: 0 })
       await this.$firebase.firestore().collection('users').doc(this.$store.state.fireUser.uid)
         .update({ visitedAt: new Date(), visitCount: 0 })
+    },
+    async test2 () {
+      const sn = await this.$firebase.storage()
+        .ref()
+        .child('boards')
+        .child('tt')
+        .child('12345678901234567890123')
+        .putString('hihi')
+
+      console.log(sn)
     }
   }
 }
