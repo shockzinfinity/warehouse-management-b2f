@@ -14,7 +14,7 @@
             v-text-field-with-validation(v-model="form.title" rules="required|max:100" :counter="100" outlined label="이름")
             editor(v-if="!sampleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
             template(v-else)
-              editor(v-if="form.content" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
+              editor(v-if="form.content" :initialValue="form.content" ref="editor2" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
               v-container(v-else)
                 v-row(justify="center" align="center")
                   v-progress-circular(indeterminate)
@@ -111,7 +111,7 @@ export default {
         const id = createdAt.getTime().toString()
         // console.log(this.$refs.editor)
         let md
-        if (this.exists) this.$refs.editor2.invoke('getMarkdown')
+        if (this.exists) md = this.$refs.editor2.invoke('getMarkdown')
         else md = this.$refs.editor.invoke('getMarkdown')
         // const md = this.$refs.editor.invoke('getMarkdown')
         const sn = await this.$firebase.storage().ref().child('boxes').child(this.document).child(id + '.md').putString(md)

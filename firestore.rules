@@ -32,7 +32,6 @@ service cloud.firestore {
           return before.url == after.url &&
                 before.createdAt == after.createdAt &&
                 before.updatedAt == after.updatedAt &&
-                before.description == after.description &&
                 before.title == after.title &&
                 before.uid == after.uid &&
                 before.user.displayName == after.user.displayName &&

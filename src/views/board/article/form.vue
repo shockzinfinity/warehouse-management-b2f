@@ -11,7 +11,7 @@
           v-text-field(v-model="form.title" outlined label="제목")
           editor(v-if="!articleId" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
           template(v-else)
-            editor(v-if="form.content" :initialValue="form.content" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
+            editor(v-if="form.content" :initialValue="form.content" ref="editor2" initialEditType="wysiwyg" :options="{ hideModeSwitch: true }")
             v-container(v-else)
               v-row(justify="center" align="center")
                 v-progress-circular(indeterminate)
@@ -72,7 +72,9 @@ export default {
       try {
         const createdAt = new Date() // primary key
         const id = createdAt.getTime().toString()
-        const md = this.$refs.editor.invoke('getMarkdown') // to storage
+        let md
+        if (this.exists) md = this.$refs.editor2.invoke('getMarkdown')
+        else md = this.$refs.editor.invoke('getMarkdown') // to storage
         const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(id + '.md').putString(md)
         const url = await sn.ref.getDownloadURL()
         const doc = {

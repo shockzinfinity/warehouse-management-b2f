@@ -6,7 +6,7 @@
         v-spacer
         template(v-if="user")
           v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
-          v-btn(icon @click="articleWrite" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
+          v-btn(icon @click="articleWrite" :disabled="user.level > 6") <v-icon>mdi-plus</v-icon>
       v-card-text(v-if="info.createdAt")
         v-alert(color="info" outlined dismissible)
           div(style="white-space: pre-line") {{ info.description }}
