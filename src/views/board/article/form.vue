@@ -85,7 +85,7 @@ export default {
         }
 
         // 한 트랜잭션으로 묶기 (article 과 count)
-        const batch = await this.$firebase.firestore().batch()
+        // const batch = await this.$firebase.firestore().batch()
 
         if (!this.articleId) {
           // create
@@ -99,14 +99,16 @@ export default {
             displayName: this.user.displayName
           }
           // 컬렉션 생성 및 카운트 증가
-          batch.set(this.ref.collection('articles').doc(id), doc)
-          batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(1) })
+          // batch.set(this.ref.collection('articles').doc(id), doc)
+          // batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(1) })
+          this.ref.collection('articles').doc(id).set(doc)
         } else {
           // update
-          batch.update(this.ref.collection('articles').doc(this.articleId), doc)
+          // batch.update(this.ref.collection('articles').doc(this.articleId), doc)
+          this.ref.collection('articles').doc(this.articleId).update(doc)
         }
 
-        await batch.commit()
+        // await batch.commit()
       } finally {
         this.loading = false
         this.$router.push('/board/' + this.document)

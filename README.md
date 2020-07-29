@@ -71,21 +71,17 @@ $ firebase use --add warehouse-management-b2f
 $ firebase use warehouse-management-b2f
 ```
 
-### Setting
+### Setting (functions config)
 
 ```bash
-# for prod
-$ firebase functions:config:set admin.prod.email=serviceaccount@email.com admin.prod.db_url=https://ctk-warehouse-management.firebaseio.com
+# for config setting
+$ firebase functions:config:set admin.region=asia-northeast1 admin.prod.email=production-service-account@email.com admin.prod.db_url=https://production-site-name.firebaseio.com admin.prod.bucket_url=production-site-name.appspot.com admin.dev.email=development-service-account@email.com admin.dev.db_url=https://development-site-name.firebaseio.com admin.dev.bucket_url=development-site-name.appspot.com
 
 # in functions/index.js
 level: email === functions.config().admin.prod.email ? 0 : 5
 
-# for dev
-$ firebase functions:config:set admin.dev.email=serviceaccount@email.com admin.dev.db_url=https://warehouse-management-b2f.firebaseio.com
-
 # in functions/index.js
 level: email === functions.config().admin.dev.email ? 0 : 5
-
 
 $ firebase functions:config:get
 $ firebase deploy --only functions
