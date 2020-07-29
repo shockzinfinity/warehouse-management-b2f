@@ -5,22 +5,44 @@ service cloud.firestore {
     //   allow read, write: if false;
     // }
     match /users/{userId} {
-      allow read, update: if request.auth != null && request.auth.uid == userId
+      allow read: if (request.auth != null && request.auth.uid == userId) || approvedLevel(0)
+      allow update: if (request.auth != null && request.auth.uid == userId && resource.data.level == request.resource.data.level) || approvedLevel(0)
       allow create, delete: if false // functions 에서 하고 있으므로
     }
     function approvedLevel (level) {
       return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level <= level
     }
     match /boards/{boardId} {
+      function incrementBoardCount (before, after) {
+        return before.category == after.category &&
+              before.createdAt == after.createdAt &&
+              before.updatedAt == after.updatedAt &&
+              before.description == after.description &&
+              before.title == after.title &&
+              before.uid == after.uid &&
+              before.count != after.count
+      }
       allow read: if true
       // 게시판 생성은 admin 만
       allow create: if approvedLevel(0)
       // 수정은 create + 자기자신
-      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || resource.data.count != request.resource.data.count
+      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementBoardCount(resource.data, request.resource.data)
       match /articles/{articleId} {
+        function incrementArticleCount (before, after) {
+          return before.url == after.url &&
+                before.createdAt == after.createdAt &&
+                before.updatedAt == after.updatedAt &&
+                before.description == after.description &&
+                before.title == after.title &&
+                before.uid == after.uid &&
+                before.user.displayName == after.user.displayName &&
+                before.user.email == after.user.email &&
+                before.user.photoURL == after.user.photoURL &&
+                (before.commentCount != after.commentCount || before.readCount != after.readCount)
+      }
         allow read: if true
         allow create: if approvedLevel(5)
-        allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid
+        allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementArticleCount(resource.data, request.resource.data)
         match /comments/{commentId} {
           allow read: if true
           allow create: if approvedLevel(5)
@@ -29,23 +51,68 @@ service cloud.firestore {
       }
     }
     match /racks/{rackId} {
+      function incrementRackCounts (before, after) {
+        return before.coverUrl == after.coverUrl &&
+                before.qrcodeUrl == after.qrcodeUrl &&
+                before.rackId == after.rackId &&
+                before.createdAt == after.createdAt &&
+                before.updatedAt == after.updatedAt &&
+                before.description == after.description &&
+                before.title == after.title &&
+                before.position == after.position &&
+                before.uid == after.uid &&
+                (before.boxCount != after.boxCount || before.sampleSKU != after.sampleSKU)
+      }
       allow read: if true
       allow create: if approvedLevel(0)
+      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementRackCounts(resource.data, request.resource.data)
     }
     match /boxes/{boxId} {
+      function incrementBoxCounts (before, after) {
+        return before.coverUrl == after.coverUrl &&
+                before.qrcodeUrl == after.qrcodeUrl &&
+                before.boxId == after.boxId &&
+                before.parentRackId == after.parentRackId &&
+                before.createdAt == after.createdAt &&
+                before.updatedAt == after.updatedAt &&
+                before.description == after.description &&
+                before.title == after.title &&
+                before.uid == after.uid &&
+                before.user.createdAt == after.user.createdAt &&
+                before.user.level == after.user.level &&
+                before.user.displayName == after.user.displayName &&
+                before.user.email == after.user.email &&
+                before.user.photoURL == after.user.photoURL &&
+                (before.count != after.count || before.sampleCount != after.sampleCount)
+      }
       allow read: if true
       allow create: if approvedLevel(5)
-      allow update, delete: if approvedLevel(5) || resource.data.uid == request.auth.uid
+      allow update, delete: if approvedLevel(5) || resource.data.uid == request.auth.uid || incrementBoxCounts(resource.data, request.resource.data)
       match /samples/{sampleId} {
+        function incrementSampleCounts (before, after) {
+          return before.url == after.url &&
+                  before.qrcodeUrl == after.qrcodeUrl &&
+                  before.createdAt == after.createdAt &&
+                  before.updatedAt == after.updatedAt &&
+                  before.title == after.title &&
+                  before.uid == after.uid &&
+                  before.user.displayName == after.user.displayName &&
+                  before.user.email == after.user.email &&
+                  before.user.photoURL == after.user.photoURL &&
+                  (before.currentStock != after.currentStock || before.commentCount != after.commentCount || before.readCount != after.readCount)
+        }
         allow read: if true
         allow create: if approvedLevel(5)
+        allow update, delete: if approvedLevel(5) || resource.data.uid == request.auth.uid || incrementSampleCounts(resource.data, request.resource.data)
         match /comments/{commentId} {
           allow read: if true
           allow create: if approvedLevel(5)
+          allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid
         }
         match /histories/{historyId} {
           allow read: if true
           allow create: if approvedLevel(5)
+          allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid
         }
       }
     }
