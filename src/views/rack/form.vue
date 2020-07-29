@@ -84,6 +84,7 @@ export default {
       })
     },
     async save () {
+      if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다.')
       const validation = await this.$refs.obs.validate()
       if (!validation) return
 
@@ -103,6 +104,7 @@ export default {
           form.rackId = cryptRandomString({ length: 10 })
           form.createdAt = new Date()
           form.boxCount = 0
+          form.uid = this.$store.state.fireUser.uid
 
           // console.log('create', form)
 
@@ -123,7 +125,7 @@ export default {
           // console.log(form.qrcodeUrl)
           // console.log('update', this.form)
 
-          this.ref.update(form)
+          await this.ref.update(form)
         }
         this.$router.push('/rack/' + this.document)
       } finally {

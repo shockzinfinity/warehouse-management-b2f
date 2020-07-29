@@ -31,7 +31,9 @@ exports.createUser = functions.auth.user().onCreate(async user => {
     photoURL,
     createdAt: time,
     // level: email === functions.config().admin.prod.email ? 0 : 5
-    level: email === functions.config().admin.dev.email ? 0 : 5
+    level: email === functions.config().admin.dev.email ? 0 : 5,
+    visitedAt: time,
+    visitCount: 0
   }
   await fdb.collection('users').doc(uid).set(u)
   u.createdAt = time.getTime()

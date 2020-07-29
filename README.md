@@ -111,4 +111,10 @@ firebase use warehouse-management-b2f
 
 #### other configuration
 
+### Firestore indexes
+
+```bash
+firebase firestore:indexes
+```
+
 See [Configuration Reference](https://cli.vuejs.org/config/).

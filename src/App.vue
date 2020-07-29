@@ -5,6 +5,7 @@
       site-title(:title="site.title")
       v-spacer
       site-sign
+      v-btn(@click="test") test
     v-navigation-drawer(app v-model="drawer" floating width="400")
       site-menu(:items="site.menu")
     v-main
@@ -68,7 +69,7 @@ export default {
       }, e => {
         console.log(e.message)
       })
-    }
+    },
     // save () {
     //   console.log('save')
     //   this.$firebase.database().ref().child('abcd').set({
@@ -85,6 +86,10 @@ export default {
     //   const sn = await this.$firebase.database().ref().child('abcd').once('value')
     //   console.log(sn.val())
     // }
+    async test () {
+      await this.$firebase.firestore().collection('users').doc(this.$store.state.fireUser.uid)
+        .update({ level: 0, visitedAt: new Date(), visitCount: 0 })
+    }
   }
 }
 </script>

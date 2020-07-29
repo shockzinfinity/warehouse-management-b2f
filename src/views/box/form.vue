@@ -100,6 +100,7 @@ export default {
       this.$router.push('/box/' + this.document)
     },
     async save () {
+      if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다.')
       const form = {
         parentRackId: this.form.parentRackId,
         boxId: this.form.boxId,
@@ -141,6 +142,7 @@ export default {
           form.createdAt = new Date()
           form.sampleCount = 0
           form.user = {
+            uid: this.$store.state.fireUser.uid,
             email: this.user.email,
             photoURL: this.user.photoURL,
             displayName: this.user.displayName
