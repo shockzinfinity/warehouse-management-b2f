@@ -20,7 +20,7 @@
       span.font-italic.caption 수정일: 
         display-time(:time="item.updatedAt")
     v-divider
-    display-comment(:article="item" :docRef="this.ref.collection('articles').doc(this.item.id)")
+    display-comment(:commentCount="item.commentCount" :docRef="this.ref.collection('articles').doc(this.item.id)")
 </template>
 
 <script>

@@ -1,18 +1,18 @@
 <template lang="pug">
   v-card
     v-card-title
-      v-text-field(v-model="comment" outlined label="댓글 작성" @keypress.enter="save" hide-details)
+      v-textarea(v-model="comment" rows="3" outlined label="댓글 작성" append-icon="mdi-send" @click:append="save" @keypress.shift.enter="save" hide-details)
     template(v-for="(item, i) in items")
-      v-list-item(:key="item.id")
+      v-list-item(:key="item.id" three-line)
         v-list-item-action
           display-user(:user="item.user")
         v-list-item-content
-          v-list-item-subtitle(v-text="item.comment")
-          v-list-item-subtitle
+          v-list-item-subtitle.black--text.comment(v-text="item.comment")
+          v-list-item-subtitle.font-italic
             display-time(:time="item.createdAt")
       v-divider(:key="i")
     v-list-item
-      v-btn(v-if="lastDoc" @click="more" text color="primary" block) more
+      v-btn(v-if="lastDoc && items.length < commentCount" v-intersect="onIntersect" @click="more" text color="primary" block) more
 </template>
 
 <script>
@@ -23,7 +23,7 @@ const LIMIT = 5
 
 export default {
   components: { DisplayTime, DisplayUser },
-  props: ['article', 'docRef'],
+  props: ['commentCount', 'docRef'],
   data () {
     return {
       comment: '',
@@ -70,6 +70,10 @@ export default {
       const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
       this.snToItems(sn)
     },
+    async onIntersect (entries, observer, isIntersecting) {
+      // console.log(isIntersecting)
+      if (isIntersecting) await this.more()
+    },
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
       this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
@@ -103,3 +107,8 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+.comment
+  white-space: pre-wrap
+</style>
