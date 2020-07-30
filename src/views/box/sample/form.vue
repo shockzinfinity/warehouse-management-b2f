@@ -99,6 +99,7 @@ export default {
       if (!this.exists) return
       const item = doc.data()
       this.form.title = item.title
+      this.form.currentStock = item.currentStock
       this.parentRackId = item.parentRackId
       const { data } = await axios.get(item.url)
       this.form.content = data
@@ -121,7 +122,7 @@ export default {
           updatedAt: createdAt,
           url,
           qrcodeUrl: this.form.qrcodeUrl,
-          currentStock: 0
+          currentStock: this.form.currentStock
         }
 
         // let rackTitle
@@ -169,7 +170,7 @@ export default {
             // console.log(doc.qrcodeUrl)
           }
 
-          this.ref.collection('sample').doc(this.sampleId).update(doc)
+          this.ref.collection('samples').doc(this.sampleId).update(doc)
           // batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
         }
 
