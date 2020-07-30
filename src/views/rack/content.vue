@@ -161,7 +161,7 @@ export default {
         if (!this.boxToAdd.qrcodeUrl) {
           const qr = await this.codeGenration(box.boxId)
           const qrSn = await this.storageRef.child('qrCodes').child(this.boxToAdd.boxId).child(box.title + '.qr.png').putString(qr, 'data_url')
-          this.boxToAdd.qrcodeUrl = await qrSn.ref.getDownloadURL()
+          box.qrcodeUrl = await qrSn.ref.getDownloadURL()
         }
         boxRef.set(box)
         // batch.set(boxRef, box)

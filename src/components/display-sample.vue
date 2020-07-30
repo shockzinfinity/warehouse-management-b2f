@@ -75,7 +75,7 @@ export default {
   methods: {
     async fetch () {
       const r = await axios.get(this.item.url)
-      this.content = r.data
+      this.content = r.data.toString()
       await this.ref.collection('samples').doc(this.item.id).update({
         readCount: this.$firebase.firestore.FieldValue.increment(1)
       })
@@ -87,10 +87,10 @@ export default {
       this.$router.push({ path: this.$route.path + '/sample-write', query: { sampleId: this.item.id } })
     },
     async remove () {
-      const batch = this.$firebase.firestore().batch()
-      batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(-1) })
-      batch.delete(this.ref.collection('samples').doc(this.item.id))
-      await batch.commit()
+      // const batch = this.$firebase.firestore().batch()
+      // batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(-1) })
+      // batch.delete(this.ref.collection('samples').doc(this.item.id))
+      // await batch.commit()
 
       // REF delete step
       // 1. count
@@ -98,11 +98,13 @@ export default {
       // 3. storage
       // await this.ref.update({ count: this.$firebase.firestore.FieldValue.increment(-1) })
       // await this.ref.collection('articles').doc(this.item.id).delete()
-      await this.$firebase.storage().ref().child('boxes').child(this.document).child(this.item.id + '.md').delete()
+      // await this.$firebase.storage().ref().child('boxes').child(this.document).child(this.item.id + '.md').delete()
+      await this.ref.collection('samples').doc(this.item.id).delete()
 
       this.$emit('close')
     },
     async incomming () {
+      if (this.stockInOut <= 0) return
       const history = {
         actionTime: new Date(),
         type: 'in',
@@ -130,12 +132,14 @@ export default {
       // action Time : Date()
       // user
       // console.log(this.stockInOut)
+      if (this.stockInOut <= 0) return
       const out = this.currentStock - this.stockInOut
       if (out < 0) {
+        throw Error('insufficient stock')
         // console.log('current', this.currentStock)
         // console.log('outcomming', this.stockInOut)
-        this.$emit('close')
-        return
+        // this.$emit('close')
+        // return
       }
       const history = {
         actionTime: new Date(),

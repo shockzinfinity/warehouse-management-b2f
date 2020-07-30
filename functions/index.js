@@ -275,8 +275,11 @@ exports.onCreateSampleComment = functions.region(region).firestore
 
 exports.onDeleteSampleComment = functions.region(region).firestore
   .document('boxes/{bid}/samples/{sid}/comments/{cid}')
-  .onDelete((snap, context) => {
-    return fdb.collection('boxes').doc(context.params.bid)
-      .collection('samples').doc(context.params.sid)
-      .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
+  .onDelete(async (snap, context) => {
+    const doc = await fdb.collection('boxes').doc(context.params.bid).collection('samples').doc(context.params.sid).get()
+    if (doc.exists) {
+      await fdb.collection('boxes').doc(context.params.bid)
+        .collection('samples').doc(context.params.sid)
+        .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
+    }
   })
