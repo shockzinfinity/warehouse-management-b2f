@@ -154,8 +154,8 @@ export default {
       box.coverUrl = this.boxCoverUrl
 
       const boxRef = this.$firebase.firestore().collection('boxes').doc(this.boxToAdd.title)
-      const rackRef = this.$firebase.firestore().collection('racks').doc(this.document)
-      const batch = await this.$firebase.firestore().batch()
+      // const rackRef = this.$firebase.firestore().collection('racks').doc(this.document)
+      // const batch = await this.$firebase.firestore().batch()
 
       try {
         if (!this.boxToAdd.qrcodeUrl) {
@@ -163,10 +163,10 @@ export default {
           const qrSn = await this.storageRef.child('qrCodes').child(this.boxToAdd.boxId).child(box.title + '.qr.png').putString(qr, 'data_url')
           this.boxToAdd.qrcodeUrl = await qrSn.ref.getDownloadURL()
         }
-
-        batch.set(boxRef, box)
-        batch.update(rackRef, { boxCount: this.$firebase.firestore.FieldValue.increment(1) })
-        await batch.commit()
+        boxRef.set(box)
+        // batch.set(boxRef, box)
+        // batch.update(rackRef, { boxCount: this.$firebase.firestore.FieldValue.increment(1) })
+        // await batch.commit()
       } finally {
         this.dialog = false
         this.loading = false

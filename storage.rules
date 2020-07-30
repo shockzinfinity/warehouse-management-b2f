@@ -1,33 +1,94 @@
 service firebase.storage {
   match /b/{bucket}/o {
-    // match /{allPaths=**} {
-    //   allow read, write: if request.auth!=null;
-    // }
-    match /boards {
-     // Allow write files to the path "images/*", subject to the constraints:
-     // 1) File is less than 5MB  (5 * 1024 * 1024)
-     // 2) Content type is an image
-     // 3) Uploaded content type matches existing content type (if it exists)
-     // 4) File name (stored in imageId wildcard variable) is less than 32 characters
-      match /{boardId}/{articleId} {
-        allow read: if true
-        allow write: if request.auth != null
-                    // && (
-                    //   request.resource == null
-                    //   || (
-                    //     request.resource.size < 20 * 1024 * 1024
-                    //     && request.resource.contentType.matches('application/octet-stream')
-                    //     && (resource == null || request.resource.contentType == resource.contentType)
-                    //   )
-                    // )
-                    && request.resource != null
-                    && (
-                      request.resource.size < 20 * 1024 * 1024
-                      && request.resource.contentType.matches('application/octet-stream')
-                      && (resource == null || request.resource.contentType == resource.contentType)
-                    )
-                    && articleId.size() < 24
-      }
+    match /{allPaths=**} {
+      allow read, write: if request.auth!=null;
     }
+    // match /boards {
+    //  // Allow write files to the path "images/*", subject to the constraints:
+    //  // 1) File is less than 5MB  (5 * 1024 * 1024)
+    //  // 2) Content type is an image
+    //  // 3) Uploaded content type matches existing content type (if it exists)
+    //  // 4) File name (stored in imageId wildcard variable) is less than 32 characters
+    //   match /{boardId}/{articleId} {
+    //     allow read: if true
+    //     allow write: if request.auth != null
+    //                 // && (
+    //                 //   request.resource == null
+    //                 //   || (
+    //                 //     request.resource.size < 20 * 1024 * 1024
+    //                 //     && request.resource.contentType.matches('application/octet-stream')
+    //                 //     && (resource == null || request.resource.contentType == resource.contentType)
+    //                 //   )
+    //                 // )
+    //                 && request.resource != null
+    //                 && (
+    //                   request.resource.size < 20 * 1024 * 1024
+    //                   && request.resource.contentType.matches('application/octet-stream')
+    //                   && (resource == null || request.resource.contentType == resource.contentType)
+    //                 )
+    //                 && articleId.size() < 24
+    //   }
+    // }
+    // match /racks {
+    //   match /{rackId} {
+    //     allow read: if true
+    //     allow write: if request.auth != null
+    //                     && request.resource != null
+    //                     && (
+    //                       request.resource.size < 20 * 1024 * 1024
+    //                       && (request.resource.contentType.matches('application/octet-stream') || request.resource.contentType.matches('images/*'))
+    //                       && (resource == null || request.resource.contentType == resource.contentType)
+    //                     )
+    //                     && rackId.size() < 24
+    //   }
+    //   match /coverImages/{positionId} {
+    //     allow read: if true
+    //     allow write: if request.auth != null
+    //                     && request.resource != null
+    //                     && (
+    //                       request.resource.size < 20 * 1024 * 1024
+    //                       && (request.resource.contentType.matches('application/octet-stream') || request.resource.contentType.matches('images/*'))
+    //                       && (resource == null || request.resource.contentType == resource.contentType)
+    //                     )
+    //                     && positionId.size() < 24
+    //   }
+    //   match /{rackId}/cover {
+    //     allow read: if true
+    //     allow write: if request.auth != null
+    //                     && request.resource != null
+    //                     && (
+    //                       request.resource.size < 20 * 1024 * 1024
+    //                       && (request.resource.contentType.matches('application/octet-stream') || request.resource.contentType.matches('images/*'))
+    //                       && (resource == null || request.resource.contentType == resource.contentType)
+    //                     )
+    //                     && rackId.size() < 24
+    //   }
+    // }
+    // match /boxes {
+    //   match /{boxId}/{sampleId} {
+    //     allow read: if true
+    //     allow write: if request.auth != null
+    //                     && request.resource != null
+    //                     && (
+    //                       request.resource.size < 20 * 1024 * 1024
+    //                       && (request.resource.contentType.matches('application/octet-stream') || request.resource.contentType.matches('images/*'))
+    //                       && (resource == null || request.resource.contentType == resource.contentType)
+    //                     )
+    //                     && sampleId.size() < 24
+    //   }
+    // }
+    // match /samples/qrCodes {
+    //   match /{sampleId} {
+    //     allow read: if true
+    //     allow write: if request.auth != null
+    //                     && request.resource != null
+    //                     && (
+    //                       request.resource.size < 20 * 1024 * 1024
+    //                       && (request.resource.contentType.matches('application/octet-stream') || request.resource.contentType.matches('images/*'))
+    //                       && (resource == null || request.resource.contentType == resource.contentType)
+    //                     )
+    //                     && sampleId.size() < 24
+    //   }
+    // }
   }
 }

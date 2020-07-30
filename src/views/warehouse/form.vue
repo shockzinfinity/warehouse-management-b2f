@@ -7,19 +7,19 @@
             v-toolbar(color="accent" dense flat dark)
               v-toolbar-title modify warehouse informations
               v-spacer
-              v-btn(icon @click="test") <v-icon>mdi-test-tube</v-icon>
+              //- v-btn(icon @click="test") <v-icon>mdi-test-tube</v-icon>
               v-btn(icon @click="$router.push('/warehouse')") <v-icon>mdi-arrow-left</v-icon>
               v-btn(icon @click="save" :disabled="!$store.state.isAdmin") <v-icon>mdi-content-save</v-icon>
             v-card-subtitle.pb-0 cover image
             v-row
               v-col(cols="12")
-                v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="info.coverUrl" width="50%")
+                v-img.mx-auto(v-if="!uploading && !uploadEnd && !downloadURL" :src="info.coverUrl" max-width="600px")
                 v-card-text.text-center {{ fileName }}
                 v-progress-circular.mx-auto(
                   v-if="uploading && !uploadEnd"
                   :size="80" :width="15" :rotate="360" :value="progressUpload" color="primary"
                 ) {{ progressUpload }}%
-                v-img.mx-auto(v-if="uploadEnd" :src="downloadURL" width="50%")
+                v-img.mx-auto(v-if="uploadEnd" :src="downloadURL" max-width="600px")
                 v-card-actions
                   v-spacer
                   v-btn(

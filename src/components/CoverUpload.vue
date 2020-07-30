@@ -34,7 +34,7 @@
 export default {
   props: {
     currentSrc: { type: String, default: '' },
-    positionId: { type: String, default: '' },
+    positionId: { type: String, default: 'temp' },
     type: { type: String, default: '', required: true }
   },
   data () {

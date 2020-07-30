@@ -114,21 +114,21 @@ export default {
 
       try {
         if (!this.form.parentRackId) return
-        const batch = await this.$firebase.firestore().batch()
-        let parentRackTitle
-        await this.$firebase
-          .firestore()
-          .collection('racks')
-          .where('rackId', '==', this.form.parentRackId)
-          .get()
-          .then(docs => {
-            if (!docs.empty) {
-              docs.forEach(d => {
-                // console.log(d.id, '=>', d.data())
-                parentRackTitle = d.id
-              })
-            }
-          })
+        // const batch = await this.$firebase.firestore().batch()
+        // let parentRackTitle
+        // await this.$firebase
+        //   .firestore()
+        //   .collection('racks')
+        //   .where('rackId', '==', this.form.parentRackId)
+        //   .get()
+        //   .then(docs => {
+        //     if (!docs.empty) {
+        //       docs.forEach(d => {
+        //         // console.log(d.id, '=>', d.data())
+        //         parentRackTitle = d.id
+        //       })
+        //     }
+        //   })
 
         if (!this.exists) {
           // if (this.document === 'newBox') {
@@ -154,14 +154,15 @@ export default {
             form.qrcodeUrl = await qrSn.ref.getDownloadURL()
           }
 
-          batch.set(this.ref, form)
-          batch.update(
-            this.$firebase
-              .firestore()
-              .collection('racks')
-              .doc(parentRackTitle),
-            { boxCount: this.$firebase.firestore.FieldValue.increment(1) }
-          )
+          this.ref.set(form)
+          // batch.set(this.ref, form)
+          // batch.update(
+          //   this.$firebase
+          //     .firestore()
+          //     .collection('racks')
+          //     .doc(parentRackTitle),
+          //   { boxCount: this.$firebase.firestore.FieldValue.increment(1) }
+          // )
         } else {
           if (!form.qrcodeUrl) {
             const qr = await this.codeGenration(form.boxId)
@@ -169,10 +170,10 @@ export default {
             form.qrcodeUrl = await qrSn.ref.getDownloadURL()
           }
 
-          // this.ref.update(form)
-          batch.update(this.ref, form)
+          this.ref.update(form)
+          // batch.update(this.ref, form)
         }
-        await batch.commit()
+        // await batch.commit()
       } finally {
         this.loading = false
         this.goBack()

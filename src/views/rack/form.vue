@@ -1,22 +1,21 @@
 <template lang="pug">
   v-container(fluid)
-    v-layout(align-center justify-center)
-      validation-observer(ref="obs" v-slot="{ invalid, validated, passes, validate }")
-        v-form
-          v-card.elevation-12(:loading="loading")
-            v-toolbar(color="accent" dense flat dark)
-              v-toolbar-title 랙 정보 작성
-              v-spacer
-              v-btn(icon @click="$router.push('/rack/' + document)") <v-icon>mdi-arrow-left</v-icon>
-              v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
-            cover-upload(ref="cover" type="rack" @downloadURL="getDownloadURL" :currentSrc="form.coverUrl" :positionId="form.rackId")
-            v-card-subtitle.pb-0 QR code
-            v-card-text
-              v-img.mx-auto(v-if="exists && form.qrcodeUrl" :src="form.qrcodeUrl" width="50%")
-            v-card-text
-              v-text-field-with-validation(v-model="form.position" rules="required|max:50" :counter="50" outlined label="위치")
-              v-text-field-with-validation(v-model="form.title" rules="required|max:50" :counter="50" outlined label="이름")
-              v-textarea(v-model="form.description" outlined label="설명")
+    validation-observer(ref="obs" v-slot="{ invalid, validated, passes, validate }")
+      v-form
+        v-card.elevation-12(:loading="loading")
+          v-toolbar(color="accent" dense flat dark)
+            v-toolbar-title 랙 정보 작성
+            v-spacer
+            v-btn(icon @click="$router.push('/rack/' + document)") <v-icon>mdi-arrow-left</v-icon>
+            v-btn(icon @click="save") <v-icon>mdi-content-save</v-icon>
+          cover-upload(ref="cover" type="rack" @downloadURL="getDownloadURL" :currentSrc="form.coverUrl" :positionId="form.rackId")
+          v-card-subtitle.pb-0 QR code
+          v-card-text
+            v-img.mx-auto(v-if="exists && form.qrcodeUrl" :src="form.qrcodeUrl" width="50%")
+          v-card-text
+            v-text-field-with-validation(v-model="form.position" rules="required|max:50" :counter="50" outlined label="위치")
+            v-text-field-with-validation(v-model="form.title" rules="required|max:50" :counter="50" outlined label="이름")
+            v-textarea(v-model="form.description" outlined label="설명")
 </template>
 
 <script>

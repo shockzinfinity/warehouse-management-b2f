@@ -69,8 +69,8 @@ export default {
   },
   watch: {
     document () {
-      console.log(this.document)
-      console.log(this.action)
+      // console.log(this.document)
+      // console.log(this.action)
       this.subscribe()
     }
   },
@@ -102,7 +102,7 @@ export default {
       this.parentRackId = item.parentRackId
       const { data } = await axios.get(item.url)
       this.form.content = data
-      console.log(this.form.content)
+      // console.log(this.form.content)
     },
     async save () {
       this.loading = true
@@ -124,16 +124,16 @@ export default {
           currentStock: 0
         }
 
-        let rackTitle
-        if (this.parentRackId) {
-          const temp = await this.$firebase.firestore().collection('racks').where('rackId', '==', this.parentRackId).get()
+        // let rackTitle
+        // if (this.parentRackId) {
+        //   const temp = await this.$firebase.firestore().collection('racks').where('rackId', '==', this.parentRackId).get()
 
-          if (!temp.empty) {
-            rackTitle = temp.docs[0].data().title
-          }
-        }
+        //   if (!temp.empty) {
+        //     rackTitle = temp.docs[0].data().title
+        //   }
+        // }
 
-        const batch = await this.$firebase.firestore().batch()
+        // const batch = await this.$firebase.firestore().batch()
 
         if (!this.sampleId) {
           doc.createdAt = createdAt
@@ -153,13 +153,14 @@ export default {
             // console.log(doc.qrcodeUrl)
           }
 
-          batch.set(this.ref.collection('samples').doc(id), doc)
-          batch.update(this.ref, { sampleCount: this.$firebase.firestore.FieldValue.increment(1) })
+          this.ref.collection('samples').doc(id).set(doc)
+          // batch.set(this.ref.collection('samples').doc(id), doc)
+          // batch.update(this.ref, { sampleCount: this.$firebase.firestore.FieldValue.increment(1) })
 
           // console.log('racktitle', rackTitle)
-          if (rackTitle && this.parentRackId) {
-            batch.update(this.$firebase.firestore().collection('racks').doc(rackTitle), { sampleSKU: this.$firebase.firestore.FieldValue.increment(1) })
-          }
+          // if (rackTitle && this.parentRackId) {
+          //   batch.update(this.$firebase.firestore().collection('racks').doc(rackTitle), { sampleSKU: this.$firebase.firestore.FieldValue.increment(1) })
+          // }
         } else {
           if (!doc.qrcodeUrl) {
             const qr = await this.codeGenration(this.form.parentBoxId, this.sampleId)
@@ -168,10 +169,11 @@ export default {
             // console.log(doc.qrcodeUrl)
           }
 
-          batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
+          this.ref.collection('sample').doc(this.sampleId).update(doc)
+          // batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
         }
 
-        await batch.commit()
+        // await batch.commit()
       } finally {
         this.loading = false
         this.$router.push('/box/' + this.document)
