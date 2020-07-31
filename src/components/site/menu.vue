@@ -122,7 +122,6 @@ export default {
     },
     openDialogItem(index) {
       // 메인 메뉴 아이템 추가
-
       this.selectedItemIndex = index
 
       if (index < 0) {

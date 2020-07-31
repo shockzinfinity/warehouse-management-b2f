@@ -53,37 +53,37 @@ export default {
     this.subscribe()
   },
   destroyed() {
-    if (this.unsubscribe) this.unsubscribe()
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
     subscribe() {
-      if (this.unsubscribe) this.unsubscribe()
-
-      const ref = this.$firebase
-        .firestore()
-        .collection('racks')
-        .orderBy('createdAt', 'asc')
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      const ref = this.$firebase.firestore().collection('racks')
       this.unsubscribe = ref.onSnapshot(sn => {
         if (sn.empty) {
           this.racks = []
           return
         }
         this.racks = sn.docs.map(doc => {
+          // console.log(doc.data())
           const item = doc.data()
-          item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           return item
         })
       })
     },
-    async rackWrite() {},
+    rackWrite() {},
     rackLink(rack) {
-      this.$router.push('/rack/' + rack.id)
+      this.$router.push('/rack/' + rack.title)
     },
-    ellipseContent(text, length) {
+    ellipseContent(txt, length) {
       const ellipseText =
-        text.length < length ? text : text.slice(0, length) + '...'
+        txt.length < length ? txt : txt.slice(0, length) + '...'
 
       return ellipseText
     },

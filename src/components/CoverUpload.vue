@@ -11,7 +11,7 @@
       ) change
       v-btn.ma-0(dark small color="error" @click="deleteImage" v-if="uploadEnd") Delete
     v-card-text(v-if="!uploading && !uploadEnd && !downloadURL")
-      v-img.mx-auto(:src="currentSrc")
+      v-img.mx-auto(:src="originSrc")
     v-card-text.text-center {{ fileName }}
       v-progress-circular(
         v-if="uploading && !uploadEnd"
@@ -33,8 +33,8 @@
 <script>
 export default {
   props: {
-    currentSrc: { type: String, default: '' },
-    positionId: { type: String, default: 'temp' },
+    originSrc: { type: String, default: '' },
+    pathId: { type: String, default: '' },
     type: { type: String, default: '', required: true },
   },
   data() {
@@ -45,7 +45,6 @@ export default {
       uploading: false,
       uploadEnd: false,
       downloadURL: '',
-      storageRef: null,
     }
   },
   computed: {
@@ -71,7 +70,7 @@ export default {
         'state_changed',
         sp => {
           this.progressUpload = Math.floor(
-            (sp.bytesTransferred / sp.totalBytes) * 100,
+            (sp.bytesTransferred / sp.totalBytes) * 100
           )
         },
         null,
@@ -81,20 +80,17 @@ export default {
             this.downloadURL = url
             this.$emit('downloadURL', url)
           })
-        },
+        }
       )
     },
-    positionId() {
+    pathId() {
       this.uploading = false
       this.uploadEnd = false
       this.downloadURL = ''
-      // this.currentSrc = ''
       this.fileName = ''
     },
   },
-  created() {
-    // console.log(this.type)
-  },
+  created() {},
   methods: {
     selectFiles() {
       this.$refs.uploadInput.click()
@@ -112,8 +108,7 @@ export default {
         .storage()
         .ref()
         .child(this.typePosition)
-        .child('coverImages')
-        .child(this.positionId)
+        .child(this.pathId)
         .child(file.name)
         .put(file)
     },
@@ -122,8 +117,7 @@ export default {
         .storage()
         .ref()
         .child(this.typePosition)
-        .child('coverImages')
-        .child(this.positionId)
+        .child(this.pathId)
         .child(this.fileName)
         .delete()
         .then(() => {

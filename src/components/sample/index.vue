@@ -1,3 +1,3 @@
 <template lang="pug">
-  v-card box list
+  v-card Sample List
 </template>

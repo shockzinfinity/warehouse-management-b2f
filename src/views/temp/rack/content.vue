@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import BoxList from '@/components/box-list'
+import BoxList from '@/components/BoxList'
 import cryptoRandomString from 'crypto-random-string'
 import CoverUpload from '@/components/CoverUpload'
 import { ValidationObserver, ValidationProvider } from 'vee-validate'

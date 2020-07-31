@@ -1,7 +1,7 @@
 <template lang="pug">
   v-toolbar-title.ml-auto.overline {{ title }}
     template(v-if="user")
-      v-btn(icon @click="openDialog" :disabled="user.level > 0") <v-icon>mdi-grease-pencil</v-icon>
+      v-btn(icon @click="openDialog" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
     v-dialog(v-model="dialog" max-width="400")
       v-card
         v-card-title 제목수정

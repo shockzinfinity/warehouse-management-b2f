@@ -1,9 +1,9 @@
 <template lang="pug">
-  v-footer.py-3(app color="primary" dark absolute :footer="footer")
+  v-footer(app color="primary" dark absolute :footer="footer")
     v-spacer
     span.ml-auto.overline &copy; {{ new Date().getFullYear() + ' ' + footer }}
     template(v-if="user")
-      v-btn(icon @click="openDialog" :disabled="user.level > 0") <v-icon>mdi-grease-pencil</v-icon>
+      v-btn(icon @click="openDialog" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
     v-dialog(v-model="dialog" max-width="400")
       v-card
         v-card-title 푸터수정

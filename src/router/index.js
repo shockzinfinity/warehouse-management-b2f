@@ -37,7 +37,7 @@ const routes = [
   },
   {
     path: '/warehouse',
-    name: 'Warehouse',
+    name: 'warehouse',
     // route level code-splitting
     // this generates a separate chunk (warehouse.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -46,67 +46,101 @@ const routes = [
   },
   {
     path: '/board',
-    name: 'Board',
+    name: 'board',
     // route level code-splitting
     // this generates a separate chunk (board.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "board" */ '../views/board/'),
   },
   {
-    path: '/storage',
-    name: 'Storage',
+    path: '/board/:info',
+    name: 'board-info',
     // route level code-splitting
-    // this generates a separate chunk (storage.[hash].js) for this route
+    // this generates a separate chunk (board-info.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "storage" */ '../views/storage/'),
+      import(/* webpackChunkName: "board-info" */ '../views/board/info'),
   },
   {
-    path: '/editor',
-    name: 'Editor',
+    path: '/board/:info/:article',
+    name: 'board-info-article',
     // route level code-splitting
-    // this generates a separate chunk (editor.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "editor" */ '../views/editor/'),
-  },
-  {
-    path: '/qrcode',
-    name: 'QrCode',
-    // route level code-splitting
-    // this generates a separate chunk (qrcode.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "qrcode" */ '../views/qrcode/'),
-  },
-  {
-    path: '/uploadtest',
-    name: 'UploadTest',
-    // route level code-splitting
-    // this generates a separate chunk (uploadtest.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "uploadtest" */ '../views/uploadtest/'),
-  },
-  {
-    path: '/uploadtest2',
-    name: 'UploadTest2',
-    // route level code-splitting
-    // this generates a separate chunk (uploadtest2.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "uploadtest2" */ '../views/uploadtest/test2'),
-  },
-  {
-    path: '/form-validation',
-    name: 'FormValidationTest',
-    // route level code-splitting
-    // this generates a separate chunk (form-validation.[hash].js) for this route
+    // this generates a separate chunk (board-info-article.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(
-        /* webpackChunkName: "form-validation" */ '../views/form-validation/'
+        /* webpackChunkName: "board-info-article" */ '../views/board/article'
       ),
+  },
+  {
+    path: '/rack',
+    name: 'rack',
+    // route level code-splitting
+    // this generates a separate chunk (rack.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "rack" */ '../views/rack/'),
+  },
+  {
+    path: '/rack/:info',
+    name: 'rack-info',
+    // route level code-splitting
+    // this generates a separate chunk (rack-info.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "rack-info" */ '../views/rack/info'),
+  },
+  {
+    path: '/rack/:info/:box',
+    name: 'rack-info-box',
+    // route level code-splitting
+    // this generates a separate chunk (rack-info-box.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "rack-info-box" */ '../views/rack/box'),
+  },
+  {
+    path: '/box',
+    name: 'box',
+    // route level code-splitting
+    // this generates a separate chunk (box.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "box" */ '../views/box/'),
+  },
+  {
+    path: '/box/:info',
+    name: 'box-info',
+    // route level code-splitting
+    // this generates a separate chunk (box-info.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "box-info" */ '../views/box/info'),
+  },
+  {
+    path: '/box/:info/:sample',
+    name: 'box-info-sample',
+    // route level code-splitting
+    // this generates a separate chunk (box-info-sample.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "box-info-sample" */ '../views/box/sample'),
+  },
+  {
+    path: '/sample',
+    name: 'sample',
+    // route level code-splitting
+    // this generates a separate chunk (sample.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "sample" */ '../views/sample/'),
+  },
+  {
+    path: '/sample/:info',
+    name: 'sample-info',
+    // route level code-splitting
+    // this generates a separate chunk (sample-info.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "sample-info" */ '../views/sample/info'),
   },
   {
     path: '/confirm',
@@ -116,26 +150,6 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "confirm" */ '../views/confirm'),
-  },
-  {
-    path: '/:collection/:document',
-    name: 'collection-document',
-    // route level code-splitting
-    // this generates a separate chunk (collection-document.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "collection-document" */ '../views/renderer'),
-  },
-  {
-    path: '/:collection/:document/:action',
-    name: 'collection-document-action',
-    // route level code-splitting
-    // this generates a separate chunk (collection-document-action.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(
-        /* webpackChunkName: "collection-document-action" */ '../views/renderer'
-      ),
   },
   {
     path: '/auth',

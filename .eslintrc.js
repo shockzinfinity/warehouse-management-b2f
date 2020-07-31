@@ -13,8 +13,8 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
-    'no-console': 'off',
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-unused-vars': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-empty': 'off',
+    'no-empty': process.env.NODE_ENV === 'production' ? 'error' : 'off',
   },
 }

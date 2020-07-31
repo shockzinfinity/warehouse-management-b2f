@@ -2,9 +2,9 @@
   warehouse-form(v-if="collection === 'warehouse' && document === 'modify'")
 
   //- board-index(v-else-if="collection === 'board' && document === 'list'")
-  board-content(v-else-if="collection === 'board' && !action" :document="document")
-  board-form(v-else-if="collection === 'board' && action === 'board-write'" :document="document" :action="action")
-  board-article-form(v-else-if="collection === 'board' && action === 'article-write'" :document="document" :action="action")
+  //- board-content(v-else-if="collection === 'board' && !action" :document="document")
+  //- board-form(v-else-if="collection === 'board' && action === 'board-write'" :document="document" :action="action")
+  //- board-article-form(v-else-if="collection === 'board' && action === 'article-write'" :document="document" :action="action")
 
   rack-index(v-else-if="collection === 'rack' && document === 'list'")
   rack-content(v-else-if="collection === 'rack' && !action" :document="document")
