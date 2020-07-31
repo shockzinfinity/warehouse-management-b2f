@@ -17,34 +17,34 @@ import { ValidationProvider } from 'vee-validate'
 
 export default {
   components: {
-    ValidationProvider
+    ValidationProvider,
   },
   props: {
     rules: {
       type: [Object, String],
-      default: ''
+      default: '',
     },
     value: {
-      type: null
-    }
+      type: null,
+    },
   },
   data: () => ({
-    innerValue: ''
+    innerValue: '',
   }),
   watch: {
     // handle internal mode change
-    innerValue (newVal) {
+    innerValue(newVal) {
       this.$emit('input', newVal)
     },
     // handle external mode change
-    value (newVal) {
+    value(newVal) {
       this.innerValue = newVal
-    }
+    },
   },
-  created () {
+  created() {
     if (this.value) {
       this.innerValue = this.value
     }
-  }
+  },
 }
 </script>

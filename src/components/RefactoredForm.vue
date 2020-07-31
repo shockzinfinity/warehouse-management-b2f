@@ -35,29 +35,29 @@ import VTextFieldWithValidation from '@/components/inputs/VTextFieldWithValidati
 import VSelectWithValidation from '@/components/inputs/VSelectWithValidation'
 
 export default {
+  components: {
+    ValidationObserver,
+    ValidationProvider,
+    VTextFieldWithValidation,
+    VSelectWithValidation,
+  },
   data: () => ({
     items: ['', 'Foo', 'Bar'],
     name: '',
     email: '',
     select: '',
-    checkbox: ''
+    checkbox: '',
   }),
-  components: {
-    ValidationObserver,
-    ValidationProvider,
-    VTextFieldWithValidation,
-    VSelectWithValidation
-  },
   methods: {
-    async clear () {
+    async clear() {
       this.name = this.email = this.select = this.checkbox = ''
       requestAnimationFrame(() => {
         this.$refs.obs.reset()
       })
     },
-    async submit () {
+    async submit() {
       console.log('submitted.')
-    }
-  }
+    },
+  },
 }
 </script>

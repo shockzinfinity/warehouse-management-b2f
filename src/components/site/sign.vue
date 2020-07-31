@@ -23,13 +23,13 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      loading: false
+      loading: false,
     }
   },
   methods: {
-    async signInWithGoogle () {
+    async signInWithGoogle() {
       const provider = new this.$firebase.auth.GoogleAuthProvider()
       this.$firebase.auth().languageCode = 'ko'
       this.loading = true
@@ -48,14 +48,14 @@ export default {
         this.loading = false
       }
     },
-    signOut () {
+    signOut() {
       this.$store.commit('setToken', '')
       this.$firebase.auth().signOut()
       this.$router.push('/')
     },
-    signInWithFacebook () {
+    signInWithFacebook() {
       throw Error('TODO')
-    }
-  }
+    },
+  },
 }
 </script>

@@ -51,42 +51,51 @@ export default {
   components: {
     DisplayTime,
     DisplayComment,
-    DisplayHistory
+    DisplayHistory,
   },
   props: ['document', 'item'],
-  data () {
+  data() {
     return {
       spinnerModel: 10,
       content: '',
-      ref: this.$firebase.firestore().collection('boxes').doc(this.document),
+      ref: this.$firebase
+        .firestore()
+        .collection('boxes')
+        .doc(this.document),
       stockInOut: 1,
-      currentStock: 0
+      currentStock: 0,
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
-  mounted () {
+  mounted() {
     // console.log('mounted')
     this.fetch()
   },
   methods: {
-    async fetch () {
+    async fetch() {
       const r = await axios.get(this.item.url)
       this.content = r.data.toString()
-      await this.ref.collection('samples').doc(this.item.id).update({
-        readCount: this.$firebase.firestore.FieldValue.increment(1)
-      })
+      await this.ref
+        .collection('samples')
+        .doc(this.item.id)
+        .update({
+          readCount: this.$firebase.firestore.FieldValue.increment(1),
+        })
       this.stockInOut = this.currentStock = this.item.currentStock
       // console.log(this.item.currentStock)
     },
-    async sampleWrite () {
+    async sampleWrite() {
       // console.log(this.item.id)
-      this.$router.push({ path: this.$route.path + '/sample-write', query: { sampleId: this.item.id } })
+      this.$router.push({
+        path: this.$route.path + '/sample-write',
+        query: { sampleId: this.item.id },
+      })
     },
-    async remove () {
+    async remove() {
       // const batch = this.$firebase.firestore().batch()
       // batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(-1) })
       // batch.delete(this.ref.collection('samples').doc(this.item.id))
@@ -99,12 +108,17 @@ export default {
       // await this.ref.update({ count: this.$firebase.firestore.FieldValue.increment(-1) })
       // await this.ref.collection('articles').doc(this.item.id).delete()
       // await this.$firebase.storage().ref().child('boxes').child(this.document).child(this.item.id + '.md').delete()
-      await this.ref.collection('samples').doc(this.item.id).delete()
+      await this.ref
+        .collection('samples')
+        .doc(this.item.id)
+        .delete()
 
       this.$emit('close')
     },
-    async incomming () {
-      if (this.stockInOut <= 0) return
+    async incomming() {
+      if (this.stockInOut <= 0) {
+        return
+      }
       const history = {
         actionTime: new Date(),
         type: 'in',
@@ -112,27 +126,40 @@ export default {
         user: {
           email: this.user.email,
           photoURL: this.user.photoURL,
-          displayName: this.user.displayName
-        }
+          displayName: this.user.displayName,
+        },
       }
       const id = history.actionTime.getTime().toString()
       const batch = this.$firebase.firestore().batch()
       // console.log(this.stockInOut)
-      batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
-      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(parseInt(this.stockInOut)) })
+      batch.set(
+        this.ref
+          .collection('samples')
+          .doc(this.item.id)
+          .collection('histories')
+          .doc(id),
+        history,
+      )
+      batch.update(this.ref.collection('samples').doc(this.item.id), {
+        currentStock: this.$firebase.firestore.FieldValue.increment(
+          parseInt(this.stockInOut),
+        ),
+      })
       // await this.ref.collection('samples').doc(this.item.id).update({
       //   currentStock: this.$firebase.firestore.FieldValue.increment(this.stockInOut)
       // })
       await batch.commit()
       this.$emit('close')
     },
-    async outcomming () {
+    async outcomming() {
       // type : in/out
       // amount : stockInOut
       // action Time : Date()
       // user
       // console.log(this.stockInOut)
-      if (this.stockInOut <= 0) return
+      if (this.stockInOut <= 0) {
+        return
+      }
       const out = this.currentStock - this.stockInOut
       if (out < 0) {
         throw Error('insufficient stock')
@@ -148,20 +175,31 @@ export default {
         user: {
           email: this.user.email,
           photoURL: this.user.photoURL,
-          displayName: this.user.displayName
-        }
+          displayName: this.user.displayName,
+        },
       }
       const id = history.actionTime.getTime().toString()
       const batch = this.$firebase.firestore().batch()
 
-      batch.set(this.ref.collection('samples').doc(this.item.id).collection('histories').doc(id), history)
-      batch.update(this.ref.collection('samples').doc(this.item.id), { currentStock: this.$firebase.firestore.FieldValue.increment(-parseInt(this.stockInOut)) })
+      batch.set(
+        this.ref
+          .collection('samples')
+          .doc(this.item.id)
+          .collection('histories')
+          .doc(id),
+        history,
+      )
+      batch.update(this.ref.collection('samples').doc(this.item.id), {
+        currentStock: this.$firebase.firestore.FieldValue.increment(
+          -parseInt(this.stockInOut),
+        ),
+      })
       // await this.ref.collection('samples').doc(this.item.id).update({
       //   currentStock: this.$firebase.firestore.FieldValue.increment(-this.stockInOut)
       // })
       await batch.commit()
       this.$emit('close')
-    }
-  }
+    },
+  },
 }
 </script>

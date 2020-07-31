@@ -22,46 +22,46 @@ export default {
     minimum: {
       type: Number,
       required: false,
-      default: 0
+      default: 0,
     },
     maximum: {
       type: Number,
       required: false,
-      default: Number.MAX_SAFE_INTEGER
+      default: Number.MAX_SAFE_INTEGER,
     },
     step: {
       type: Number,
       required: false,
-      default: 1
-    }
+      default: 1,
+    },
   },
-  data () {
+  data() {
     return {
       myValue: this.value,
-      myLabel: this.label
+      myLabel: this.label,
     }
   },
-  mounted () {
+  mounted() {
     this.verifyRange()
   },
   methods: {
-    increment () {
+    increment() {
       this.myValue = parseInt(this.myValue, 10) + this.step
       this.updateModel()
     },
-    decrement () {
+    decrement() {
       this.myValue = parseInt(this.myValue, 10) - this.step
       this.updateModel()
     },
-    updateModel () {
+    updateModel() {
       if (this.verifyRange()) {
         this.$emit('input', this.myValue)
       }
     },
-    verifyKeyStrokes: function (evt) {
+    verifyKeyStrokes(evt) {
       // Only allow numbers and the decimal
       evt = evt || window.event
-      var charCode = evt.which ? evt.which : evt.keyCode
+      const charCode = evt.which ? evt.which : evt.keyCode
       if (
         charCode > 31 &&
         (charCode < 48 || charCode > 57) &&
@@ -72,7 +72,7 @@ export default {
         return true
       }
     },
-    verifyRange () {
+    verifyRange() {
       // Fit the number to the range
       // Doesn't emit a v-model 'input' event itself
       if (this.myValue < this.minimum) {
@@ -86,8 +86,8 @@ export default {
       } else {
         return true
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

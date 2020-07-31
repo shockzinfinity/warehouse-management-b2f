@@ -17,32 +17,32 @@
 import { ValidationProvider } from 'vee-validate'
 export default {
   components: {
-    ValidationProvider
+    ValidationProvider,
   },
   props: {
     rules: {
       type: [Object, String],
-      default: ''
+      default: '',
     },
     value: {
-      type: null
-    }
+      type: null,
+    },
   },
   data: () => ({
-    innerValue: ''
+    innerValue: '',
   }),
   watch: {
-    innerValue (newVal) {
+    innerValue(newVal) {
       this.$emit('input', newVal)
     },
-    value (newVal) {
+    value(newVal) {
       this.innerValue = newVal
-    }
+    },
   },
-  created () {
+  created() {
     if (this.value) {
       this.innerValue = this.value
     }
-  }
+  },
 }
 </script>

@@ -57,10 +57,10 @@ export default {
     VTextFieldWithValidation,
     VSelectWithValidation,
     CoverUpload,
-    QRCode
+    QRCode,
   },
   props: ['document'],
-  data () {
+  data() {
     return {
       unsubscribe: null,
       rackCollection: null,
@@ -69,72 +69,89 @@ export default {
         position: '',
         description: '',
         title: '',
-        boxCount: 0
+        boxCount: 0,
       },
       loading: false,
       dialog: false,
       boxToAdd: {
         title: '',
         description: '',
-        parentRackId: ''
+        parentRackId: '',
       },
       comboModel: 'rack-1', // 초기 모델인듯
       rackItems: [],
       search: null,
       storageRef: null,
-      boxCoverUrl: ''
+      boxCoverUrl: '',
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   watch: {
-    document () {
+    document() {
       this.subscribe()
-    }
+    },
   },
-  created () {
+  created() {
     this.subscribe()
     // console.log(this.$route.params.collection)
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
-    if (this.rackCollection) this.rackCollection()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
+    if (this.rackCollection) {
+      this.rackCollection()
+    }
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      const ref = this.$firebase.firestore().collection('racks').doc(this.document)
-      this.storageRef = this.$firebase.storage().ref().child('boxes')
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      const ref = this.$firebase
+        .firestore()
+        .collection('racks')
+        .doc(this.document)
+      this.storageRef = this.$firebase
+        .storage()
+        .ref()
+        .child('boxes')
       this.unsubscribe = ref.onSnapshot(doc => {
-        if (!doc.exists) return this.rackWrite()
+        if (!doc.exists) {
+          return this.rackWrite()
+        }
         this.rackInfo = doc.data()
         // console.log(this.rackInfo)
       })
 
-      this.rackCollection = this.$firebase.firestore().collection('racks').onSnapshot(sn => {
-        if (sn.empty) {
-          this.rackItems = []
-          return
-        }
-        this.rackItems = sn.docs.map(doc => {
-          const item = doc.data()
-          return item.title
+      this.rackCollection = this.$firebase
+        .firestore()
+        .collection('racks')
+        .onSnapshot(sn => {
+          if (sn.empty) {
+            this.rackItems = []
+            return
+          }
+          this.rackItems = sn.docs.map(doc => {
+            const item = doc.data()
+            return item.title
+          })
         })
-      })
     },
-    async rackWrite () {
+    async rackWrite() {
       this.$router.push({ path: this.$route.path + '/rack-write' })
     },
-    openDialog () {
+    openDialog() {
       this.dialog = true
       // console.log('before', this.boxToAdd.boxId)
       this.boxToAdd.boxId = cryptoRandomString({ length: 10 })
       // console.log('after', this.boxToAdd.boxId)
     },
-    async boxSaveDialog () {
+    async boxSaveDialog() {
       this.loading = true
       const validation = await this.$refs.obs.validate()
       if (!validation) {
@@ -153,14 +170,21 @@ export default {
       box.sampleCount = 0
       box.coverUrl = this.boxCoverUrl
 
-      const boxRef = this.$firebase.firestore().collection('boxes').doc(this.boxToAdd.title)
+      const boxRef = this.$firebase
+        .firestore()
+        .collection('boxes')
+        .doc(this.boxToAdd.title)
       // const rackRef = this.$firebase.firestore().collection('racks').doc(this.document)
       // const batch = await this.$firebase.firestore().batch()
 
       try {
         if (!this.boxToAdd.qrcodeUrl) {
           const qr = await this.codeGenration(box.boxId)
-          const qrSn = await this.storageRef.child('qrCodes').child(this.boxToAdd.boxId).child(box.title + '.qr.png').putString(qr, 'data_url')
+          const qrSn = await this.storageRef
+            .child('qrCodes')
+            .child(this.boxToAdd.boxId)
+            .child(box.title + '.qr.png')
+            .putString(qr, 'data_url')
           box.qrcodeUrl = await qrSn.ref.getDownloadURL()
         }
         boxRef.set(box)
@@ -174,13 +198,15 @@ export default {
         this.$refs.boxList.subscribe(0)
       }
     },
-    getDownloadURL (url) {
+    getDownloadURL(url) {
       this.boxCoverUrl = url
     },
-    async codeGenration (boxId) {
-      const qrCodeAddress = 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-' + boxId
+    async codeGenration(boxId) {
+      const qrCodeAddress =
+        'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-' +
+        boxId
       return await QRCode.toDataURL(qrCodeAddress)
-    }
-  }
+    },
+  },
 }
 </script>

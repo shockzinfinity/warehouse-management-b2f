@@ -4,19 +4,19 @@ import authHeader from './auth-header'
 const API_URL = 'http://localhost:8080/api/test/'
 
 class UserService {
-  getPublicContent () {
+  getPublicContent() {
     return axios.get(API_URL + 'all')
   }
 
-  getUserBoard () {
+  getUserBoard() {
     return axios.get(API_URL + 'user', { headers: authHeader() })
   }
 
-  getModeratorBoard () {
+  getModeratorBoard() {
     return axios.get(API_URL + 'mod', { headers: authHeader() })
   }
 
-  getAdminBoard () {
+  getAdminBoard() {
     return axios.get(API_URL + 'admin', { headers: authHeader() })
   }
 }

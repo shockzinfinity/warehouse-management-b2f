@@ -17,14 +17,19 @@ firebase.initializeApp(firebaseConfig)
 // firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 
 let unsubscribe = null
-const subscribe = (fu) => {
-  const ref = firebase.firestore().collection('users').doc(fu.uid)
+const subscribe = fu => {
+  const ref = firebase
+    .firestore()
+    .collection('users')
+    .doc(fu.uid)
   unsubscribe = ref.onSnapshot(doc => {
     if (doc.exists) {
       const user = doc.data()
       store.commit('setUser', user)
       store.commit('setLevel', user.level)
-      if (user.level === 0) store.commit('setIsAdmin', user.level === 0)
+      if (user.level === 0) {
+        store.commit('setIsAdmin', user.level === 0)
+      }
     }
   }, console.error)
 }
@@ -37,7 +42,9 @@ firebase.auth().onAuthStateChanged(fu => {
     store.commit('setIsAdmin', false)
     store.commit('setEdit', false)
     store.commit('setLevel', 9)
-    if (unsubscribe) unsubscribe()
+    if (unsubscribe) {
+      unsubscribe()
+    }
     return
   }
   subscribe(fu)

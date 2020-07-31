@@ -24,22 +24,19 @@ import DisplayComment from '@/components/display-comment'
 
 export default {
   components: {
-    DisplayComment
+    DisplayComment,
   },
   data: () => ({
     feedbackRef: null,
-    commentLength: 0
+    commentLength: 0,
   }),
-  created () {
+  created() {
     // this.subscribe()
   },
   methods: {
-    async subscribe () {
-    }
-  }
+    async subscribe() {},
+  },
 }
 </script>
 
-<style lang="sass" scoped>
-
-</style>
+<style lang="sass" scoped></style>

@@ -32,18 +32,18 @@
 import { head, last } from 'lodash'
 
 export default {
-  data () {
+  data() {
     return {
       headers: [
         { value: 'createdAt', text: '작성일' },
         { value: 'title', text: '제목' },
         { value: 'content', text: '내용' },
-        { value: 'id', text: 'Id', sortable: false }
+        { value: 'id', text: 'Id', sortable: false },
       ],
       items: [],
       form: {
         title: '',
-        content: ''
+        content: '',
       },
       dialog: false,
       selectedItem: null,
@@ -52,80 +52,93 @@ export default {
       serverItemsLength: 0,
       options: {
         sortBy: ['createdAt'],
-        sortDesc: [true]
+        sortDesc: [true],
       },
-      docs: []
+      docs: [],
     }
-  },
-  created () {
-    // this.read()
-  },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
-    if (this.unsubscribeCount) this.unsubscribeCount()
   },
   watch: {
     options: {
-      handler (n, o) {
+      handler(n, o) {
         // console.log('old', o)
         // console.log('new', n)
         const arrow = n.page - o.page
         this.subscribe(arrow)
       },
-      deep: true
+      deep: true,
+    },
+  },
+  created() {
+    // this.read()
+  },
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
+    if (this.unsubscribeCount) {
+      this.unsubscribeCount()
     }
   },
   methods: {
-    subscribe (arrow) {
-      this.unsubscribeCount = this.$firebase.firestore().collection('meta').doc('boards').onSnapshot(doc => {
-        if (!doc.exists) return
-        this.serverItemsLength = doc.data().count
-      })
+    subscribe(arrow) {
+      this.unsubscribeCount = this.$firebase
+        .firestore()
+        .collection('meta')
+        .doc('boards')
+        .onSnapshot(doc => {
+          if (!doc.exists) {
+            return
+          }
+          this.serverItemsLength = doc.data().count
+        })
       const order = head(this.options.sortBy)
       const sort = head(this.options.sortDesc) ? 'desc' : 'asc'
       const limit = this.options.itemsPerPage
 
-      const ref = this.$firebase.firestore().collection('boards').orderBy(order, sort)
+      const ref = this.$firebase
+        .firestore()
+        .collection('boards')
+        .orderBy(order, sort)
 
       let query
       switch (arrow) {
-        case -1: query = ref.endBefore(head(this.docs))
+        case -1:
+          query = ref.endBefore(head(this.docs))
           break
-        case 1: query = ref.startAfter(last(this.docs))
+        case 1:
+          query = ref.startAfter(last(this.docs))
           break
-        default: query = ref
+        default:
+          query = ref
           break
       }
 
       if (limit >= 0) {
         query = query.limit(limit)
-      } else {
-        if (arrow < 0) {
-          query = query.limitToLast(limit)
-        }
+      } else if (arrow < 0) {
+        query = query.limitToLast(limit)
       }
 
-      this.unsubscribe = query
-        .onSnapshot(sn => {
-          if (sn.empty) {
-            this.items = []
-            return
+      this.unsubscribe = query.onSnapshot(sn => {
+        if (sn.empty) {
+          this.items = []
+          return
+        }
+        this.docs = sn.docs
+        // console.log(head(sn.docs).data())
+        // console.log(last(sn.docs).data())
+        this.items = sn.docs.map(v => {
+          const item = v.data()
+          return {
+            id: v.id,
+            title: item.title,
+            content: item.content,
+            createdAt: item.createdAt.toDate(),
           }
-          this.docs = sn.docs
-          // console.log(head(sn.docs).data())
-          // console.log(last(sn.docs).data())
-          this.items = sn.docs.map(v => {
-            const item = v.data()
-            return {
-              id: v.id,
-              title: item.title,
-              content: item.content,
-              createdAt: item.createdAt.toDate()
-            }
-          })
         })
+      })
     },
-    openDialog (item) {
+    openDialog(item) {
       this.selectedItem = item
       this.dialog = true
       if (!item) {
@@ -136,7 +149,7 @@ export default {
         this.form.content = item.content
       }
     },
-    add () {
+    add() {
       const item = { ...this.form }
       item.createdAt = new Date()
 
@@ -146,7 +159,7 @@ export default {
         .add(item)
       this.dialog = false
     },
-    update () {
+    update() {
       this.$firebase
         .firestore()
         .collection('boards')
@@ -154,13 +167,13 @@ export default {
         .update(this.form)
       this.dialog = false
     },
-    remove (item) {
+    remove(item) {
       this.$firebase
         .firestore()
         .collection('boards')
         .doc(item.id)
         .delete()
-    }
-  }
+    },
+  },
 }
 </script>

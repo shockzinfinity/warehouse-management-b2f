@@ -27,43 +27,46 @@ import DisplayUser from '@/components/display-user'
 export default {
   components: {
     DisplayTime,
-    DisplayUser
+    DisplayUser,
     // DisplaySample
   },
   props: {
     info: Object,
-    document: String
+    document: String,
   },
-  data () {
+  data() {
     return {
       headers: [
         { value: 'createdAt', text: '작성일' },
         { value: 'boxId', text: 'boxId' },
         { value: 'title', text: '박스명' },
-        { value: 'user.displayName', text: '등록자' }
+        { value: 'user.displayName', text: '등록자' },
       ],
       items: [],
       unsubscribe: null,
       docs: [],
       options: {
         sortBy: ['createdAt'],
-        sortDesc: [true]
+        sortDesc: [true],
       },
       dialog: false,
-      selectedItem: null
+      selectedItem: null,
     }
   },
   watch: {
-    info () {
+    info() {
       this.subscribe(0)
     },
     options: {
-      handler (n, o) {
+      handler(n, o) {
         if (!o.page) {
           this.subscribe(0)
           return
         }
-        if (head(o.sortBy) !== head(n.sortBy) || head(o.sortDesc) !== head(n.sortDesc)) {
+        if (
+          head(o.sortBy) !== head(n.sortBy) ||
+          head(o.sortDesc) !== head(n.sortDesc)
+        ) {
           n.page = 1
           this.subscribe(0)
           return
@@ -71,38 +74,49 @@ export default {
         const arrow = n.page - o.page
         this.subscribe(arrow)
       },
-      deep: true
+      deep: true,
     },
-    dialog (n, o) {
+    dialog(n, o) {
       if (!n) {
         this.selectedItem = null
       }
-    }
+    },
   },
-  created () {
+  created() {
     // this.subscribe(0)
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe (arrow) {
-      if (!this.info.rackId) return
-      if (this.unsubscribe) this.unsubscribe()
+    subscribe(arrow) {
+      if (!this.info.rackId) {
+        return
+      }
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
 
       const order = head(this.options.sortBy)
       const sort = head(this.options.sortDesc) ? 'desc' : 'asc'
       const limit = this.options.itemsPerPage
       const ref = this.$firebase.firestore().collection('boxes')
-      let query = ref.where('parentRackId', '==', this.info.rackId).orderBy(order, sort)
+      let query = ref
+        .where('parentRackId', '==', this.info.rackId)
+        .orderBy(order, sort)
       // console.log(this.info.rackId)
 
       switch (arrow) {
-        case -1: query = query.endBefore(head(this.docs)).limitToLast(limit)
+        case -1:
+          query = query.endBefore(head(this.docs)).limitToLast(limit)
           break
-        case 1: query = query.startAfter(last(this.docs)).limit(limit)
+        case 1:
+          query = query.startAfter(last(this.docs)).limit(limit)
           break
-        default: query = query.limit(limit)
+        default:
+          query = query.limit(limit)
           break
       }
       this.unsubscribe = query.onSnapshot(sn => {
@@ -120,11 +134,11 @@ export default {
         })
       })
     },
-    openBox (item) {
+    openBox(item) {
       this.selectedItem = item
       // console.log(item)
       this.$router.push('/box/' + item.id)
-    }
-  }
+    },
+  },
 }
 </script>

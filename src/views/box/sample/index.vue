@@ -30,40 +30,43 @@ export default {
   components: {
     DisplayTime,
     DisplayUser,
-    DisplaySample
+    DisplaySample,
   },
   props: ['info', 'document', 'viewSampleId'],
-  data () {
+  data() {
     return {
       headers: [
         { value: 'createdAt', text: '작성일' },
         { value: 'title', text: '샘플명' },
         { value: 'user.displayName', text: '등록자' },
         { value: 'readCount', text: '조회수' },
-        { value: 'commentCount', text: '댓글' }
+        { value: 'commentCount', text: '댓글' },
       ],
       items: [],
       unsubscribe: null,
       docs: [],
       options: {
         sortBy: ['createdAt'],
-        sortDesc: [true]
+        sortDesc: [true],
       },
       dialog: false,
-      selectedItem: null
+      selectedItem: null,
     }
   },
   watch: {
-    document () {
+    document() {
       this.subscribe(0)
     },
     options: {
-      handler (n, o) {
+      handler(n, o) {
         if (!o.page) {
           this.subscribe(0)
           return
         }
-        if (head(o.sortBy) !== head(n.sortBy) || head(o.sortDesc) !== head(n.sortDesc)) {
+        if (
+          head(o.sortBy) !== head(n.sortBy) ||
+          head(o.sortDesc) !== head(n.sortDesc)
+        ) {
           n.page = 1
           this.subscribe(0)
           return
@@ -71,36 +74,48 @@ export default {
         const arrow = n.page - o.page
         this.subscribe(arrow)
       },
-      deep: true
+      deep: true,
     },
-    dialog (n, o) {
+    dialog(n, o) {
       if (!n) {
         this.selectedItem = null
       }
-    }
+    },
   },
-  created () {
+  created() {
     // this.subscribe(0)
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe (arrow) {
-      if (this.unsubscribe) this.unsubscribe()
+    subscribe(arrow) {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
 
       const order = head(this.options.sortBy)
       const sort = head(this.options.sortDesc) ? 'desc' : 'asc'
       const limit = this.options.itemsPerPage
-      const ref = this.$firebase.firestore().collection('boxes').doc(this.document).collection('samples').orderBy(order, sort)
+      const ref = this.$firebase
+        .firestore()
+        .collection('boxes')
+        .doc(this.document)
+        .collection('samples')
+        .orderBy(order, sort)
       let query
 
       switch (arrow) {
-        case -1: query = ref.endBefore(head(this.docs)).limitToLast(limit)
+        case -1:
+          query = ref.endBefore(head(this.docs)).limitToLast(limit)
           break
-        case 1: query = ref.startAfter(last(this.docs)).limit(limit)
+        case 1:
+          query = ref.startAfter(last(this.docs)).limit(limit)
           break
-        default: query = ref.limit(limit)
+        default:
+          query = ref.limit(limit)
           break
       }
       this.unsubscribe = query.onSnapshot(sn => {
@@ -120,10 +135,10 @@ export default {
         // console.log('items', this.items)
       })
     },
-    openDialog (item) {
+    openDialog(item) {
       this.selectedItem = item
       this.dialog = true
-    }
-  }
+    },
+  },
 }
 </script>

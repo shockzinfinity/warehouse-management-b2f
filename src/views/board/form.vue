@@ -16,34 +16,41 @@
 <script>
 export default {
   props: ['document', 'action'],
-  data () {
+  data() {
     return {
       unsubscribe: null,
       form: {
         category: '',
         title: '',
-        description: ''
+        description: '',
       },
       loading: false,
       exists: false,
-      ref: null
+      ref: null,
     }
   },
   watch: {
-    document () {
+    document() {
       this.subscribe()
-    }
+    },
   },
-  created () {
+  created() {
     this.subscribe()
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      this.ref = this.$firebase.firestore().collection('boards').doc(this.document)
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      this.ref = this.$firebase
+        .firestore()
+        .collection('boards')
+        .doc(this.document)
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
@@ -54,13 +61,15 @@ export default {
         }
       })
     },
-    async save () {
-      if (!this.$store.state.fireUser.uid) throw Error('로그인이 필요합니다.')
+    async save() {
+      if (!this.$store.state.fireUser.uid) {
+        throw Error('로그인이 필요합니다.')
+      }
       const form = {
         category: this.form.category,
         title: this.form.title,
         description: this.form.description,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
       this.loading = true
       try {
@@ -76,7 +85,7 @@ export default {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 }
 </script>

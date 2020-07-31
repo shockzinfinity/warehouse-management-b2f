@@ -24,26 +24,28 @@ import DisplayUser from '@/components/display-user'
 const LIMIT = 5
 
 export default {
-  props: ['docRef'],
   components: {
     DisplayTime,
-    DisplayUser
+    DisplayUser,
   },
-  created () {
-    this.subscribe()
-  },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
-  },
-  data () {
+  props: ['docRef'],
+  data() {
     return {
       items: [],
       unsubscribe: null,
-      lastDoc: null
+      lastDoc: null,
+    }
+  },
+  created() {
+    this.subscribe()
+  },
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
     }
   },
   methods: {
-    snToItems (sn) {
+    snToItems(sn) {
       this.lastDoc = last(sn.docs)
 
       sn.docs.forEach(doc => {
@@ -62,21 +64,34 @@ export default {
         return afterId - beforeId
       })
     },
-    async more () {
-      if (!this.lastDoc) throw Error('No more history.')
-      const sn = await this.docRef.collection('histories').orderBy('actionTime', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
+    async more() {
+      if (!this.lastDoc) {
+        throw Error('No more history.')
+      }
+      const sn = await this.docRef
+        .collection('histories')
+        .orderBy('actionTime', 'desc')
+        .startAfter(this.lastDoc)
+        .limit(LIMIT)
+        .get()
       this.snToItems(sn)
     },
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      this.unsubscribe = this.docRef.collection('histories').orderBy('actionTime', 'desc').limit(LIMIT).onSnapshot(sn => {
-        if (sn.empty) {
-          this.items = []
-          return
-        }
-        this.snToItems(sn)
-      })
-    }
-  }
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      this.unsubscribe = this.docRef
+        .collection('histories')
+        .orderBy('actionTime', 'desc')
+        .limit(LIMIT)
+        .onSnapshot(sn => {
+          if (sn.empty) {
+            this.items = []
+            return
+          }
+          this.snToItems(sn)
+        })
+    },
+  },
 }
 </script>

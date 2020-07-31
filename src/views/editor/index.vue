@@ -10,21 +10,21 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       options: {
-        language: 'ko'
+        language: 'ko',
       },
       text: '# abcdefg',
-      toggle: false
+      toggle: false,
     }
   },
   methods: {
-    read () {
+    read() {
       // alert(this.text)
       this.text = this.$refs.editor.invoke('getMarkdown')
       alert(this.text)
-    }
-  }
+    },
+  },
 }
 </script>

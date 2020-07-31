@@ -52,27 +52,27 @@
 import { ValidationObserver, ValidationProvider } from 'vee-validate'
 
 export default {
+  components: {
+    ValidationObserver,
+    ValidationProvider,
+  },
   data: () => ({
     items: ['', 'Foo', 'Bar'],
     name: '',
     email: '',
     select: '',
-    checkbox: ''
+    checkbox: '',
   }),
-  components: {
-    ValidationObserver,
-    ValidationProvider
-  },
   methods: {
-    async clear () {
+    async clear() {
       this.name = this.email = this.select = this.checkbox = ''
       requestAnimationFrame(() => {
         this.$refs.obs.reset()
       })
     },
-    async submit () {
+    async submit() {
       console.log('submitted.')
-    }
-  }
+    },
+  },
 }
 </script>

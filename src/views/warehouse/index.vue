@@ -25,32 +25,44 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       info: {
         title: '',
         description: '',
         address: '',
-        coverUrl: ''
-      }
+        coverUrl: '',
+      },
     }
   },
-  created () {
+  created() {
     this.subscribe()
   },
   methods: {
-    subscribe () {
-      this.$firebase.database().ref().child('warehouseInfo').on('value', sn => {
-        const w = sn.val()
-        if (!w) {
-          this.$firebase.database().ref().child('warehouseInfo').set(this.info)
-          return
-        }
-        this.info = w
-      }, e => {
-        console.log(e.message)
-      })
-    }
-  }
+    subscribe() {
+      this.$firebase
+        .database()
+        .ref()
+        .child('warehouseInfo')
+        .on(
+          'value',
+          sn => {
+            const w = sn.val()
+            if (!w) {
+              this.$firebase
+                .database()
+                .ref()
+                .child('warehouseInfo')
+                .set(this.info)
+              return
+            }
+            this.info = w
+          },
+          e => {
+            console.log(e.message)
+          },
+        )
+    },
+  },
 }
 </script>

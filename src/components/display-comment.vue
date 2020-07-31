@@ -24,28 +24,30 @@ const LIMIT = 5
 export default {
   components: { DisplayTime, DisplayUser },
   props: ['commentCount', 'docRef'],
-  data () {
+  data() {
     return {
       comment: '',
       items: [],
       unsubscribe: null,
-      lastDoc: null
+      lastDoc: null,
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
-  created () {
+  created() {
     this.subscribe()
     // console.log(this.article)
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    snToItems (sn) {
+    snToItems(sn) {
       this.lastDoc = last(sn.docs)
 
       sn.docs.forEach(doc => {
@@ -65,27 +67,42 @@ export default {
         return afterId - beforeId
       })
     },
-    async more () {
-      if (!this.lastDoc) throw Error('No more comments.')
-      const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
+    async more() {
+      if (!this.lastDoc) {
+        throw Error('No more comments.')
+      }
+      const sn = await this.docRef
+        .collection('comments')
+        .orderBy('createdAt', 'desc')
+        .startAfter(this.lastDoc)
+        .limit(LIMIT)
+        .get()
       this.snToItems(sn)
     },
-    async onIntersect (entries, observer, isIntersecting) {
+    async onIntersect(entries, observer, isIntersecting) {
       // console.log(isIntersecting)
-      if (isIntersecting) await this.more()
+      if (isIntersecting) {
+        await this.more()
+      }
     },
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
-        if (sn.empty) {
-          this.items = []
-          return
-        }
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      this.unsubscribe = this.docRef
+        .collection('comments')
+        .orderBy('createdAt', 'desc')
+        .limit(LIMIT)
+        .onSnapshot(sn => {
+          if (sn.empty) {
+            this.items = []
+            return
+          }
 
-        this.snToItems(sn)
-      })
+          this.snToItems(sn)
+        })
     },
-    async save () {
+    async save() {
       const doc = {
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -94,18 +111,21 @@ export default {
         user: {
           email: this.user.email,
           photoURL: this.user.photoURL,
-          displayName: this.user.displayName
-        }
+          displayName: this.user.displayName,
+        },
       }
       const id = doc.createdAt.getTime().toString()
       // const batch = this.$firebase.firestore().batch()
       // batch.update(this.docRef, { commentCount: this.$firebase.firestore.FieldValue.increment(1) })
       // batch.set(this.docRef.collection('comments').doc(id), doc)
       // await batch.commit()
-      this.docRef.collection('comments').doc(id).set(doc)
+      this.docRef
+        .collection('comments')
+        .doc(id)
+        .set(doc)
       this.comment = ''
-    }
-  }
+    },
+  },
 }
 </script>
 

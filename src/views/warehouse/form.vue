@@ -47,9 +47,9 @@ export default {
     ValidationObserver,
     ValidationProvider,
     VTextFieldWithValidation,
-    VSelectWithValidation
+    VSelectWithValidation,
   },
-  data () {
+  data() {
     return {
       loading: false,
       progressUpload: 0,
@@ -63,27 +63,60 @@ export default {
         description: '',
         address: '',
         fileName: '',
-        coverUrl: ''
-      }
+        coverUrl: '',
+      },
     }
   },
+  watch: {
+    uploadTask() {
+      this.uploadTask.on(
+        'state_changed',
+        sp => {
+          this.progressUpload = Math.floor(
+            (sp.bytesTransferred / sp.totalBytes) * 100,
+          )
+        },
+        null,
+        () => {
+          this.uploadTask.snapshot.ref.getDownloadURL().then(url => {
+            this.uploadEnd = true
+            this.downloadURL = url
+            this.$emit('downloadURL', url)
+          })
+        },
+      )
+    },
+  },
+  created() {
+    this.subscribe()
+  },
   methods: {
-    selectFiles () {
+    selectFiles() {
       this.$refs.uploadInput.click()
     },
-    detectFiles (e) {
+    detectFiles(e) {
       const fileList = e.target.files || e.dataTransfer.files
       Array.from(Array(fileList.length).keys()).map(x => {
         this.upload(fileList[x])
       })
     },
-    upload (file) {
+    upload(file) {
       this.fileName = file.name
       this.uploading = true
-      this.uploadTask = this.$firebase.storage().ref().child('warehouseInfo').child(file.name).put(file)
+      this.uploadTask = this.$firebase
+        .storage()
+        .ref()
+        .child('warehouseInfo')
+        .child(file.name)
+        .put(file)
     },
-    deleteImage () {
-      this.$firebase.storage().ref().child('warehouseInfo').child(this.fileName).delete()
+    deleteImage() {
+      this.$firebase
+        .storage()
+        .ref()
+        .child('warehouseInfo')
+        .child(this.fileName)
+        .delete()
         .then(() => {
           this.uploading = false
           this.uploadEnd = false
@@ -95,61 +128,65 @@ export default {
         })
       this.$refs.form.reset()
     },
-    subscribe () {
-      this.$firebase.database().ref().child('warehouseInfo').on('value', sn => {
-        const w = sn.val()
-        if (!w) {
-          this.$firebase.database().ref().child('warehouseInfo').set(this.info)
-          return
-        }
-        this.info = w
-      }, e => {
-        console.log(e.message)
-      })
+    subscribe() {
+      this.$firebase
+        .database()
+        .ref()
+        .child('warehouseInfo')
+        .on(
+          'value',
+          sn => {
+            const w = sn.val()
+            if (!w) {
+              this.$firebase
+                .database()
+                .ref()
+                .child('warehouseInfo')
+                .set(this.info)
+              return
+            }
+            this.info = w
+          },
+          e => {
+            console.log(e.message)
+          },
+        )
     },
-    async save () {
+    async save() {
       // console.log('save')
       try {
         this.loading = true
 
         if (this.info.fileName) {
-          this.$firebase.storage().ref().child('warehouseInfo').child(this.info.fileName).delete()
-            .then(() => {
-            })
+          this.$firebase
+            .storage()
+            .ref()
+            .child('warehouseInfo')
+            .child(this.info.fileName)
+            .delete()
+            .then(() => {})
             .catch(e => {
               throw Error(e)
             })
         }
         this.info.coverUrl = this.downloadURL
         this.info.fileName = this.fileName
-        
-        await this.$firebase.database().ref().child('warehouseInfo').set(this.info)
+
+        await this.$firebase
+          .database()
+          .ref()
+          .child('warehouseInfo')
+          .set(this.info)
       } finally {
         this.loading = false
         this.$router.push('/warehouse')
       }
     },
-    async test () {
+    async test() {
       const result = await this.$refs.obs.validate()
       console.log(result)
-    }
+    },
   },
-  created () {
-    this.subscribe()
-  },
-  watch: {
-    uploadTask () {
-      this.uploadTask.on('state_changed', sp => {
-        this.progressUpload = Math.floor(sp.bytesTransferred / sp.totalBytes * 100)
-      }, null, () => {
-        this.uploadTask.snapshot.ref.getDownloadURL().then(url => {
-          this.uploadEnd = true
-          this.downloadURL = url
-          this.$emit('downloadURL', url)
-        })
-      })
-    }
-  }
 }
 </script>
 

@@ -33,10 +33,10 @@ export default {
     VTextFieldWithValidation,
     VSelectWithValidation,
     QRCode,
-    CoverUpload
+    CoverUpload,
   },
   props: ['document', 'action'],
-  data () {
+  data() {
     return {
       unsubscribe: null,
       form: {
@@ -44,31 +44,42 @@ export default {
         description: '',
         title: '',
         coverUrl: '',
-        qrcodeUrl: ''
+        qrcodeUrl: '',
       },
       loading: false,
       exists: false,
       ref: null,
       storageRef: null,
-      rackCoverUrl: ''
+      rackCoverUrl: '',
     }
   },
   watch: {
-    document () {
+    document() {
       this.subscribe()
-    }
+    },
   },
-  created () {
+  created() {
     this.subscribe()
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      this.ref = this.$firebase.firestore().collection('racks').doc(this.document)
-      this.storageRef = this.$firebase.storage().ref().child('racks').child(this.document)
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      this.ref = this.$firebase
+        .firestore()
+        .collection('racks')
+        .doc(this.document)
+      this.storageRef = this.$firebase
+        .storage()
+        .ref()
+        .child('racks')
+        .child(this.document)
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
@@ -82,10 +93,14 @@ export default {
         }
       })
     },
-    async save () {
-      if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다.')
+    async save() {
+      if (!this.$store.state.fireUser) {
+        throw Error('로그인이 필요합니다.')
+      }
       const validation = await this.$refs.obs.validate()
-      if (!validation) return
+      if (!validation) {
+        return
+      }
 
       const form = {
         rackId: this.form.rackId,
@@ -93,8 +108,11 @@ export default {
         title: this.form.title,
         description: this.form.description,
         updatedAt: new Date(),
-        coverUrl: this.rackCoverUrl !== this.form.coverUrl && this.rackCoverUrl ? this.rackCoverUrl : this.form.coverUrl,
-        qrcodeUrl: this.form.qrcodeUrl
+        coverUrl:
+          this.rackCoverUrl !== this.form.coverUrl && this.rackCoverUrl
+            ? this.rackCoverUrl
+            : this.form.coverUrl,
+        qrcodeUrl: this.form.qrcodeUrl,
       }
       this.loading = true
 
@@ -109,7 +127,9 @@ export default {
 
           if (!form.qrcodeUrl) {
             const qr = await this.codeGenration(form.rackId)
-            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            const qrSn = await this.storageRef
+              .child(this.document + '.qr.png')
+              .putString(qr, 'data_url')
             form.qrcodeUrl = await qrSn.ref.getDownloadURL()
           }
 
@@ -117,7 +137,9 @@ export default {
         } else {
           if (!this.form.qrcodeUrl) {
             const qr = await this.codeGenration(form.rackId)
-            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            const qrSn = await this.storageRef
+              .child(this.document + '.qr.png')
+              .putString(qr, 'data_url')
             form.qrcodeUrl = await qrSn.ref.getDownloadURL()
           }
 
@@ -131,14 +153,16 @@ export default {
         this.loading = false
       }
     },
-    getDownloadURL (url) {
+    getDownloadURL(url) {
       this.rackCoverUrl = url
     },
-    async codeGenration (rackId) {
-      const qrCodeAddress = 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=rk-' + rackId
+    async codeGenration(rackId) {
+      const qrCodeAddress =
+        'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=rk-' +
+        rackId
       return await QRCode.toDataURL(qrCodeAddress)
-    }
-  }
+    },
+  },
 }
 </script>
 

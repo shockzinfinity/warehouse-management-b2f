@@ -12,11 +12,10 @@ const requireAuth = () => (to, from, next) => {
     } else {
       next({
         path: '/auth',
-        query: { redirect: to.fullPath }
+        query: { redirect: to.fullPath },
       })
     }
   } finally {
-  
   }
 }
 
@@ -24,7 +23,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
   },
   {
     path: '/about',
@@ -32,8 +31,9 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-    beforeEnter: requireAuth()
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/About.vue'),
+    beforeEnter: requireAuth(),
   },
   {
     path: '/warehouse',
@@ -41,7 +41,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (warehouse.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "warehouse" */ '../views/warehouse/')
+    component: () =>
+      import(/* webpackChunkName: "warehouse" */ '../views/warehouse/'),
   },
   {
     path: '/board',
@@ -49,7 +50,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (board.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "board" */ '../views/board/')
+    component: () => import(/* webpackChunkName: "board" */ '../views/board/'),
   },
   {
     path: '/storage',
@@ -57,7 +58,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (storage.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "storage" */ '../views/storage/')
+    component: () =>
+      import(/* webpackChunkName: "storage" */ '../views/storage/'),
   },
   {
     path: '/editor',
@@ -65,7 +67,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (editor.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "editor" */ '../views/editor/')
+    component: () =>
+      import(/* webpackChunkName: "editor" */ '../views/editor/'),
   },
   {
     path: '/qrcode',
@@ -73,7 +76,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (qrcode.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "qrcode" */ '../views/qrcode/')
+    component: () =>
+      import(/* webpackChunkName: "qrcode" */ '../views/qrcode/'),
   },
   {
     path: '/uploadtest',
@@ -81,7 +85,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (uploadtest.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "uploadtest" */ '../views/uploadtest/')
+    component: () =>
+      import(/* webpackChunkName: "uploadtest" */ '../views/uploadtest/'),
   },
   {
     path: '/uploadtest2',
@@ -89,7 +94,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (uploadtest2.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "uploadtest2" */ '../views/uploadtest/test2')
+    component: () =>
+      import(/* webpackChunkName: "uploadtest2" */ '../views/uploadtest/test2'),
   },
   {
     path: '/form-validation',
@@ -97,7 +103,10 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (form-validation.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "form-validation" */ '../views/form-validation/')
+    component: () =>
+      import(
+        /* webpackChunkName: "form-validation" */ '../views/form-validation/'
+      ),
   },
   {
     path: '/confirm',
@@ -105,7 +114,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (confirm.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "confirm" */ '../views/confirm')
+    component: () =>
+      import(/* webpackChunkName: "confirm" */ '../views/confirm'),
   },
   {
     path: '/:collection/:document',
@@ -113,7 +123,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (collection-document.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "collection-document" */ '../views/renderer')
+    component: () =>
+      import(/* webpackChunkName: "collection-document" */ '../views/renderer'),
   },
   {
     path: '/:collection/:document/:action',
@@ -121,7 +132,10 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (collection-document-action.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "collection-document-action" */ '../views/renderer')
+    component: () =>
+      import(
+        /* webpackChunkName: "collection-document-action" */ '../views/renderer'
+      ),
   },
   {
     path: '/auth',
@@ -129,7 +143,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (auth.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "auth" */ '../views/auth/')
+    component: () => import(/* webpackChunkName: "auth" */ '../views/auth/'),
   },
   {
     path: '*',
@@ -137,14 +151,14 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (404.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "404" */ '../views/404')
-  }
+    component: () => import(/* webpackChunkName: "404" */ '../views/404'),
+  },
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes,
 })
 
 export default router

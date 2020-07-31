@@ -70,25 +70,29 @@ export default {
       { title: 'Home', href: '/', icon: 'mdi-home-outline' },
       { title: 'Detections', href: '/detections', icon: 'mdi-shield-account' },
       { title: 'Components', href: '/comp', icon: 'mdi-palette-swatch' },
-      { title: 'Customers', href: '/customers', icon: 'mdi-account-search-outline' },
+      {
+        title: 'Customers',
+        href: '/customers',
+        icon: 'mdi-account-search-outline',
+      },
       { title: 'Orders', href: '/orders', icon: 'mdi-bus-clock' },
-      { title: 'Settings', href: '/settings', icon: 'mdi-settings-outline' }
+      { title: 'Settings', href: '/settings', icon: 'mdi-settings-outline' },
     ],
-    sparklineData: [423, 446, 675, 510, 590, 610, 423]
+    sparklineData: [423, 446, 675, 510, 590, 610, 423],
   }),
   computed: {
-    mini () {
-      return (this.$vuetify.breakpoint.smAndDown) || this.toggleMini
+    mini() {
+      return this.$vuetify.breakpoint.smAndDown || this.toggleMini
     },
-    buttonText () {
+    buttonText() {
       return !this.$vuetify.theme.dark ? 'Go Dark' : 'Go Light'
-    }
+    },
   },
   methods: {
-    toggleTheme () {
+    toggleTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -132,5 +136,4 @@ export default {
 
 .theme--dark.v-application ::-webkit-scrollbar-thumb:hover
   background: white
-
 </style>

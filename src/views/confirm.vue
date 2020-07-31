@@ -15,38 +15,37 @@
 import axios from 'axios'
 
 export default {
-  components: {
-  },
-  computed: {
-    qrCode () {
-      return this.$route.query.qc
-    },
-    type () {
-      return this.qrCode.split('-')[0]
-    },
-    code () {
-      return this.qrCode.split('-')[1]
-    }
-  },
-  created () {
-    // console.log(this.qrcode)
-    // this.checkCode()
-  },
-  data () {
+  components: {},
+  data() {
     return {
       title: '',
       sampleId: '',
       sampleUrl: '',
       sampleContent: '',
       boxInfo: null,
-      sampleInfo: null
+      sampleInfo: null,
     }
   },
-  mounted () {
+  computed: {
+    qrCode() {
+      return this.$route.query.qc
+    },
+    type() {
+      return this.qrCode.split('-')[0]
+    },
+    code() {
+      return this.qrCode.split('-')[1]
+    },
+  },
+  created() {
+    // console.log(this.qrcode)
+    // this.checkCode()
+  },
+  mounted() {
     this.checkCode()
   },
   methods: {
-    routeCode () {
+    routeCode() {
       let rt
       if (this.title) {
         switch (this.type) {
@@ -66,37 +65,55 @@ export default {
       if (this.type !== 'sp') {
         this.$router.replace(rt + this.title)
       } else {
-        this.$router.replace({ path: '/box/' + this.title, query: { sampleId: this.sampleId } })
+        this.$router.replace({
+          path: '/box/' + this.title,
+          query: { sampleId: this.sampleId },
+        })
       }
     },
-    async checkCode () {
+    async checkCode() {
       let ref
       let tempRef
       // TODO: regex 이용
       // bx-1364ab1e82
       switch (this.type) {
         case 'rk':
-          ref = this.$firebase.firestore().collection('racks').where('rackId', '==', this.code)
+          ref = this.$firebase
+            .firestore()
+            .collection('racks')
+            .where('rackId', '==', this.code)
           break
         case 'bx':
-          ref = this.$firebase.firestore().collection('boxes').where('boxId', '==', this.code)
+          ref = this.$firebase
+            .firestore()
+            .collection('boxes')
+            .where('boxId', '==', this.code)
           break
         case 'sp':
           var boxId = this.code.substr(0, 10)
           // console.log(boxId)
           this.sampleId = this.code.substr(10, this.code.length - 10)
-          tempRef = this.$firebase.firestore().collection('boxes').where('boxId', '==', boxId)
+          tempRef = this.$firebase
+            .firestore()
+            .collection('boxes')
+            .where('boxId', '==', boxId)
           var box = await tempRef.get()
           if (!box.empty) {
             this.title = box.docs[0].id
             // console.log(boxTitle)
             // console.log(this.title)
             this.boxInfo = box.docs[0].data()
-            ref = this.$firebase.firestore().collection('boxes').doc(this.title).collection('samples').doc(this.sampleId)
+            ref = this.$firebase
+              .firestore()
+              .collection('boxes')
+              .doc(this.title)
+              .collection('samples')
+              .doc(this.sampleId)
           }
 
           break
-        default: // 404
+        default:
+          // 404
           // this.exists = false
           throw Error('Not exists.')
       }
@@ -117,19 +134,19 @@ export default {
 
         if (!temp.empty) {
           this.title = temp.docs[0].id
-        // console.log('id', temp.docs[0].id)
-        // console.log('tempt', temp.docs[0].data())
-        // console.log(this.title)
+          // console.log('id', temp.docs[0].id)
+          // console.log('tempt', temp.docs[0].data())
+          // console.log(this.title)
         }
 
         this.routeCode()
       }
     },
-    routeToBox () {
+    routeToBox() {
       if (this.type === 'sp') {
         this.$router.replace({ path: '/box/' + this.title })
       }
-    }
-  }
+    },
+  },
 }
 </script>

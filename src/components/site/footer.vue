@@ -17,31 +17,35 @@
 <script>
 export default {
   props: ['footer'],
-  data () {
+  data() {
     return {
       dialog: false,
-      text: ''
+      text: '',
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   methods: {
-    openDialog () {
+    openDialog() {
       this.dialog = true
       this.text = this.footer
     },
-    async save () {
+    async save() {
       try {
-        await this.$firebase.database().ref().child('site').update({
-          footer: this.text
-        })
+        await this.$firebase
+          .database()
+          .ref()
+          .child('site')
+          .update({
+            footer: this.text,
+          })
       } finally {
         this.dialog = false
       }
-    }
-  }
+    },
+  },
 }
 </script>

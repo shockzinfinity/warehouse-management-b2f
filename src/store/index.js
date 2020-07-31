@@ -12,39 +12,41 @@ export default new Vuex.Store({
     user: null,
     isAdmin: false,
     userLevel: 9,
-    token: ''
+    token: '',
   }),
   getters: {
-    isLogged: (state) => {
+    isLogged: state => {
       return state.fireUser !== null
-    }
+    },
   },
   mutations: {
-    setEdit (state, edit) {
-      if (state.isAdmin) state.editable = edit // admin 만 가능
+    setEdit(state, edit) {
+      if (state.isAdmin) {
+        state.editable = edit
+      } // admin 만 가능
     },
-    setFireUser (state, fu) {
+    setFireUser(state, fu) {
       state.fireUser = fu
     },
-    setUser (state, user) {
+    setUser(state, user) {
       state.user = user
     },
-    setIsAdmin (state, isAdmin) {
+    setIsAdmin(state, isAdmin) {
       state.isAdmin = isAdmin
     },
-    setLevel (state, level) {
+    setLevel(state, level) {
       state.userLevel = level
     },
-    setToken (state, token) {
+    setToken(state, token) {
       state.token = 'Bearer ' + token
-    }
+    },
   },
   actions: {
-    setFireUser ({ commit }, payload) {
+    setFireUser({ commit }, payload) {
       commit('setFireUser', payload)
-    }
+    },
   },
   modules: {
     // auth
-  }
+  },
 })

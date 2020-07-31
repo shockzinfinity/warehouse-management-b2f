@@ -43,21 +43,25 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       racks: [],
-      unsubscribe: null
+      unsubscribe: null,
     }
   },
-  created () {
+  created() {
     this.subscribe()
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
       const ref = this.$firebase.firestore().collection('racks')
       this.unsubscribe = ref.onSnapshot(sn => {
         if (sn.empty) {
@@ -73,18 +77,16 @@ export default {
         })
       })
     },
-    rackWrite () {
-
-    },
-    rackLink (rack) {
+    rackWrite() {},
+    rackLink(rack) {
       this.$router.push('/rack/' + rack.title)
     },
-    ellipseContent (txt, length) {
+    ellipseContent(txt, length) {
       const ellipseText =
         txt.length < length ? txt : txt.slice(0, length) + '...'
 
       return ellipseText
-    }
-  }
+    },
+  },
 }
 </script>

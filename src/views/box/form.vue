@@ -34,13 +34,13 @@ export default {
     VTextFieldWithValidation,
     VSelectWithValidation,
     QRCode,
-    CoverUpload
+    CoverUpload,
   },
   props: {
     document: String,
-    action: String
+    action: String,
   },
-  data () {
+  data() {
     return {
       unsubscribe: null,
       form: {
@@ -48,41 +48,49 @@ export default {
         description: '',
         title: '',
         sampleCount: 0,
-        coverUrl: ''
+        coverUrl: '',
       },
       loading: false,
       exists: false,
       ref: null,
       boxCoverUrl: '',
-      storageRef: null
+      storageRef: null,
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   watch: {
-    document () {
+    document() {
       this.subscribe()
-    }
+    },
   },
-  created () {
+  created() {
     this.subscribe()
     // console.log(this.parentRackId)
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
 
       this.ref = this.$firebase
         .firestore()
         .collection('boxes')
         .doc(this.document)
-      this.storageRef = this.$firebase.storage().ref().child('boxes').child(this.document)
+      this.storageRef = this.$firebase
+        .storage()
+        .ref()
+        .child('boxes')
+        .child(this.document)
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
@@ -96,24 +104,31 @@ export default {
         }
       })
     },
-    goBack () {
+    goBack() {
       this.$router.push('/box/' + this.document)
     },
-    async save () {
-      if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다.')
+    async save() {
+      if (!this.$store.state.fireUser) {
+        throw Error('로그인이 필요합니다.')
+      }
       const form = {
         parentRackId: this.form.parentRackId,
         boxId: this.form.boxId,
         title: this.form.title,
         description: this.form.description,
         updatedAt: new Date(),
-        coverUrl: this.form.coverUrl !== this.boxCoverUrl && this.boxCoverUrl ? this.boxCoverUrl : this.form.coverUrl,
-        qrcodeUrl: this.form.qrcodeUrl
+        coverUrl:
+          this.form.coverUrl !== this.boxCoverUrl && this.boxCoverUrl
+            ? this.boxCoverUrl
+            : this.form.coverUrl,
+        qrcodeUrl: this.form.qrcodeUrl,
       }
       this.loading = true
 
       try {
-        if (!this.form.parentRackId) return
+        if (!this.form.parentRackId) {
+          return
+        }
         // const batch = await this.$firebase.firestore().batch()
         // let parentRackTitle
         // await this.$firebase
@@ -145,12 +160,14 @@ export default {
             uid: this.$store.state.fireUser.uid,
             email: this.user.email,
             photoURL: this.user.photoURL,
-            displayName: this.user.displayName
+            displayName: this.user.displayName,
           }
 
           if (!form.qrcodeUrl) {
             const qr = await this.codeGenration(form.boxId)
-            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            const qrSn = await this.storageRef
+              .child(this.document + '.qr.png')
+              .putString(qr, 'data_url')
             form.qrcodeUrl = await qrSn.ref.getDownloadURL()
           }
 
@@ -166,7 +183,9 @@ export default {
         } else {
           if (!form.qrcodeUrl) {
             const qr = await this.codeGenration(form.boxId)
-            const qrSn = await this.storageRef.child(this.document + '.qr.png').putString(qr, 'data_url')
+            const qrSn = await this.storageRef
+              .child(this.document + '.qr.png')
+              .putString(qr, 'data_url')
             form.qrcodeUrl = await qrSn.ref.getDownloadURL()
           }
 
@@ -179,14 +198,16 @@ export default {
         this.goBack()
       }
     },
-    getDownloadURL (url) {
+    getDownloadURL(url) {
       this.boxCoverUrl = url
     },
-    async codeGenration (boxId) {
-      const qrCodeAddress = 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-' + boxId
+    async codeGenration(boxId) {
+      const qrCodeAddress =
+        'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-' +
+        boxId
       return await QRCode.toDataURL(qrCodeAddress)
-    }
-  }
+    },
+  },
 }
 </script>
 

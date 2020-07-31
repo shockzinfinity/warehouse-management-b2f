@@ -28,15 +28,15 @@ import VSelectWithValidation from '@/components/inputs/VSelectWithValidation'
 import QRCode from 'qrcode'
 
 export default {
-  props: ['document', 'action'],
   components: {
     ValidationObserver,
     ValidationProvider,
     VTextFieldWithValidation,
     VSelectWithValidation,
-    QRCode
+    QRCode,
   },
-  data () {
+  props: ['document', 'action'],
+  data() {
     return {
       unsubscribe: null,
       form: {
@@ -44,45 +44,50 @@ export default {
         title: '',
         content: '',
         currentStock: 0,
-        qrcodeUrl: ''
+        qrcodeUrl: '',
       },
       loading: false,
       exists: false,
       ref: null,
       parentRackId: '',
-      storageRef: null
+      storageRef: null,
     }
   },
   computed: {
-    sampleId () {
+    sampleId() {
       return this.$route.query.sampleId
     },
-    boxId () {
+    boxId() {
       return this.$route.query.boxId
     },
-    user () {
+    user() {
       return this.$store.state.user
-    }
-  },
-  mounted () {
-    this.form.parentBoxId = this.boxId
+    },
   },
   watch: {
-    document () {
+    document() {
       // console.log(this.document)
       // console.log(this.action)
       this.subscribe()
-    }
+    },
   },
-  created () {
+  mounted() {
+    this.form.parentBoxId = this.boxId
+  },
+  created() {
     this.fetch()
-    this.storageRef = this.$firebase.storage().ref().child('samples')
+    this.storageRef = this.$firebase
+      .storage()
+      .ref()
+      .child('samples')
   },
-  destroyed () {
-  },
+  destroyed() {},
   methods: {
-    async fetch () {
-      this.ref = this.$firebase.firestore().collection('boxes').doc(this.document)
+    async fetch() {
+      this.ref = this.$firebase
+        .firestore()
+        .collection('boxes')
+        .doc(this.document)
 
       this.ref.get().then(doc => {
         if (!doc.empty) {
@@ -93,10 +98,17 @@ export default {
         }
       })
 
-      if (!this.sampleId) return
-      const doc = await this.ref.collection('samples').doc(this.sampleId).get()
+      if (!this.sampleId) {
+        return
+      }
+      const doc = await this.ref
+        .collection('samples')
+        .doc(this.sampleId)
+        .get()
       this.exists = doc.exists
-      if (!this.exists) return
+      if (!this.exists) {
+        return
+      }
       const item = doc.data()
       this.form.title = item.title
       this.form.currentStock = item.currentStock
@@ -105,24 +117,33 @@ export default {
       this.form.content = data
       // console.log(this.form.content)
     },
-    async save () {
+    async save() {
       this.loading = true
       try {
         const createdAt = new Date()
         const id = createdAt.getTime().toString()
         // console.log(this.$refs.editor)
         let md
-        if (this.exists) md = this.$refs.editor2.invoke('getMarkdown')
-        else md = this.$refs.editor.invoke('getMarkdown')
+        if (this.exists) {
+          md = this.$refs.editor2.invoke('getMarkdown')
+        } else {
+          md = this.$refs.editor.invoke('getMarkdown')
+        }
         // const md = this.$refs.editor.invoke('getMarkdown')
-        const sn = await this.$firebase.storage().ref().child('boxes').child(this.document).child(id + '.md').putString(md)
+        const sn = await this.$firebase
+          .storage()
+          .ref()
+          .child('boxes')
+          .child(this.document)
+          .child(id + '.md')
+          .putString(md)
         const url = await sn.ref.getDownloadURL()
         const doc = {
           title: this.form.title,
           updatedAt: createdAt,
           url,
           qrcodeUrl: this.form.qrcodeUrl,
-          currentStock: this.form.currentStock
+          currentStock: this.form.currentStock,
         }
 
         // let rackTitle
@@ -144,17 +165,24 @@ export default {
           doc.user = {
             email: this.user.email,
             photoURL: this.user.photoURL,
-            displayName: this.user.displayName
+            displayName: this.user.displayName,
           }
 
           if (!doc.qrcodeUrl) {
             const qr = await this.codeGenration(this.form.parentBoxId, id)
-            const qrSn = await this.storageRef.child('qrCodes').child(id).child(doc.title + '.qr.png').putString(qr, 'data_url')
+            const qrSn = await this.storageRef
+              .child('qrCodes')
+              .child(id)
+              .child(doc.title + '.qr.png')
+              .putString(qr, 'data_url')
             doc.qrcodeUrl = await qrSn.ref.getDownloadURL()
             // console.log(doc.qrcodeUrl)
           }
 
-          this.ref.collection('samples').doc(id).set(doc)
+          this.ref
+            .collection('samples')
+            .doc(id)
+            .set(doc)
           // batch.set(this.ref.collection('samples').doc(id), doc)
           // batch.update(this.ref, { sampleCount: this.$firebase.firestore.FieldValue.increment(1) })
 
@@ -164,13 +192,23 @@ export default {
           // }
         } else {
           if (!doc.qrcodeUrl) {
-            const qr = await this.codeGenration(this.form.parentBoxId, this.sampleId)
-            const qrSn = await this.storageRef.child('qrCodes').child(this.sampleId).child(doc.title + '.qr.png').putString(qr, 'data_url')
+            const qr = await this.codeGenration(
+              this.form.parentBoxId,
+              this.sampleId,
+            )
+            const qrSn = await this.storageRef
+              .child('qrCodes')
+              .child(this.sampleId)
+              .child(doc.title + '.qr.png')
+              .putString(qr, 'data_url')
             doc.qrcodeUrl = await qrSn.ref.getDownloadURL()
             // console.log(doc.qrcodeUrl)
           }
 
-          this.ref.collection('samples').doc(this.sampleId).update(doc)
+          this.ref
+            .collection('samples')
+            .doc(this.sampleId)
+            .update(doc)
           // batch.update(this.ref.collection('samples').doc(this.sampleId), doc)
         }
 
@@ -180,10 +218,13 @@ export default {
         this.$router.push('/box/' + this.document)
       }
     },
-    async codeGenration (boxId, sampleId) {
-      const qrCodeAddress = 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=sp-' + boxId + sampleId
+    async codeGenration(boxId, sampleId) {
+      const qrCodeAddress =
+        'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=sp-' +
+        boxId +
+        sampleId
       return await QRCode.toDataURL(qrCodeAddress)
-    }
-  }
+    },
+  },
 }
 </script>

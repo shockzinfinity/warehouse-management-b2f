@@ -9,15 +9,15 @@ Vue.use(Vuetify, {
   components: {
     VSnackbar,
     VBtn,
-    VIcon
-  }
+    VIcon,
+  },
 })
 
 const VuetifyObj = new Vuetify({
   lang: {
     locales: { en, ko },
-    current: 'ko'
-  }
+    current: 'ko',
+  },
 })
 Vue.use(VuetifyToast, {
   x: 'right', // default
@@ -25,9 +25,7 @@ Vue.use(VuetifyToast, {
   color: 'info', // default
   icon: 'mdi-information',
   iconColor: '', // default
-  classes: [
-    'body-2'
-  ],
+  classes: ['body-2'],
   timeout: 3000, // default
   dismissable: true, // default
   multiLine: false, // default
@@ -40,11 +38,11 @@ Vue.use(VuetifyToast, {
   slot: [], // default
   shorts: {
     custom: {
-      color: 'purple'
-    }
+      color: 'purple',
+    },
   },
   property: '$toast', // default
-  $vuetify: VuetifyObj.framework
+  $vuetify: VuetifyObj.framework,
 })
 
 // export default new Vuetify({

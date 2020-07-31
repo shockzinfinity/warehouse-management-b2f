@@ -15,66 +15,84 @@
 <script>
 export default {
   props: ['document', 'action'],
-  data () {
+  data() {
     return {
       unsubscribe: null,
       form: {
         title: '',
-        content: ''
+        content: '',
       },
       loading: false,
       exists: false,
-      ref: null
+      ref: null,
     }
   },
   computed: {
-    articleId () {
+    articleId() {
       return this.$route.query.articleId
     },
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   watch: {
-    document () {
+    document() {
       this.subscribe()
-    }
+    },
   },
-  created () {
+  created() {
     this.subscribe()
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe () {
+    subscribe() {
       console.log(this.articleId)
-      this.ref = this.$firebase.firestore().collection('boards').doc(this.document)
+      this.ref = this.$firebase
+        .firestore()
+        .collection('boards')
+        .doc(this.document)
 
       // if (this.articleId === 'new') return
-      if (!this.articleId) return
+      if (!this.articleId) {
+        return
+      }
 
-      if (this.unsubscribe) this.unsubscribe()
-      this.unsubscribe = this.ref.collection('articles').doc(this.articleId).onSnapshot(doc => {
-        this.exists = doc.exists
-        if (this.exists) {
-          const item = doc.data()
-          this.form.title = item.title
-        }
-      })
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      this.unsubscribe = this.ref
+        .collection('articles')
+        .doc(this.articleId)
+        .onSnapshot(doc => {
+          this.exists = doc.exists
+          if (this.exists) {
+            const item = doc.data()
+            this.form.title = item.title
+          }
+        })
     },
-    async save () {
+    async save() {
       this.loading = true
       try {
         const createdAt = new Date() // primary key
         const id = createdAt.getTime().toString()
         const md = this.$refs.editor.invoke('getMarkdown') // to storage
-        const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(id + '.md').putString(md)
+        const sn = await this.$firebase
+          .storage()
+          .ref()
+          .child('boards')
+          .child(this.document)
+          .child(id + '.md')
+          .putString(md)
         const url = await sn.ref.getDownloadURL()
         const doc = {
           title: this.form.title,
           updatedAt: createdAt,
-          url
+          url,
         }
 
         // 한 트랜잭션으로 묶기 (article 과 count)
@@ -89,11 +107,13 @@ export default {
           doc.user = {
             email: this.user.email,
             photoURL: this.user.photoURL,
-            displayName: this.user.displayName
+            displayName: this.user.displayName,
           }
           // 컬렉션 생성 및 카운트 증가
           batch.set(this.ref.collection('articles').doc(id), doc)
-          batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(1) })
+          batch.update(this.ref, {
+            count: this.$firebase.firestore.FieldValue.increment(1),
+          })
         } else {
           // update
           batch.update(this.ref.collection('articles').doc(this.articleId), doc)
@@ -104,7 +124,7 @@ export default {
         this.loading = false
         this.$router.push('/board/' + this.document)
       }
-    }
-  }
+    },
+  },
 }
 </script>

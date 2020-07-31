@@ -33,33 +33,63 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       progressUpload: 0,
       fileName: '',
       uploadTask: '',
       uploading: false,
       uploadEnd: false,
-      downloadURL: ''
+      downloadURL: '',
     }
   },
+  watch: {
+    uploadTask() {
+      this.uploadTask.on(
+        'state_changed',
+        sp => {
+          this.progressUpload = Math.floor(
+            (sp.bytesTransferred / sp.totalBytes) * 100,
+          )
+        },
+        null,
+        () => {
+          this.uploadTask.snapshot.ref.getDownloadURL().then(url => {
+            this.uploadEnd = true
+            this.downloadURL = url
+            this.$emit('downloadURL', url)
+          })
+        },
+      )
+    },
+  },
   methods: {
-    selectFiles () {
+    selectFiles() {
       this.$refs.uploadInput.click()
     },
-    detectFiles (e) {
+    detectFiles(e) {
       const fileList = e.target.files || e.dataTransfer.files
       Array.from(Array(fileList.length).keys()).map(x => {
         this.upload(fileList[x])
       })
     },
-    upload (file) {
+    upload(file) {
       this.fileName = file.name
       this.uploading = true
-      this.uploadTask = this.$firebase.storage().ref().child('uploadTest').child(file.name).put(file)
+      this.uploadTask = this.$firebase
+        .storage()
+        .ref()
+        .child('uploadTest')
+        .child(file.name)
+        .put(file)
     },
-    deleteImage () {
-      this.$firebase.storage().ref().child('uploadTest').child(this.fileName).delete()
+    deleteImage() {
+      this.$firebase
+        .storage()
+        .ref()
+        .child('uploadTest')
+        .child(this.fileName)
+        .delete()
         .then(() => {
           this.uploading = false
           this.uploadEnd = false
@@ -69,21 +99,8 @@ export default {
           console.error(e)
         })
       this.$refs.form.reset()
-    }
+    },
   },
-  watch: {
-    uploadTask: function () {
-      this.uploadTask.on('state_changed', sp => {
-        this.progressUpload = Math.floor(sp.bytesTransferred / sp.totalBytes * 100)
-      }, null, () => {
-        this.uploadTask.snapshot.ref.getDownloadURL().then(url => {
-          this.uploadEnd = true
-          this.downloadURL = url
-          this.$emit('downloadURL', url)
-        })
-      })
-    }
-  }
 }
 </script>
 

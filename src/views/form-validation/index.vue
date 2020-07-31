@@ -13,7 +13,7 @@ import RefactoredForm from '@/components/RefactoredForm'
 export default {
   components: {
     TestForm,
-    RefactoredForm
-  }
+    RefactoredForm,
+  },
 }
 </script>

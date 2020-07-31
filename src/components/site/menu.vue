@@ -86,7 +86,7 @@
 <script>
 export default {
   props: ['items'],
-  data () {
+  data() {
     return {
       loading: false,
       dialogItem: false,
@@ -96,28 +96,31 @@ export default {
       formItem: {
         icon: '',
         title: '',
-        level: 9
+        level: 9,
       },
       formSubItem: {
         title: '',
         to: '',
-        level: 9
+        level: 9,
       },
       selectedItemIndex: 0,
-      selectedSubItemIndex: 0
+      selectedSubItemIndex: 0,
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   methods: {
-    isAdminItem (level) {
-      if (level >= 9) return false
-      else return true
+    isAdminItem(level) {
+      if (level >= 9) {
+        return false
+      } else {
+        return true
+      }
     },
-    openDialogItem (index) {
+    openDialogItem(index) {
       // 메인 메뉴 아이템 추가
 
       this.selectedItemIndex = index
@@ -133,7 +136,7 @@ export default {
 
       this.dialogItem = true
     },
-    async saveItem () {
+    async saveItem() {
       if (this.selectedItemIndex < 0) {
         this.formItem.level = this.adminItem ? 0 : 9
         this.items.push(this.formItem)
@@ -145,7 +148,7 @@ export default {
 
       this.save()
     },
-    openDialogSubItem (index, subIndex) {
+    openDialogSubItem(index, subIndex) {
       this.selectedItemIndex = index
       this.selectedSubItemIndex = subIndex
 
@@ -155,17 +158,21 @@ export default {
       } else {
         this.formSubItem.title = this.items[index].subItems[subIndex].title
         this.formSubItem.to = this.items[index].subItems[subIndex].to
-        this.adminSubitem = this.isAdminItem(this.items[index].subItems[subIndex].level)
+        this.adminSubitem = this.isAdminItem(
+          this.items[index].subItems[subIndex].level,
+        )
       }
       this.dialogSubItem = true
     },
-    async saveSubItem () {
+    async saveSubItem() {
       if (this.selectedSubItemIndex < 0) {
-        if (!this.items[this.selectedItemIndex].subItems) { this.items[this.selectedItemIndex].subItems = [] }
+        if (!this.items[this.selectedItemIndex].subItems) {
+          this.items[this.selectedItemIndex].subItems = []
+        }
         this.items[this.selectedItemIndex].subItems.push({
           title: this.formSubItem.title,
           to: this.formSubItem.to,
-          level: this.adminSubitem ? 0 : 9
+          level: this.adminSubitem ? 0 : 9,
         })
       } else {
         this.items[this.selectedItemIndex].subItems[
@@ -181,7 +188,7 @@ export default {
 
       this.save()
     },
-    async save () {
+    async save() {
       try {
         this.loading = true
         await this.$firebase
@@ -196,18 +203,18 @@ export default {
         this.loading = false
       }
     },
-    moveItem (items, i, arrow) {
+    moveItem(items, i, arrow) {
       // const item = items.splice(i, 1)[0]
       // items.splice(i + arrow, 0, item)
       items.splice(i + arrow, 0, ...items.splice(i, 1))
 
       this.save()
     },
-    removeItem (items, index) {
+    removeItem(items, index) {
       items.splice(index, 1)
 
       this.save()
-    }
-  }
+    },
+  },
 }
 </script>

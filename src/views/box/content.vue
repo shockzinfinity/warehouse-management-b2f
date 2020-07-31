@@ -29,53 +29,65 @@ import BoxSample from './sample/index'
 
 export default {
   components: {
-    BoxSample
+    BoxSample,
   },
   props: ['document'],
-  data () {
+  data() {
     return {
       unsubscribe: null,
       boxInfo: {
         parentRackId: '',
         description: '',
         title: '',
-        sampleCount: 0
+        sampleCount: 0,
       },
-      loading: false
+      loading: false,
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   watch: {
-    document () {
+    document() {
       this.subscribe()
-    }
+    },
   },
-  created () {
+  created() {
     this.subscribe()
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      const ref = this.$firebase.firestore().collection('boxes').doc(this.document)
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      const ref = this.$firebase
+        .firestore()
+        .collection('boxes')
+        .doc(this.document)
       this.unsubscribe = ref.onSnapshot(doc => {
-        if (!doc.exists) return this.boxWrite()
+        if (!doc.exists) {
+          return this.boxWrite()
+        }
         this.boxInfo = doc.data()
         this.boxInfo.id = doc.id
       })
     },
-    async boxWrite () {
+    async boxWrite() {
       this.$router.push({ path: this.$route.path + '/box-write' })
     },
-    async sampleWrite () {
-      this.$router.push({ path: this.$route.path + '/sample-write', query: { sampleId: '' } })
-    }
-  }
+    async sampleWrite() {
+      this.$router.push({
+        path: this.$route.path + '/sample-write',
+        query: { sampleId: '' },
+      })
+    },
+  },
 }
 </script>

@@ -21,52 +21,64 @@ import BoardArticle from './article/index'
 
 export default {
   components: {
-    BoardArticle
+    BoardArticle,
   },
   props: ['document'],
-  data () {
+  data() {
     return {
       unsubscribe: null,
       info: {
         category: '',
         title: '',
         description: '',
-        count: 0
+        count: 0,
       },
-      loading: false
-    }
-  },
-  watch: {
-    document () {
-      this.subscribe()
+      loading: false,
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
-  created () {
+  watch: {
+    document() {
+      this.subscribe()
+    },
+  },
+  created() {
     this.subscribe()
   },
-  destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+  destroyed() {
+    if (this.unsubscribe) {
+      this.unsubscribe()
+    }
   },
   methods: {
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      const ref = this.$firebase.firestore().collection('boards').doc(this.document)
+    subscribe() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      const ref = this.$firebase
+        .firestore()
+        .collection('boards')
+        .doc(this.document)
       this.unsubscribe = ref.onSnapshot(doc => {
-        if (!doc.exists) return this.write()
+        if (!doc.exists) {
+          return this.write()
+        }
         this.info = doc.data()
       })
     },
-    async write () {
+    async write() {
       this.$router.push(this.$route.path + '/board-write')
     },
-    async articleWrite () {
-      this.$router.push({ path: this.$route.path + '/article-write', query: { articleId: '' } })
-    }
-  }
+    async articleWrite() {
+      this.$router.push({
+        path: this.$route.path + '/article-write',
+        query: { articleId: '' },
+      })
+    },
+  },
 }
 </script>

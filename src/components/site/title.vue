@@ -15,31 +15,35 @@
 <script>
 export default {
   props: ['title'],
-  data () {
+  data() {
     return {
       dialog: false,
-      text: ''
+      text: '',
     }
   },
   computed: {
-    user () {
+    user() {
       return this.$store.state.user
-    }
+    },
   },
   methods: {
-    openDialog () {
+    openDialog() {
       this.dialog = true
       this.text = this.title
     },
-    async save () {
+    async save() {
       try {
-        await this.$firebase.database().ref().child('site').update({
-          title: this.text
-        })
+        await this.$firebase
+          .database()
+          .ref()
+          .child('site')
+          .update({
+            title: this.text,
+          })
       } finally {
         this.dialog = false
       }
-    }
-  }
+    },
+  },
 }
 </script>

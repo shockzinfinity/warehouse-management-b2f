@@ -9,7 +9,7 @@ export const auth = {
   namespaced: true,
   state: initialState,
   actions: {
-    login ({ commit }, user) {
+    login({ commit }, user) {
       return AuthService.login(user).then(
         user => {
           commit('loginSuccess', user)
@@ -18,14 +18,14 @@ export const auth = {
         error => {
           commit('loginFailure')
           return Promise.reject(error)
-        }
+        },
       )
     },
-    logout ({ commit }) {
+    logout({ commit }) {
       AuthService.logout()
       commit('logout')
     },
-    register ({ commit }, user) {
+    register({ commit }, user) {
       return AuthService.register(user).then(
         response => {
           commit('registerSuccess')
@@ -34,28 +34,28 @@ export const auth = {
         error => {
           commit('registerFailure')
           return Promise.reject(error)
-        }
+        },
       )
-    }
+    },
   },
   mutations: {
-    loginSuccess (state, user) {
+    loginSuccess(state, user) {
       state.status.loggedIn = true
       state.user = user
     },
-    loginFailure (state) {
+    loginFailure(state) {
       state.status.loggedIn = false
       state.user = null
     },
-    logout (state) {
+    logout(state) {
       state.status.loggedIn = false
       state.user = null
     },
-    registerSuccess (state) {
+    registerSuccess(state) {
       state.status.loggedIn = false
     },
-    registerFailure (state) {
+    registerFailure(state) {
       state.status.loggedIn = false
-    }
-  }
+    },
+  },
 }

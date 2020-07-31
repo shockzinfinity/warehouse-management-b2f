@@ -18,41 +18,54 @@
 import QRCode from 'qrcode'
 
 export default {
-  data () {
+  components: {
+    QRCode,
+  },
+  data() {
     return {
       prefix: 'bx',
       qrValue: 'f360a13660',
-      testVal: 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-f360a13660'
+      testVal:
+        'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-f360a13660',
     }
   },
-  components: {
-    QRCode
-  },
   methods: {
-    async save () {
+    async save() {
       const qr = this.$refs.qr.dataUrl
-      const sn = await this.$firebase.storage().ref().child('qrcode').child('temp.png').putString(qr, 'data_url')
+      const sn = await this.$firebase
+        .storage()
+        .ref()
+        .child('qrcode')
+        .child('temp.png')
+        .putString(qr, 'data_url')
       console.log('url', await sn.ref.getDownloadURL())
     },
-    codeGeneration () {
-      return 'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=' + this.prefix + '-' + this.qrValue
+    codeGeneration() {
+      return (
+        'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=' +
+        this.prefix +
+        '-' +
+        this.qrValue
+      )
     },
-    async goRoute () {
+    async goRoute() {
       // this.$router.push(this.prefix + this.qrValue)
       // console.log(this.$route)
       // console.log(`${window.location.origin}/confirm/${this.prefix}-${this.qrValue}`)
       // const path = `${window.location.origin}/confirm/${this.prefix}-${this.qrValue}`
-      this.$router.push({ path: '/confirm', query: { qc: this.prefix + '-' + this.qrValue } })
+      this.$router.push({
+        path: '/confirm',
+        query: { qc: this.prefix + '-' + this.qrValue },
+      })
     },
-    async generate () {
-      this.$refs.qr.toDataURL('temp')
-        .then(url => {
-          console.log(url)
-        })
+    async generate() {
+      this.$refs.qr.toDataURL('temp').then(url => {
+        console.log(url)
+      })
     },
-    async testGen () {
+    async testGen() {
       console.log(await QRCode.toDataURL('temp'))
-    }
-  }
+    },
+  },
 }
 </script>

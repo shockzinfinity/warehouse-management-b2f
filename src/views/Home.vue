@@ -9,7 +9,7 @@ import WarehouseInfo from '@/components/site/warehouseInfo'
 export default {
   name: 'Home',
   components: {
-    WarehouseInfo
-  }
+    WarehouseInfo,
+  },
 }
 </script>

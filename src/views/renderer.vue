@@ -53,18 +53,18 @@ export default {
     BoxSampleForm,
     PageIndex,
     PageContent,
-    ErrorPage
+    ErrorPage,
   },
   computed: {
-    collection () {
+    collection() {
       return this.$route.params.collection
     },
-    document () {
+    document() {
       return this.$route.params.document
     },
-    action () {
+    action() {
       return this.$route.params.action
-    }
-  }
+    },
+  },
 }
 </script>

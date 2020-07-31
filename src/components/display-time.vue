@@ -9,15 +9,17 @@
 export default {
   props: ['time'],
   computed: {
-    displayTime () {
+    displayTime() {
       const bt = this.$moment(this.time)
       const ct = this.$moment()
       const diff = ct.diff(bt, 'days')
 
-      if (diff > 0) return bt.toDate().toLocaleString()
+      if (diff > 0) {
+        return bt.toDate().toLocaleString()
+      }
 
       return bt.fromNow()
-    }
-  }
+    },
+  },
 }
 </script>
