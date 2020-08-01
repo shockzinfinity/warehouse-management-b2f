@@ -94,8 +94,6 @@ export default {
         const doc = {
           title: this.form.title,
           updatedAt: createdAt,
-          // qrCodeUrl: this.form.qrCodeUrl,
-          // currentStock: this.form.currentStock,
         }
 
         if (this.sampleId === 'new') {
@@ -121,7 +119,18 @@ export default {
           }
 
           if (!doc.qrCodeUrl) {
-            const qr = await this.codeGenration(id)
+            const box = await this.$firebase
+              .firestore()
+              .collection('boxes')
+              .doc(this.boxId)
+              .get()
+            let boxId
+            if (box.exists) {
+              const item = box.data()
+              boxId = item.boxId
+            }
+
+            const qr = await this.codeGenration(boxId, id)
             const qrSn = await this.$firebase
               .storage()
               .ref()

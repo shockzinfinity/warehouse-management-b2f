@@ -1,29 +1,14 @@
 <template lang="pug">
-  v-card(v-if="sampleInfo")
-    v-toolbar(color="primary" dark)
-      v-toolbar-title {{ sampleInfo.title }}
-      v-spacer
-      v-btn(icon @click="routeToBox") <v-icon>mdi-comment-text-outline</v-icon>
-    v-card-text(v-if="sampleContent")
-      viewer(:initialValue="sampleContent")
-  v-container(v-else)
-    v-row(justify="center" align="center")
-      v-progress-circular(indeterminate)
+  div
+    span redirecting to {{ qrCode }} ...
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
-  components: {},
   data() {
     return {
-      title: '',
-      sampleId: '',
-      sampleUrl: '',
-      sampleContent: '',
-      boxInfo: null,
-      sampleInfo: null,
+      routeType: '',
+      routePathId: '',
     }
   },
   computed: {
@@ -37,45 +22,34 @@ export default {
       return this.qrCode.split('-')[1]
     },
   },
-  created() {
-    // console.log(this.qrcode)
-    // this.checkCode()
-  },
+  created() {},
   mounted() {
-    this.checkCode()
+    this.goToItem()
   },
   methods: {
-    routeCode() {
-      let rt
-      if (this.title) {
-        switch (this.type) {
-          case 'rk':
-            rt = '/rack/'
-            break
-          case 'bx':
-            rt = '/box/'
-            break
-          case 'sp':
-            rt = '/sample/'
-            break
-          default:
-            break
-        }
-      }
-      if (this.type !== 'sp') {
-        this.$router.replace(rt + this.title)
-      } else {
-        this.$router.replace({
-          path: '/box/' + this.title,
-          query: { sampleId: this.sampleId },
-        })
+    async parseType() {
+      // type check
+      switch (this.type) {
+        case 'rk':
+          this.routeType = '/rack/'
+          break
+        case 'bx':
+          this.routeType = '/box/'
+          break
+        case 'sp':
+          this.routeType = '/sample/'
+          break
+        default:
+          throw Error('unknown type')
       }
     },
-    async checkCode() {
+    async goToItem() {
+      this.parseType()
+
       let ref
       let tempRef
-      // TODO: regex 이용
-      // bx-1364ab1e82
+      let box
+      let boxId
       switch (this.type) {
         case 'rk':
           ref = this.$firebase
@@ -90,61 +64,45 @@ export default {
             .where('boxId', '==', this.code)
           break
         case 'sp':
-          var boxId = this.code.substr(0, 10)
-          // console.log(boxId)
-          this.sampleId = this.code.substr(10, this.code.length - 10)
+          var boxCode = this.code.substr(0, 10)
+          var sampleCode = this.code.substr(10, this.code.length - 10)
+
           tempRef = this.$firebase
             .firestore()
             .collection('boxes')
-            .where('boxId', '==', boxId)
-          var box = await tempRef.get()
+            .where('boxId', '==', boxCode)
+          box = await tempRef.get()
           if (!box.empty) {
-            this.title = box.docs[0].id
-            // console.log(boxTitle)
-            // console.log(this.title)
-            this.boxInfo = box.docs[0].data()
+            boxId = box.docs[0].id
             ref = this.$firebase
               .firestore()
               .collection('boxes')
-              .doc(this.title)
+              .doc(boxId)
               .collection('samples')
-              .doc(this.sampleId)
+              .doc(sampleCode)
           }
-
           break
         default:
-          // 404
-          // this.exists = false
-          throw Error('Not exists.')
+          this.$router.replace('/404')
       }
 
       if (this.type === 'sp') {
         const temp = await ref.get()
         if (temp.exists) {
-          this.sampleId = temp.id
-          this.sampleInfo = temp.data()
-          const r = await axios.get(this.sampleInfo.url)
-          this.sampleContent = r.data
+          const samplePathId = temp.id
+          // sample
+          this.$router.replace({
+            path: `/box/${boxId}/${samplePathId}`,
+          })
         }
-        // console.log('samplecontent', this.sampleContent)
-        // console.log('sampleInfo', this.sampleInfo)
-        // this.routeCode()
       } else {
         const temp = await ref.get()
-
         if (!temp.empty) {
-          this.title = temp.docs[0].id
-          // console.log('id', temp.docs[0].id)
-          // console.log('tempt', temp.docs[0].data())
-          // console.log(this.title)
+          // rack, box
+          this.$router.replace({
+            path: this.routeType + temp.docs[0].id,
+          })
         }
-
-        this.routeCode()
-      }
-    },
-    routeToBox() {
-      if (this.type === 'sp') {
-        this.$router.replace({ path: '/box/' + this.title })
       }
     },
   },
