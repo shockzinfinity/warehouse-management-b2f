@@ -11,10 +11,9 @@
       item-key="boxId"
     )
       template(v-slot:item.createdAt="{ item }")
-        display-time(:time="item.createdAt")
+        display-time(:time="item.createdAt.toDate()")
       template(v-slot:item.title="{ item }")
-        //- a(@click="read(item)") {{ item.title }}
-        a {{ item.title }}
+        a(@click="read(item)") {{ item.title }}
       template(v-slot:item.user.displayName="{ item }")
         display-user(:user="item.user")
 </template>
@@ -43,6 +42,7 @@ export default {
       docs: [],
       unsubscribe: null,
       options: {
+        itemsPerPage: 5,
         sortBy: ['createdAt'],
         sortDesc: [true],
       },
@@ -73,6 +73,9 @@ export default {
     },
   },
   created() {},
+  mounted() {
+    this.subscribe(0)
+  },
   destroyed() {
     if (this.unsubscribe) this.unsubscribe()
   },
@@ -86,18 +89,18 @@ export default {
       const ref = this.$firebase.firestore().collection('boxes')
 
       let query = ref
-        .where('parentRackId', '==', this.rackId)
+        .where('parentRackId', '==', this.rack.rackId)
         .orderBy(order, sort)
 
       switch (arrow) {
         case -1:
-          query = ref.endBefore(head(this.docs)).limitToLast(limit)
+          query = query.endBefore(head(this.docs)).limitToLast(limit)
           break
         case 1:
-          query = ref.startAfter(last(this.docs)).limit(limit)
+          query = query.startAfter(last(this.docs)).limit(limit)
           break
         default:
-          query = ref.limit(limit)
+          query = query.limit(limit)
           break
       }
       this.unsubscribe = query.onSnapshot(sn => {
@@ -109,15 +112,13 @@ export default {
         this.items = sn.docs.map(doc => {
           const item = doc.data()
           item.id = doc.id
-          item.createdAt = item.createdAt.toDate()
-          item.updatedAt = item.updatedAt.toDate()
           return item
         })
       })
     },
-    // read(item) {
-    //   this.$router.push({ path: this.$route.path + '/' + item.id })
-    // },
+    read(item) {
+      this.$router.push({ path: '/box/' + item.id })
+    },
   },
 }
 </script>

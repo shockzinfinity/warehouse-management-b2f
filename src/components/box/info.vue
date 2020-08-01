@@ -78,7 +78,7 @@ export default {
     },
     async sampleWrite() {
       this.$router.replace({
-        path: '/sample/' + 'new',
+        path: this.$route.path + '/new',
         query: { action: 'write' },
       })
     },

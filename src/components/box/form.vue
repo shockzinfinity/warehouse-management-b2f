@@ -6,7 +6,7 @@
           v-toolbar(color="accent" dense flat dark)
             v-toolbar-title 박스 정보 작성
             v-spacer
-            v-btn(icon @click="$router.replace('/box/' + boxId)") <v-icon>mdi-arrow-left</v-icon>
+            v-btn(icon @click="goBack") <v-icon>mdi-arrow-left</v-icon>
             v-btn(icon @click="save" :disabled="!user") <v-icon>mdi-content-save</v-icon>
           v-card-actions
             cover-upload(ref="cover" type="box" @downloadURL="getDownloadURL" :originSrc="form.coverUrl" :pathId="boxId")
@@ -65,6 +65,12 @@ export default {
     fireUser() {
       return this.$store.state.fireUser
     },
+    parentRackId() {
+      return this.$route.query.parentRackId
+    },
+    parentRackPath() {
+      return this.$route.query.parentRackPath
+    },
   },
   watch: {
     boxId() {
@@ -104,7 +110,6 @@ export default {
         boxId: this.form.boxId,
         coverUrl: this.form.coverUrl,
         description: this.form.description,
-        parentRackId: this.form.parentRackId,
         qrCodeUrl: this.form.qrCodeUrl,
         title: this.form.title,
         updatedAt: new Date(),
@@ -124,6 +129,7 @@ export default {
           form.createdAt = new Date()
           form.sampleCount = 0
           form.uid = this.fireUser.uid
+          form.parentRackId = this.parentRackId
           form.user = {
             displayName: this.user.displayName,
             email: this.user.email,
@@ -160,6 +166,11 @@ export default {
         'https://warehouse-management-b2f.firebaseapp.com/confirm?qc=bx-' +
         boxId
       return await QRCode.toDataURL(qrCodeAddress)
+    },
+    goBack() {
+      if (this.parentRackPath)
+        return this.$router.replace('/rack/' + this.parentRackPath)
+      else return this.$router.replace('/box/' + this.boxId)
     },
   },
 }

@@ -138,11 +138,11 @@ export default {
           .doc(this.item.id)
           .collection('histories')
           .doc(id),
-        history,
+        history
       )
       batch.update(this.ref.collection('samples').doc(this.item.id), {
         currentStock: this.$firebase.firestore.FieldValue.increment(
-          parseInt(this.stockInOut),
+          parseInt(this.stockInOut)
         ),
       })
       // await this.ref.collection('samples').doc(this.item.id).update({
@@ -187,11 +187,11 @@ export default {
           .doc(this.item.id)
           .collection('histories')
           .doc(id),
-        history,
+        history
       )
       batch.update(this.ref.collection('samples').doc(this.item.id), {
         currentStock: this.$firebase.firestore.FieldValue.increment(
-          -parseInt(this.stockInOut),
+          -parseInt(this.stockInOut)
         ),
       })
       // await this.ref.collection('samples').doc(this.item.id).update({

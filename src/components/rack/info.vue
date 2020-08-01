@@ -19,7 +19,8 @@
               div(style="white-space: pre-line") {{ rack.description }}
               .text-right.font-italic.caption 작성일: {{ rack.createdAt.toDate().toLocaleString() }}
               .text-right.font-italic.caption 수정일: {{ rack.updatedAt.toDate().toLocaleString() }}
-      rack-box(:rackId="rackId" :rack="rack")
+              .text-right.font-italic.caption 포함 박스 수: {{ rack.boxCount }}
+      rack-box(v-if="rack.rackId" :rackId="rackId" :rack="rack")
     v-dialog(v-model="boxDialog" max-width="400")
       v-card
         v-card-title 박스 추가
@@ -27,8 +28,7 @@
           v-btn(icon @click="boxWrite") <v-icon>mdi-content-save</v-icon>
           v-btn(icon @click="boxDialog = false") <v-icon>mdi-close</v-icon>
         v-card-text
-          v-text-field(v-model="boxTitle" outlined label="박스 이름" @keypress.enter="boxWrite" hide-details)
-
+          v-text-field(v-model="toAddBoxTitle" outlined label="박스 이름" @keypress.enter="boxWrite" hide-details)
 </template>
 
 <script>
@@ -48,11 +48,14 @@ export default {
       },
       loading: false,
       boxDialog: false,
-      boxTitle: '',
+      toAddBoxTitle: '',
     }
   },
   watch: {
     rackId() {
+      this.subscribe()
+    },
+    rack() {
       this.subscribe()
     },
   },
@@ -90,8 +93,12 @@ export default {
     async boxWrite() {
       // TODO: 박스 이름 중복 체크
       this.$router.push({
-        path: '/box/' + this.boxTitle,
-        query: { action: 'write' },
+        path: '/box/' + this.toAddBoxTitle,
+        query: {
+          action: 'write',
+          parentRackId: this.rack.rackId,
+          parentRackPath: this.rackId,
+        },
       })
     },
   },
