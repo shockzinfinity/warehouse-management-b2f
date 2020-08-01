@@ -57,12 +57,17 @@ export default {
         .firestore()
         .collection('boards')
         .doc(this.boardId)
-      this.unsubscribe = ref.onSnapshot(doc => {
-        if (!doc.exists) {
-          return this.write()
+      this.unsubscribe = ref.onSnapshot(
+        doc => {
+          if (!doc.exists) {
+            return this.write()
+          }
+          this.board = doc.data()
+        },
+        e => {
+          throw Error(e.message)
         }
-        this.board = doc.data()
-      }, console.error)
+      )
     },
     async write() {
       this.$router.replace({

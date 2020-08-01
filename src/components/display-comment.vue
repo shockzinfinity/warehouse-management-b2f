@@ -12,7 +12,7 @@
             display-time(:time="item.createdAt")
       v-divider(:key="i")
     v-list-item
-      v-btn(v-if="lastDoc && items.length < commentCount" v-intersect="onIntersect" @click="more" text color="primary" block) more
+      v-btn(v-if="lastDoc && items.length < article.commentCount" v-intersect="onIntersect" @click="more" text color="primary" block) more
 </template>
 
 <script>
@@ -23,7 +23,7 @@ const LIMIT = 5
 
 export default {
   components: { DisplayTime, DisplayUser },
-  props: ['commentCount', 'docRef'],
+  props: ['article', 'docRef'],
   data() {
     return {
       comment: '',
@@ -39,7 +39,6 @@ export default {
   },
   created() {
     this.subscribe()
-    // console.log(this.article)
   },
   destroyed() {
     if (this.unsubscribe) {
@@ -115,10 +114,7 @@ export default {
         },
       }
       const id = doc.createdAt.getTime().toString()
-      // const batch = this.$firebase.firestore().batch()
-      // batch.update(this.docRef, { commentCount: this.$firebase.firestore.FieldValue.increment(1) })
-      // batch.set(this.docRef.collection('comments').doc(id), doc)
-      // await batch.commit()
+
       this.docRef
         .collection('comments')
         .doc(id)

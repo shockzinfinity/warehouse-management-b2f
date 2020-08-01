@@ -126,7 +126,8 @@ export default {
           this.downloadURL = ''
         })
         .catch(e => {
-          console.error(e)
+          throw Error(e.message)
+          // console.error(e)
         })
       this.$refs.form.reset()
     },

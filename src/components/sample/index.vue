@@ -22,13 +22,13 @@
 import { head, last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
-import DisplaySample from '@/components/display-sample'
+// import DisplaySample from '@/components/display-sample'
 
 export default {
   components: {
     DisplayTime,
     DisplayUser,
-    DisplaySample,
+    // DisplaySample,
   },
   props: ['box', 'boxId'],
   data() {
@@ -37,7 +37,7 @@ export default {
         { value: 'createdAt', text: '등록일' },
         { value: 'title', text: '샘플명' },
         { value: 'user.displayName', text: '등록자' },
-        { value: 'readCount', text: '조회수' },
+        { value: 'currentStock', text: '현재고' },
         { value: 'commentCount', text: '댓글' },
       ],
       items: [],

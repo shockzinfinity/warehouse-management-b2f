@@ -1,6 +1,6 @@
 <template lang="pug">
-  sample-content(v-if="!action" :boxId="info" :sampleId="box")
-  sample-form(v-else :boxId="info" :sampleId="box" :action="action")
+  sample-content(v-if="!action" :boxId="info" :sampleId="sample")
+  sample-form(v-else :boxId="info" :sampleId="sample" :action="action")
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
       return this.$route.params.sample
     },
     action() {
-      return this.$route.params.action
+      return this.$route.query.action
     },
   },
 }

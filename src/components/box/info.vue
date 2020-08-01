@@ -63,12 +63,17 @@ export default {
         .firestore()
         .collection('boxes')
         .doc(this.boxId)
-      this.unsubscribe = ref.onSnapshot(doc => {
-        if (!doc.exists) {
-          return this.write()
+      this.unsubscribe = ref.onSnapshot(
+        doc => {
+          if (!doc.exists) {
+            return this.write()
+          }
+          this.box = doc.data()
+        },
+        e => {
+          throw Error(e.message)
         }
-        this.box = doc.data()
-      }, console.error)
+      )
     },
     async write() {
       this.$router.replace({

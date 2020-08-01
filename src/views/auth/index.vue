@@ -13,7 +13,7 @@ export default {
     },
   },
   watch: {
-    changedLoggin(n, o) {
+    changedLoggin() {
       if (this.$store.getters.isLogged) {
         if (this.redirect) {
           this.$router.replace(this.redirect)

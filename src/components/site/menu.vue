@@ -158,7 +158,7 @@ export default {
         this.formSubItem.title = this.items[index].subItems[subIndex].title
         this.formSubItem.to = this.items[index].subItems[subIndex].to
         this.adminSubitem = this.isAdminItem(
-          this.items[index].subItems[subIndex].level,
+          this.items[index].subItems[subIndex].level
         )
       }
       this.dialogSubItem = true

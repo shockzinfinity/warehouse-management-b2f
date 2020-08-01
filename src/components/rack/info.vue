@@ -77,12 +77,17 @@ export default {
         .firestore()
         .collection('racks')
         .doc(this.rackId)
-      this.unsubscribe = ref.onSnapshot(doc => {
-        if (!doc.exists) {
-          return this.write()
+      this.unsubscribe = ref.onSnapshot(
+        doc => {
+          if (!doc.exists) {
+            return this.write()
+          }
+          this.rack = doc.data()
+        },
+        e => {
+          throw Error(e.message)
         }
-        this.rack = doc.data()
-      }, console.error)
+      )
     },
     async write() {
       this.$router.push({

@@ -8,17 +8,17 @@
             v-spacer
             v-btn(icon @click="goBack") <v-icon>mdi-arrow-left</v-icon>
             v-btn(icon @click="save" :disabled="!user") <v-icon>mdi-content-save</v-icon>
+          v-card-text
+            v-text-field-with-validation(v-model="form.title" rules="required|max:50" :counter="50"  outlined label="이름")
+            v-textarea(v-model="form.description" outlined label="설명")
           v-card-actions
             cover-upload(ref="cover" type="box" @downloadURL="getDownloadURL" :originSrc="form.coverUrl" :pathId="boxId")
           v-card-actions
             v-img(v-if="exists && form.qrCodeUrl" :src="form.qrCodeUrl")
-          v-card-text
-            v-text-field-with-validation(v-model="form.title" rules="required|max:50" :counter="50"  outlined label="이름")
-            v-textarea(v-model="form.description" outlined label="설명")
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import { ValidationObserver, ValidationProvider } from 'vee-validate'
 import VTextFieldWithValidation from '@/components/inputs/VTextFieldWithValidation'
 import VSelectWithValidation from '@/components/inputs/VSelectWithValidation'
@@ -113,13 +113,6 @@ export default {
         qrCodeUrl: this.form.qrCodeUrl,
         title: this.form.title,
         updatedAt: new Date(),
-        // uid: this.form.uid,
-        // user: {
-        //   displayName: this.form.user.displayName,
-        //   email: this.form.user.email,
-        //   level: this.form.level,
-        //   photoURL: this.form.photoURL,
-        // },
       }
 
       this.loading = true

@@ -1,14 +1,14 @@
 <template lang="pug">
-  box-content(v-if="!action" :rackId="info" :boxId="box")
+  box-info(v-if="!action" :rackId="info" :boxId="box")
   box-form(v-else :rackId="info" :boxId="box" :action="action")
 </template>
 
 <script>
-import BoxContent from '@/components/box/content'
+import BoxInfo from '@/components/box/info'
 import BoxForm from '@/components/box/form'
 
 export default {
-  components: { BoxContent, BoxForm },
+  components: { BoxInfo, BoxForm },
   computed: {
     info() {
       return this.$route.params.info

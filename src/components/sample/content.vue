@@ -1,25 +1,36 @@
 <template lang="pug">
   v-container(fluid)
-    v-card(v-if="article")
+    v-card(v-if="sample")
       v-toolbar(color="info" dark dense flat)
-        v-toolbar-title {{ article.title }}
+        v-toolbar-title {{ sample.title }}
         v-spacer
-        v-btn(@click="articleWrite" icon) <v-icon>mdi-pencil</v-icon>
+        v-btn(@click="sampleWrite" icon) <v-icon>mdi-pencil</v-icon>
         v-btn(@click="remove" icon) <v-icon>mdi-delete</v-icon>
         v-btn(@click="back" icon) <v-icon>mdi-close</v-icon>
+      v-card-text
+        v-row.no-gutters
+          v-col.pb-2(lg="6" cols="sm")
+            v-img.mx-auto(:src="sample.qrCodeUrl" max-width="200px")
+          v-col.pb-2(lg="6" cols="sm")
+            v-row
+              v-text-field(type="number" v-model="stockInOut" flat dense outlined label="Current stock")
+              v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
+              v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
       v-card-text
         viewer(v-if="content" :initialValue="content")
         v-container(v-else)
           v-row(justify="center" align="center")
             v-progress-circular(indeterminate)
-      v-card-action
+      v-card-actions
         v-spacer
-        span.font-italic.caption 작성일: <display-time :time="article.createdAt"></display-time>
-      v-card-action
+        span.font-italic.caption 작성일: <display-time :time="sample.createdAt"></display-time>
+      v-card-actions
         v-spacer
-        span.font-italic.caption 수성일: <display-time :time="article.updatedAt"></display-time>
+        span.font-italic.caption 수정일: <display-time :time="sample.updatedAt"></display-time>
       v-divider
-      display-comment(:article="article" :docRef="ref")
+      display-history(:docRef="ref")
+      v-divider
+      display-comment(:article="sample" :docRef="ref")
     v-card(v-else)
       v-container
         v-row(justify="center" align="center")
@@ -30,25 +41,33 @@
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
+import DisplayHistory from '@/components/display-history'
 
 export default {
   components: {
     DisplayTime,
     DisplayComment,
+    DisplayHistory,
   },
-  props: ['boardId', 'articleId'],
+  props: ['boxId', 'sampleId'],
   data() {
     return {
       content: '',
       ref: this.$firebase
         .firestore()
-        .collection('boards')
-        .doc(this.boardId)
-        .collection('articles')
-        .doc(this.articleId),
+        .collection('boxes')
+        .doc(this.boxId)
+        .collection('samples')
+        .doc(this.sampleId),
       unsubscribe: null,
-      article: null,
+      sample: null,
+      stockInOut: 0,
     }
+  },
+  computed: {
+    user() {
+      return this.$store.state.user
+    },
   },
   async created() {
     await this.readCountUpdate()
@@ -73,8 +92,9 @@ export default {
         const item = doc.data()
         item.createdAt = item.createdAt.toDate()
         item.updatedAt = item.updatedAt.toDate()
-        if (!this.article || this.article.url !== item.url) this.fetch(item.url)
-        this.article = item
+        if (!this.sample || this.sample.url !== item.url) this.fetch(item.url)
+        this.sample = item
+        this.stockInOut = this.sample.currentStock
       }, console.error)
     },
     async fetch(url) {
@@ -82,7 +102,7 @@ export default {
       const r = await axios.get(url)
       this.content = typeof r.data === 'string' ? r.data : r.data.toString()
     },
-    async articleWrite() {
+    async sampleWrite() {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
     },
     async remove() {
@@ -92,6 +112,59 @@ export default {
       const us = this.$route.path.split('/')
       us.pop()
       this.$router.push({ path: us.join('/') })
+    },
+    async incomming() {
+      if (this.stockInOut <= 0) {
+        return
+      }
+      const history = {
+        actionTime: new Date(),
+        type: 'in',
+        amount: this.stockInOut,
+        user: {
+          email: this.user.email,
+          photoURL: this.user.photoURL,
+          displayName: this.user.displayName,
+        },
+      }
+      const id = history.actionTime.getTime().toString()
+      const batch = this.$firebase.firestore().batch()
+      batch.set(this.ref.collection('histories').doc(id), history)
+      batch.update(this.ref, {
+        currentStock: this.$firebase.firestore.FieldValue.increment(
+          parseInt(this.stockInOut)
+        ),
+      })
+      await batch.commit()
+    },
+    async outcomming() {
+      if (this.stockInOut <= 0) {
+        return
+      }
+      const out = this.currentStock - this.stockInOut
+      if (out < 0) {
+        throw Error('insufficient stock')
+      }
+      const history = {
+        actionTime: new Date(),
+        type: 'out',
+        amount: this.stockInOut,
+        user: {
+          email: this.user.email,
+          photoURL: this.user.photoURL,
+          displayName: this.user.displayName,
+        },
+      }
+      const id = history.actionTime.getTime().toString()
+      const batch = this.$firebase.firestore().batch()
+
+      batch.set(this.ref.collection('histories').doc(id), history)
+      batch.update(this.ref, {
+        currentStock: this.$firebase.firestore.FieldValue.increment(
+          -parseInt(this.stockInOut)
+        ),
+      })
+      await batch.commit()
     },
   },
 }

@@ -26,6 +26,10 @@ $ firebase deploy --only funtions
 $ firebase deploy --only funtions:createUser,functions:deleteUser ...
 ```
 
+### Global path setting in nvm env
+
+![yarn glbal path](./doc/yarnGlobalPath.png)
+
 ### Firebase Storage CORS setting
 
 [Gooble Cloud SDK](https://cloud.google.com/sdk/install)

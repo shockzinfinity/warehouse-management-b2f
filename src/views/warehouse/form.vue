@@ -73,7 +73,7 @@ export default {
         'state_changed',
         sp => {
           this.progressUpload = Math.floor(
-            (sp.bytesTransferred / sp.totalBytes) * 100,
+            (sp.bytesTransferred / sp.totalBytes) * 100
           )
         },
         null,
@@ -83,7 +83,7 @@ export default {
             this.downloadURL = url
             this.$emit('downloadURL', url)
           })
-        },
+        }
       )
     },
   },
@@ -148,8 +148,8 @@ export default {
             this.info = w
           },
           e => {
-            console.log(e.message)
-          },
+            throw Error(e.message)
+          }
         )
     },
     async save() {

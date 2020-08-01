@@ -12,10 +12,10 @@
         v-container(v-else)
           v-row(justify="center" align="center")
             v-progress-circular(indeterminate)
-      v-card-action
+      v-card-actions
         v-spacer
         span.font-italic.caption 작성일: <display-time :time="article.createdAt"></display-time>
-      v-card-action
+      v-card-actions
         v-spacer
         span.font-italic.caption 수성일: <display-time :time="article.updatedAt"></display-time>
       v-divider
@@ -65,17 +65,23 @@ export default {
     },
     subscribe() {
       if (this.unsubscribe) this.unsubscribe()
-      this.unsubscribe = this.ref.onSnapshot(doc => {
-        if (!doc.exists) {
-          this.back()
-          return
+      this.unsubscribe = this.ref.onSnapshot(
+        doc => {
+          if (!doc.exists) {
+            this.back()
+            return
+          }
+          const item = doc.data()
+          item.createdAt = item.createdAt.toDate()
+          item.updatedAt = item.updatedAt.toDate()
+          if (!this.article || this.article.url !== item.url)
+            this.fetch(item.url)
+          this.article = item
+        },
+        e => {
+          throw Error(e.message)
         }
-        const item = doc.data()
-        item.createdAt = item.createdAt.toDate()
-        item.updatedAt = item.updatedAt.toDate()
-        if (!this.article || this.article.url !== item.url) this.fetch(item.url)
-        this.article = item
-      }, console.error)
+      )
     },
     async fetch(url) {
       this.content = ''

@@ -48,7 +48,6 @@ export default {
     },
   }),
   created() {
-    console.log('site started')
     this.subscribe()
   },
   mounted() {},
@@ -73,8 +72,9 @@ export default {
             this.site = v
           },
           e => {
-            console.log(e.message)
-          },
+            throw Error(e.message)
+            // console.log(e.message)
+          }
         )
     },
     async test() {
@@ -85,15 +85,14 @@ export default {
         .update({ visitedAt: new Date(), visitCount: 0 })
     },
     async test2() {
-      const sn = await this.$firebase
-        .storage()
-        .ref()
-        .child('boards')
-        .child('tt')
-        .child('12345678901234567890123')
-        .putString('hihi')
-
-      console.log(sn)
+      // const sn = await this.$firebase
+      //   .storage()
+      //   .ref()
+      //   .child('boards')
+      //   .child('tt')
+      //   .child('12345678901234567890123')
+      //   .putString('hihi')
+      // console.log(sn)
     },
   },
 }

@@ -57,7 +57,6 @@ export default {
           this.items.push(item)
         }
       })
-      // console.log(this.items)
       this.items.sort((before, after) => {
         const beforeId = Number(before.id)
         const afterId = Number(after.id)

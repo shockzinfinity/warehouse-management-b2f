@@ -194,7 +194,7 @@ export default {
           if (!doc.qrcodeUrl) {
             const qr = await this.codeGenration(
               this.form.parentBoxId,
-              this.sampleId,
+              this.sampleId
             )
             const qrSn = await this.storageRef
               .child('qrCodes')

@@ -308,9 +308,7 @@ exports.onDeleteBox = functions
     sn.docs.forEach(doc => batch.delete(doc.ref))
     await batch.commit()
   })
-// TODO:
-// sample
-//    4. 샘플 추가/삭제 시 상위 포함 랙의 sample sku 증가 및 감소
+
 exports.onCreateBoxSample = functions
   .region(region)
   .firestore.document('boxes/{bid}/samples/{sid}')
@@ -426,7 +424,7 @@ exports.onDeleteBoxSample = functions
     await admin
       .storage()
       .bucket()
-      .deleteFiles({ prefix: `samples/qrCodes/${context.params.sid}` })
+      .deleteFiles({ prefix: `samples/${context.params.sid}` })
       .catch(e => console.error('storage remove error: ' + e.message))
   })
 

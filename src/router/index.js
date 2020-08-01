@@ -6,16 +6,13 @@ import store from '@/store'
 Vue.use(VueRouter)
 
 const requireAuth = () => (to, from, next) => {
-  try {
-    if (store.getters.isLogged) {
-      next()
-    } else {
-      next({
-        path: '/auth',
-        query: { redirect: to.fullPath },
-      })
-    }
-  } finally {
+  if (store.getters.isLogged) {
+    next()
+  } else {
+    next({
+      path: '/auth',
+      query: { redirect: to.fullPath },
+    })
   }
 }
 
@@ -123,24 +120,6 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "box-info-sample" */ '../views/box/sample'),
-  },
-  {
-    path: '/sample',
-    name: 'sample',
-    // route level code-splitting
-    // this generates a separate chunk (sample.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "sample" */ '../views/sample/'),
-  },
-  {
-    path: '/sample/:info',
-    name: 'sample-info',
-    // route level code-splitting
-    // this generates a separate chunk (sample-info.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "sample-info" */ '../views/sample/info'),
   },
   {
     path: '/confirm',
