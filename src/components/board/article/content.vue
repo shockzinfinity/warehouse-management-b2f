@@ -173,7 +173,6 @@ export default {
       if (sn.empty) throw Error('더 이상 없습니다.')
       const doc = sn.docs[0]
 
-      console.log(doc.id)
       const us = this.$route.path.split('/')
       us.pop()
       us.push(doc.id)

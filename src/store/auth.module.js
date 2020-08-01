@@ -18,7 +18,7 @@ export const auth = {
         error => {
           commit('loginFailure')
           return Promise.reject(error)
-        },
+        }
       )
     },
     logout({ commit }) {
@@ -34,7 +34,7 @@ export const auth = {
         error => {
           commit('registerFailure')
           return Promise.reject(error)
-        },
+        }
       )
     },
   },

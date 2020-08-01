@@ -59,8 +59,8 @@ export default {
             this.info = w
           },
           e => {
-            console.log(e.message)
-          },
+            throw Error(e.message)
+          }
         )
     },
   },

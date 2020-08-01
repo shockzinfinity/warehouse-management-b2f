@@ -84,18 +84,23 @@ export default {
     },
     subscribe() {
       if (this.unsubscribe) this.unsubscribe()
-      this.unsubscribe = this.ref.onSnapshot(doc => {
-        if (!doc.exists) {
-          this.back()
-          return
+      this.unsubscribe = this.ref.onSnapshot(
+        doc => {
+          if (!doc.exists) {
+            this.back()
+            return
+          }
+          const item = doc.data()
+          item.createdAt = item.createdAt.toDate()
+          item.updatedAt = item.updatedAt.toDate()
+          if (!this.sample || this.sample.url !== item.url) this.fetch(item.url)
+          this.sample = item
+          this.stockInOut = this.sample.currentStock
+        },
+        e => {
+          throw Error(e.message)
         }
-        const item = doc.data()
-        item.createdAt = item.createdAt.toDate()
-        item.updatedAt = item.updatedAt.toDate()
-        if (!this.sample || this.sample.url !== item.url) this.fetch(item.url)
-        this.sample = item
-        this.stockInOut = this.sample.currentStock
-      }, console.error)
+      )
     },
     async fetch(url) {
       this.content = ''
