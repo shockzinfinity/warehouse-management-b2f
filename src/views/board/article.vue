@@ -20,7 +20,7 @@ export default {
       return this.$route.params.article
     },
     action() {
-      return this.$route.params.action
+      return this.$route.query.action
     },
   },
 }

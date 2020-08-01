@@ -103,6 +103,8 @@ export default {
             displayName: this.user.displayName,
             photoURL: this.user.photoURL,
           }
+          doc.likeCount = 0
+          doc.likeUids = []
           await this.ref
             .collection('articles')
             .doc(id)

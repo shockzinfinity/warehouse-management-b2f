@@ -17,7 +17,10 @@
         span.font-italic.caption 작성일: <display-time :time="article.createdAt"></display-time>
       v-card-actions
         v-spacer
-        span.font-italic.caption 수성일: <display-time :time="article.updatedAt"></display-time>
+        span.font-italic.caption 수정일: <display-time :time="article.updatedAt"></display-time>
+      v-card-actions
+        v-spacer
+        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ article.likeCount }}</span>
       v-divider
       display-comment(:article="article" :docRef="ref")
     v-card(v-else)
@@ -49,6 +52,18 @@ export default {
       unsubscribe: null,
       article: null,
     }
+  },
+  computed: {
+    fireUser() {
+      return this.$store.state.fireUser
+    },
+    user() {
+      return this.$store.state.user
+    },
+    liked() {
+      if (!this.fireUser) return false
+      return this.article.likeUids.includes(this.fireUser.uid)
+    },
   },
   async created() {
     await this.readCountUpdate()
@@ -98,6 +113,24 @@ export default {
       const us = this.$route.path.split('/')
       us.pop()
       this.$router.push({ path: us.join('/') })
+    },
+    async like() {
+      if (!this.fireUser) throw Error('로그인이 필요합니다')
+      if (this.liked) {
+        await this.ref.update({
+          likeCount: this.$firebase.firestore.FieldValue.increment(-1),
+          likeUids: this.$firebase.firestore.FieldValue.arrayRemove(
+            this.fireUser.uid
+          ),
+        })
+      } else {
+        await this.ref.update({
+          likeCount: this.$firebase.firestore.FieldValue.increment(1),
+          likeUids: this.$firebase.firestore.FieldValue.arrayUnion(
+            this.fireUser.uid
+          ),
+        })
+      }
     },
   },
 }
