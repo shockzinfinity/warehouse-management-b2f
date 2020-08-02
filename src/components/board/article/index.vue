@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { head, last } from 'lodash'
+import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 const LIMIT = 5
@@ -110,7 +110,7 @@ export default {
         return Number(after.id) - Number(before.id)
       })
     },
-    subscribe(arrow) {
+    subscribe() {
       if (this.unsubscribe) this.unsubscribe()
       this.ref = this.$firebase
         .firestore()
