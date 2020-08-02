@@ -3,7 +3,7 @@
     v-card(outlined :tile="$vuetify.breakpoint.xs" v-if="rack")
       v-toolbar(color="transparent" dense flat)
         v-toolbar-title
-          v-chip.mr-4(color="info" label outlined) {{ rack.position }}
+          v-chip.mr-4(color="info" label outlined) 위치: {{ rack.position }}
         | {{ rack.title }}
         v-spacer
         v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>

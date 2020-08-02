@@ -3,7 +3,7 @@
     v-card(v-if="article" outlined)
       v-toolbar(color="transparent" dense flat)
         v-toolbar-title
-          v-chip.mr-4(color="info" label) feedback
+          v-chip.mr-4(color="info" small label) {{ article.category }}
         | {{ article.title }}
         v-spacer
         template(v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)")
@@ -29,12 +29,14 @@
       v-card-actions
         v-spacer
         v-sheet.mr-4
-          v-icon(left) mdi-eye
+          v-icon(left :color="article.readCount ? 'info' : ''") mdi-eye
           span.body-2 {{ article.readCount }}
         v-sheet.mr-0
-          v-icon(left) mdi-comment
+          v-icon(left :color="article.commentCount ? 'info' : ''") mdi-comment
           span.body-2 {{ article.commentCount }}
-        v-btn(text @click="like") <v-icon left :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ article.likeCount }}</span>
+        v-btn(text @click="like") <v-icon left :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span class="body-2">{{ article.likeCount }}</span>
+      v-card-actions
+        v-chip.mr-2(small outlined label color="info" v-for="tag in article.tags" :key="tag" v-text="tag")
       v-divider
       v-card-actions.py-0
         v-row.no-gutters

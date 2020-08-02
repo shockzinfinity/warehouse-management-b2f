@@ -1,8 +1,8 @@
 <template lang="pug">
-  v-container(fluid)
+  v-container(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
     v-form
-      v-card(:loading="loading")
-        v-toolbar(color="accent" dense flat dark)
+      v-card(:loading="loading" outlined :tile="$vuetify.breakpoint.xs")
+        v-toolbar(color="transparent" dense flat)
           v-toolbar-title 게시판 정보 작성
           v-spacer
           v-btn(icon @click="$router.replace('/board/' + boardId)") <v-icon>mdi-arrow-left</v-icon>

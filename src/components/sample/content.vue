@@ -3,7 +3,7 @@
     v-card(v-if="sample" outlined)
       v-toolbar(color="transparent" dense flat)
         v-toolbar-title
-          v-chip.mr-4(color="info" label) 포함박스: {{ boxId }}
+          v-chip.mr-4(color="info" small label) 포함박스: {{ boxId }}
         | {{ sample.title }}
         v-spacer
         template(v-if="(fireUser && fireUser.uid === sample.uid) || (user && user.level === 0)")
@@ -39,12 +39,16 @@
       v-card-actions
         v-spacer
         v-sheet.mr-4
-          v-icon(left) mdi-eye
+          v-icon(left :color="sample.readCount ? 'info' : ''") mdi-eye
           span.body-2 {{ sample.readCount }}
         v-sheet.mr-0
-          v-icon(left) mdi-comment
+          v-icon(left :color="sample.commentCount ? 'info' : ''") mdi-comment
           span.body-2 {{ sample.commentCount }}
-        v-btn(text @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ sample.likeCount }}</span>
+        v-btn(text @click="like")
+          v-icon(:color="liked ? 'success' : ''") mdi-thumb-up
+          span.body-2 {{ sample.likeCount }}
+      v-card-actions
+        v-chip.mr-2(small outlined label color="info" v-for="tag in sample.tags" :key="tag" v-text="tag")
       v-divider
       v-card-actions.py-0
         v-row.no-gutters
