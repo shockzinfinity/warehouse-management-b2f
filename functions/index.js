@@ -399,7 +399,7 @@ exports.onCreateBoxSample = functions
       .update(set)
   })
 
-exports.onUpdateBoardArticle = functions
+exports.onUpdateBoxSample = functions
   .region(region)
   .firestore.document('boxes/{bid}/samples/{sid}')
   .onUpdate((change, context) => {
