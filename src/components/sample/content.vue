@@ -3,7 +3,7 @@
     v-card(v-if="sample" outlined)
       v-toolbar(color="transparent" dense flat)
         v-toolbar-title
-          v-chip.mr-4(color="info" label) {{ boxId }}
+          v-chip.mr-4(color="info" label) 포함박스: {{ boxId }}
         | {{ sample.title }}
         v-spacer
         template(v-if="(fireUser && fireUser.uid === sample.uid) || (user && user.level === 0)")

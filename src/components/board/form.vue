@@ -33,6 +33,14 @@ export default {
       this.fetch()
     },
   },
+  computed: {
+    user() {
+      return this.$store.state.user
+    },
+    fireUser() {
+      return this.$store.state.fireUser
+    },
+  },
   created() {
     this.fetch()
   },
@@ -69,6 +77,14 @@ export default {
           form.boxCount = 0
           form.sampleSKU = 0
           form.uid = this.$store.state.fireUser.uid
+          form.user = {
+            displayName: this.user.displayName,
+            email: this.user.email,
+            photoURL: this.user.photoURL,
+          }
+          form.categories = ['일반']
+          form.tags = ['vue', 'firebase']
+
           await this.ref.set(form)
         } else {
           await this.ref.update(form)

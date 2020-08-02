@@ -1,41 +1,80 @@
 <template lang="pug">
   v-container(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
-    v-card(outlined)
+    v-card(outlined :tile="$vuetify.breakpoint.xs" v-if="box")
       v-toolbar(color="transparent" dense flat)
         v-toolbar-title
-          v-chip.mr-4(color="info" outlined label) 포함 랙
+          v-chip.mr-4(color="info" outlined label) 포함랙: {{ box.parentRackId }}
         | {{ box.title }}
         v-spacer
-        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
+        v-btn(text @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
+        v-btn(icon @click="dialog = true") <v-icon>mdi-information-outline</v-icon>
         template(v-if="user")
-          v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
           v-btn(icon @click="sampleWrite" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
-      v-card-text(v-if="box.createdAt")
-        v-alert(color="info" outlined dismissible)
-          v-row.no-gutters(justify="center" align="center")
-            v-col(lg="6" cols="sm")
-              v-img.mx-auto(:src="box.coverUrl" max-width="200px")
-            v-col(lg="6" cols="sm")
-              v-img.mx-auto(:src="box.qrCodeUrl" max-width="200px")
-          v-row.no-gutters
-            v-col
-              div(style="white-space: pre-line") {{ box.description }}
-                .text-right.font-italic.caption 작성일: {{ box.createdAt.toDate().toLocaleString() }}
-                .text-right.font-italic.caption 수정일: {{ box.updatedAt.toDate().toLocaleString() }}
-                .text-right.font-italic.caption 포함샘플수: {{ box.sampleCount }}
-                .text-right.font-italic.caption 등록자:
-                  display-user(:user="box.user")
+      v-divider
       box-sample(:boxId="boxId" :box="box")
+      v-dialog(v-model="dialog" max-width="500")
+        v-card
+          v-toolbar(color="transparent" dense flat)
+            v-toolbar-title 박스 정보
+            v-spacer
+            v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
+            v-btn(icon @click="dialog = false") <v-icon>mdi-close</v-icon>
+          v-divider
+          v-list-item
+            v-list-item-content
+              v-list-item-title 등록자
+              v-list-item-subtitle
+                display-user(:user="box.user")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 작성일
+              v-list-item-subtitle.font-italic
+                display-time(:time="box.createdAt")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 수정일
+              v-list-item-subtitle.font-italic
+                display-time(:time="box.updatedAt")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 포함 샘플 수
+              v-list-item-subtitle.font-italic {{ box.sampleCount }}
+          v-list-item
+            v-list-item-content
+              v-list-item-title 등록된 종류
+              v-list-item-subtitle
+                v-chip.mt-2.mr-2(color="info" label small v-for="item in box.categories" :key="item" v-text="item")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 등록된 태그
+              v-list-item-subtitle.comment
+                v-chip.mt-2.mr-2(color="info" outlined label small v-for="item in box.tags" :key="item" v-text="item")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 커버 이미지
+              v-list-item-subtitle
+                v-img.mx-auto(:src="box.coverUrl" max-width="200px")
+          v-list-item
+            v-list-item-content
+              v-list-item-title QR code
+              v-list-item-subtitle
+                v-img.mx-auto(:src="box.qrCodeUrl" max-width="200px")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 설명
+              v-list-item-subtitle.comment(v-text="box.description")
 </template>
 
 <script>
 import BoxSample from '@/components/sample/index'
 import DisplayUser from '@/components/display-user'
+import DisplayTime from '@/components/display-time'
 
 export default {
   components: {
     BoxSample,
     DisplayUser,
+    DisplayTime,
   },
   props: ['boxId'],
   data() {
@@ -48,7 +87,7 @@ export default {
         likeUids: [],
       },
       loading: false,
-      doc: null,
+      dialog: false,
     }
   },
   watch: {
@@ -86,8 +125,10 @@ export default {
           if (!doc.exists) {
             return this.write()
           }
-          this.doc = doc
-          this.box = doc.data()
+          const item = doc.data()
+          item.createdAt = item.createdAt.toDate()
+          item.updatedAt = item.updatedAt.toDate()
+          this.box = item
         },
         e => {
           throw Error(e.message)
@@ -127,3 +168,8 @@ export default {
   },
 }
 </script>
+
+<style lang="sass" scoped>
+.comment
+  white-space: pre-wrap
+</style>

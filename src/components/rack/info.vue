@@ -1,32 +1,62 @@
 <template lang="pug">
   v-container(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
-    v-card(outlined)
+    v-card(outlined :tile="$vuetify.breakpoint.xs" v-if="rack")
       v-toolbar(color="transparent" dense flat)
         v-toolbar-title
           v-chip.mr-4(color="info" label outlined) {{ rack.position }}
         | {{ rack.title }}
         v-spacer
         v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
+        v-btn(icon @click="dialog = true") <v-icon>mdi-information-outline</v-icon>
         template(v-if="user")
-          v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
           v-btn(icon @click="boxDialog = true" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
       v-divider
-      v-card-text(v-if="rack.createdAt")
-        v-alert(color="info" outlined dismissible)
-          v-row.no-gutters
-            v-col.pb-2(lg="6" cols="sm")
-              v-img.mx-auto(:src="rack.coverUrl" max-width="200px")
-            v-col.pb-2(lg="6" cols="sm")
-              v-img.mx-auto(:src="rack.qrCodeUrl" max-width="200px")
-          v-row
-            v-col
-              div(style="white-space: pre-line") {{ rack.description }}
-              .text-right.font-italic.caption 작성일: {{ rack.createdAt.toDate().toLocaleString() }}
-              .text-right.font-italic.caption 수정일: {{ rack.updatedAt.toDate().toLocaleString() }}
-              .text-right.font-italic.caption 포함 박스 수: {{ rack.boxCount }}
-              .text-right.font-italic.caption 등록자:
-                display-user(:user="rack.user")
       rack-box(v-if="rack.rackId" :rackId="rackId" :rack="rack")
+      v-dialog(v-model="dialog" max-width="500")
+        v-card
+          v-toolbar(color="transparent" dense flat)
+            v-toolbar-title 랙 정보
+            v-spacer
+            v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
+            v-btn(icon @click="dialog = false") <v-icon>mdi-close</v-icon>
+          v-divider
+          v-list-item
+            v-list-item-content
+              v-list-item-title 등록자
+              v-list-item-subtitle
+                display-user(:user="rack.user")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 작성일
+              v-list-item-subtitle.font-italic
+                display-time(:time="rack.createdAt")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 수정일
+              v-list-item-subtitle.font-italic
+                display-time(:time="rack.updatedAt")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 포함 박스 수
+              v-list-item-subtitle.font-italic {{ rack.boxCount }}
+          v-list-item
+            v-list-item-content
+              v-list-item-title 포함 샘플 수
+              v-list-item-subtitle.font-italic {{ rack.sampleSKU }}
+          v-list-item
+            v-list-item-content
+              v-list-item-title 커버 이미지
+              v-list-item-subtitle
+                v-img.mx-auto(:src="rack.coverUrl" max-width="200px")
+          v-list-item
+            v-list-item-content
+              v-list-item-title QR code
+              v-list-item-subtitle
+                v-img.mx-auto(:src="rack.qrCodeUrl" max-width="200px")
+          v-list-item
+            v-list-item-content
+              v-list-item-title 설명
+              v-list-item-subtitle.comment(v-text="rack.description")
     v-dialog(v-model="boxDialog" max-width="400")
       v-card
         v-card-title 박스 추가
@@ -40,11 +70,13 @@
 <script>
 import RackBox from '@/components/box/index'
 import DisplayUser from '@/components/display-user'
+import DisplayTime from '@/components/display-time'
 
 export default {
   components: {
     RackBox,
     DisplayUser,
+    DisplayTime,
   },
   props: ['rackId'],
   data() {
@@ -60,6 +92,7 @@ export default {
       boxDialog: false,
       toAddBoxTitle: '',
       ref: null,
+      dialog: false,
     }
   },
   watch: {
@@ -97,7 +130,10 @@ export default {
           if (!doc.exists) {
             return this.write()
           }
-          this.rack = doc.data()
+          const item = doc.data()
+          item.createdAt = item.createdAt.toDate()
+          item.updatedAt = item.updatedAt.toDate()
+          this.rack = item
         },
         e => {
           throw Error(e.message)
@@ -142,3 +178,8 @@ export default {
   },
 }
 </script>
+
+<style lang="sass" scoped>
+.comment
+  white-space: pre-wrap
+</style>

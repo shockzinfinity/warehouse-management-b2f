@@ -133,6 +133,8 @@ export default {
             createdAt: new Date(),
             level: this.user.level,
           }
+          // form.categories = ['일반']
+          // form.tags = ['vue', 'firebase']
 
           if (!form.qrCodeUrl) {
             const qr = await this.codeGenration(form.rackId)

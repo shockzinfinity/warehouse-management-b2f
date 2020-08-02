@@ -1,20 +1,20 @@
 <template lang="pug">
-  board-info(v-if="!action" :boardId="info")
+  board-content(v-if="!action" :boardId="info")
   board-form(v-else :boardId="info" :action="action")
 </template>
 
 <script>
-import BoardInfo from '@/components/board/info'
+import BoardContent from '@/components/board/content'
 import BoardForm from '@/components/board/form'
 
 export default {
-  components: { BoardInfo, BoardForm },
+  components: { BoardContent, BoardForm },
   computed: {
     info() {
       return this.$route.params.info
     },
     action() {
-      return this.$route.params.action
+      return this.$route.query.action
     },
   },
 }

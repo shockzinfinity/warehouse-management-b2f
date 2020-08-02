@@ -124,10 +124,37 @@ exports.onCreateBoardArticle = functions
   .region(region)
   .firestore.document('boards/{bid}/articles/{aid}')
   .onCreate((snap, context) => {
+    const set = {
+      count: admin.firestore.FieldValue.increment(1),
+    }
+    const doc = snap.data()
+    if (doc.category)
+      set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+
+    if (doc.tags.length)
+      set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
+
     return fdb
       .collection('boards')
       .doc(context.params.bid)
-      .update({ count: admin.firestore.FieldValue.increment(1) })
+      .update(set)
+  })
+
+exports.onUpdateBoardArticle = functions
+  .region(region)
+  .firestore.document('/boards/{bid}/articles/{aid}')
+  .onUpdate((change, context) => {
+    const set = {}
+    const doc = change.after.data()
+    if (doc.category)
+      set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+    if (doc.tags.length)
+      set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
+    if (!Object.keys(set).length) return false
+    return fdb
+      .collection('boards')
+      .doc(context.params.bid)
+      .update(set)
   })
 
 exports.onDeleteBoardArticle = functions
@@ -320,11 +347,6 @@ exports.onCreateBoxSample = functions
   .region(region)
   .firestore.document('boxes/{bid}/samples/{sid}')
   .onCreate(async (snap, context) => {
-    await fdb
-      .collection('boxes')
-      .doc(context.params.bid)
-      .update({ sampleCount: admin.firestore.FieldValue.increment(1) })
-
     try {
       await fdb
         .collection('meta')
@@ -361,6 +383,37 @@ exports.onCreateBoxSample = functions
           .set({ sampleSKU: 1 })
       }
     }
+
+    const set = {
+      sampleCount: admin.firestore.FieldValue.increment(1),
+    }
+
+    const doc = snap.data()
+    if (doc.category)
+      set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+    if (doc.tags) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
+
+    return fdb
+      .collection('boxes')
+      .doc(context.params.bid)
+      .update(set)
+  })
+
+exports.onUpdateBoardArticle = functions
+  .region(region)
+  .firestore.document('boxes/{bid}/samples/{sid}')
+  .onUpdate((change, context) => {
+    const set = {}
+    const doc = change.after.data()
+    if (doc.category)
+      set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+    if (doc.tags.length)
+      set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
+    if (!Object.keys(set).length) return false
+    return fdb
+      .collection('boxes')
+      .doc(context.params.bid)
+      .update(set)
   })
 
 exports.onDeleteBoxSample = functions
@@ -409,7 +462,10 @@ exports.onDeleteBoxSample = functions
     } catch (e) {
       console.error('history remove error: ' + e.message)
     }
+
     // rack update
+    // TODO: 이 시점에 box 가 이미 사라져있을수 있음
+    // 고로, onDeleteBox 단에서 sampleCount 만큼 상위 랙에 (-) 업데이트
     const box = await fdb
       .collection('boxes')
       .doc(context.params.bid)
