@@ -117,6 +117,8 @@ export default {
             displayName: this.user.displayName,
             photoURL: this.user.photoURL,
           }
+          doc.likeCount = 0
+          doc.likeUids = []
 
           if (!doc.qrCodeUrl) {
             const box = await this.$firebase

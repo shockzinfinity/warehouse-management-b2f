@@ -19,6 +19,9 @@
               div(style="white-space: pre-line") {{ box.description }}
               .text-right.font-italic.caption 작성일: {{ box.createdAt.toDate().toLocaleString() }}
               .text-right.font-italic.caption 수정일: {{ box.updatedAt.toDate().toLocaleString() }}
+      v-card-actions
+        v-spacer
+        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
       box-sample(:boxId="boxId" :box="box")
 </template>
 
@@ -33,11 +36,14 @@ export default {
   data() {
     return {
       unsubscribe: null,
+      ref: null,
       box: {
         title: '',
         description: '',
+        likeUids: [],
       },
       loading: false,
+      doc: null,
     }
   },
   watch: {
@@ -49,6 +55,13 @@ export default {
     user() {
       return this.$store.state.user
     },
+    fireUser() {
+      return this.$store.state.fireUser
+    },
+    liked() {
+      if (!this.fireUser) return false
+      return this.box.likeUids.includes(this.fireUser.uid)
+    },
   },
   created() {
     this.subscribe()
@@ -59,21 +72,40 @@ export default {
   methods: {
     subscribe() {
       if (this.unsubscribe) this.unsubscribe()
-      const ref = this.$firebase
+      this.ref = this.$firebase
         .firestore()
         .collection('boxes')
         .doc(this.boxId)
-      this.unsubscribe = ref.onSnapshot(
+      this.unsubscribe = this.ref.onSnapshot(
         doc => {
           if (!doc.exists) {
             return this.write()
           }
+          this.doc = doc
           this.box = doc.data()
         },
         e => {
           throw Error(e.message)
         }
       )
+    },
+    async like() {
+      if (!this.fireUser) throw Error('로그인이 필요합니다')
+      if (this.liked) {
+        await this.ref.update({
+          likeCount: this.$firebase.firestore.FieldValue.increment(-1),
+          likeUids: this.$firebase.firestore.FieldValue.arrayRemove(
+            this.fireUser.uid
+          ),
+        })
+      } else {
+        await this.ref.update({
+          likeCount: this.$firebase.firestore.FieldValue.increment(1),
+          likeUids: this.$firebase.firestore.FieldValue.arrayUnion(
+            this.fireUser.uid
+          ),
+        })
+      }
     },
     async write() {
       this.$router.replace({

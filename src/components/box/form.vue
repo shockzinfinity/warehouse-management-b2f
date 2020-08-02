@@ -130,6 +130,8 @@ export default {
             createdAt: new Date(),
             level: this.user.level,
           }
+          form.likeCount = 0
+          form.likeUids = []
 
           if (!form.qrCodeUrl) {
             const qr = await this.codeGenration(form.boxId)

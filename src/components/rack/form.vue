@@ -114,6 +114,8 @@ export default {
           form.boxCount = 0
           form.sampleSKU = 0
           form.uid = this.$store.state.fireUser.uid
+          form.likeCount = 0
+          form.likeUids = []
 
           if (!form.qrCodeUrl) {
             const qr = await this.codeGenration(form.rackId)
@@ -126,6 +128,7 @@ export default {
               .putString(qr, 'data_url')
             form.qrCodeUrl = await qrSn.ref.getDownloadURL()
           }
+
           await this.ref.set(form)
         } else {
           await this.ref.update(form)
