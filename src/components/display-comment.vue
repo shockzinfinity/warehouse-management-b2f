@@ -7,7 +7,7 @@
         outlined
         label="댓글 작성"
         placeholder="Ctrl + Enter 로 작성가능"
-        append-icon="mdi-send"
+        append-icon="mdi-comment-plus"
         @click:append="save"
         @keypress.ctrl.enter="save"
         hide-details
@@ -25,7 +25,7 @@
         v-list-item-action
           v-btn(text @click="like(item)") <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
             span {{ item.likeCount }}
-        v-list-item-action
+        v-list-item-action(v-if="(fireUser && fireUser.uid === item.uid) || (user && user.level === 0)")
           v-btn(icon @click="remove(item)") <v-icon>mdi-delete</v-icon>
       v-divider(:key="i" v-if="i < items.length - 1")
     v-list-item(v-if="lastDoc && items.length < article.commentCount")
@@ -103,10 +103,9 @@ export default {
         .get()
       this.snToItems(sn)
     },
-    async onIntersect(entries, observer, isIntersecting) {
-      // console.log(isIntersecting)
+    onIntersect(entries, observer, isIntersecting) {
       if (isIntersecting) {
-        await this.more()
+        this.more()
       }
     },
     subscribe() {
@@ -127,6 +126,8 @@ export default {
         })
     },
     async save() {
+      if (!this.fireUser) throw Error('로그인이 필요합니다')
+      // if (this.comment.length > 10) throw Error('문자 허용치를 넘었습니다')
       const doc = {
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -185,7 +186,7 @@ export default {
       return item.likeUids.includes(this.fireUser.uid)
     },
     async remove(comment) {
-      if (!this.fireUser) throw Error('로그인이 필요합니다')
+      // if (!this.fireUser) throw Error('로그인이 필요합니다')
       await this.docRef
         .collection('comments')
         .doc(comment.id)
