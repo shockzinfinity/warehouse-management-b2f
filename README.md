@@ -22,8 +22,8 @@ $ yarn build
 ```bash
 $ firebase deploy --only database
 $ firebase deploy --only firestore
-$ firebase deploy --only funtions
-$ firebase deploy --only funtions:createUser,functions:deleteUser ...
+$ firebase deploy --only functions
+$ firebase deploy --only functions:createUser,functions:deleteUser ...
 ```
 
 ### Global path setting in nvm env

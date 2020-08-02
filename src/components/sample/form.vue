@@ -98,12 +98,13 @@ export default {
 
         if (this.sampleId === 'new') {
           const id = createdAt.getTime().toString()
+          const fn = id + '-' + this.fireUser.uid + '.md'
           const sn = await this.$firebase
             .storage()
             .ref()
-            .child('boxes')
-            .child(this.boxId)
-            .child(id + '.md')
+            .child('samples')
+            .child(id)
+            .child(fn)
             .putString(md)
           doc.url = await sn.ref.getDownloadURL()
           doc.createdAt = createdAt
@@ -121,18 +122,7 @@ export default {
           doc.likeUids = []
 
           if (!doc.qrCodeUrl) {
-            const box = await this.$firebase
-              .firestore()
-              .collection('boxes')
-              .doc(this.boxId)
-              .get()
-            let boxId
-            if (box.exists) {
-              const item = box.data()
-              boxId = item.boxId
-            }
-
-            const qr = await this.codeGenration(boxId, id)
+            const qr = await this.codeGenration(this.boxId, id)
             const qrSn = await this.$firebase
               .storage()
               .ref()
@@ -148,12 +138,13 @@ export default {
             .doc(id)
             .set(doc)
         } else {
+          const fn = this.sampleId + '-' + this.sample.uid + '.md'
           await this.$firebase
             .storage()
             .ref()
-            .child('boxes')
-            .child(this.boxId)
-            .child(this.sampleId + '.md')
+            .child('samples')
+            .child(this.sampleId)
+            .child(fn)
             .putString(md)
           await this.ref
             .collection('samples')

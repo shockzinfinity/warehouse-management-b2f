@@ -86,12 +86,13 @@ export default {
 
         if (this.articleId === 'new') {
           const id = createdAt.getTime().toString()
+          const fn = id + '-' + this.fireUser.uid + '.md'
           const sn = await this.$firebase
             .storage()
             .ref()
             .child('boards')
             .child(this.boardId)
-            .child(id + '.md')
+            .child(fn)
             .putString(md)
           doc.url = await sn.ref.getDownloadURL()
           doc.createdAt = createdAt
@@ -110,21 +111,22 @@ export default {
             .doc(id)
             .set(doc)
         } else {
+          const fn = this.articleId + '-' + this.article.uid + '.md'
           await this.$firebase
             .storage()
             .ref()
             .child('boards')
             .child(this.boardId)
-            .child(this.articleId + '.md')
+            .child(fn)
             .putString(md)
           await this.ref
             .collection('articles')
             .doc(this.articleId)
             .update(doc)
         }
+        this.$router.replace('/board/' + this.boardId)
       } finally {
         this.loading = false
-        this.$router.replace('/board/' + this.boardId)
       }
     },
   },

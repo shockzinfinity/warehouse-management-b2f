@@ -34,8 +34,7 @@
 export default {
   props: {
     originSrc: { type: String, default: '' },
-    pathId: { type: String, default: '' },
-    type: { type: String, default: '', required: true },
+    storeRef: { default: null },
   },
   data() {
     return {
@@ -47,23 +46,7 @@ export default {
       downloadURL: '',
     }
   },
-  computed: {
-    typePosition() {
-      let retVal
-      switch (this.type) {
-        case 'rack':
-          retVal = 'racks'
-          break
-        case 'box':
-          retVal = 'boxes'
-          break
-        case 'sample':
-          retVal = 'samples'
-          break
-      }
-      return retVal
-    },
-  },
+  computed: {},
   watch: {
     uploadTask() {
       this.uploadTask.on(
@@ -104,20 +87,10 @@ export default {
     upload(file) {
       this.fileName = file.name
       this.uploading = true
-      this.uploadTask = this.$firebase
-        .storage()
-        .ref()
-        .child(this.typePosition)
-        .child(this.pathId)
-        .child(file.name)
-        .put(file)
+      this.uploadTask = this.storeRef.child(file.name).put(file)
     },
     deleteImage() {
-      this.$firebase
-        .storage()
-        .ref()
-        .child(this.typePosition)
-        .child(this.pathId)
+      this.storeRef
         .child(this.fileName)
         .delete()
         .then(() => {

@@ -12,7 +12,12 @@
             v-text-field-with-validation(v-model="form.title" rules="required|max:50" :counter="50"  outlined label="이름")
             v-textarea(v-model="form.description" outlined label="설명")
           v-card-actions
-            cover-upload(ref="cover" type="box" @downloadURL="getDownloadURL" :originSrc="form.coverUrl" :pathId="boxId")
+            cover-upload(
+              ref="cover"
+              @downloadURL="getDownloadURL"
+              :originSrc="form.coverUrl"
+              :storeRef="$firebase.storage().ref().child('boxes').child(boxId)"
+            )
           v-card-actions
             v-img(v-if="exists && form.qrCodeUrl" :src="form.qrCodeUrl")
 </template>

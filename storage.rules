@@ -4,6 +4,7 @@ service firebase.storage {
       allow read: if true
       allow write: if request.auth!=null;
     }
+    // TODO: 이 기반으로 나머지 룰 설정
     // match /boards {
     //  // Allow write files to the path "images/*", subject to the constraints:
     //  // 1) File is less than 5MB  (5 * 1024 * 1024)
@@ -13,23 +14,17 @@ service firebase.storage {
     //   match /{boardId}/{articleId} {
     //     allow read: if true
     //     allow write: if request.auth != null
-    //                 // && (
-    //                 //   request.resource == null
-    //                 //   || (
-    //                 //     request.resource.size < 20 * 1024 * 1024
-    //                 //     && request.resource.contentType.matches('application/octet-stream')
-    //                 //     && (resource == null || request.resource.contentType == resource.contentType)
-    //                 //   )
-    //                 // )
+    //                 && articleId.split('-')[1] == request.auth.uid + '.md'
     //                 && request.resource != null
-    //                 && (
-    //                   request.resource.size < 20 * 1024 * 1024
+    //                 && (                      
+    //                   request.resource.size < 5 * 1024 * 1024
     //                   && request.resource.contentType.matches('application/octet-stream')
-    //                   && (resource == null || request.resource.contentType == resource.contentType)
+    //                   && (resource == null || request.resource.contentType == resource.contentType)                      
     //                 )
-    //                 && articleId.size() < 24
+    //                 // && articleId.size() == 16
     //   }
     // }
+
     // match /racks {
     //   match /{rackId} {
     //     allow read: if true

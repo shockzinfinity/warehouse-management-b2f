@@ -160,7 +160,7 @@ exports.onDeleteBoardArticle = functions
     const ps = []
     ps.push('boards')
     ps.push(context.params.bid)
-    ps.push(context.params.aid + '.md')
+    ps.push(context.params.aid + '-' + snap.data().uid + '.md')
 
     await admin
       .storage()
@@ -307,6 +307,13 @@ exports.onDeleteBox = functions
       .get()
     sn.docs.forEach(doc => batch.delete(doc.ref))
     await batch.commit()
+
+    // remove storage (context, cover, qr)
+    await admin
+      .storage()
+      .bucket()
+      .deleteFiles({ prefix: `boxes/${context.params.bid}` })
+      .catch(e => console.error('storage remove error: ' + e.message))
   })
 
 exports.onCreateBoxSample = functions
@@ -420,7 +427,43 @@ exports.onDeleteBoxSample = functions
         .update({ sampleSKU: admin.firestore.FieldValue.increment(-1) })
     }
 
-    // remove storage
+    // remove sample context
+    // const ps1 = []
+    // ps1.push('boxes')
+    // ps1.push(context.params.bid)
+    // ps1.push(context.params.sid + '-' + snap.data().uid + '.md')
+    // await admin
+    //   .storage()
+    //   .bucket()
+    //   .file(ps1.join('/'))
+    //   .delete()
+    //   .catch(e => console.error('storage remove error: ' + e.message))
+
+    // remove sample qr
+    // const ps2 = []
+    // ps2.push('samples')
+    // ps2.push(context.params.sid)
+    // ps2.push(context.params.sid + '.qr.png')
+    // await admin
+    //   .storage()
+    //   .bucket()
+    //   .file(ps2.join('/'))
+    //   .delete()
+    //   .catch(e => console.error('storage remove error: ' + e.message))
+
+    // remove sample cover
+    // const ps3 = []
+    // ps3.push('samples')
+    // ps3.push(context.params.bid)
+    // ps3.push(context.params.sid + '-' + snap.data().uid + '.md')
+    // await admin
+    //   .storage()
+    //   .bucket()
+    //   .file(ps3.join('/'))
+    //   .delete()
+    //   .catch(e => console.error('storage remove error: ' + e.message))
+
+    // remove storage (context, cover, qr)
     await admin
       .storage()
       .bucket()
