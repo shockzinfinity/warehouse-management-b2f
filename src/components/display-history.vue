@@ -2,6 +2,7 @@
   v-expansion-panels
     v-expansion-panel
       v-expansion-panel-header History
+      v-divider
       v-expansion-panel-content
         template(v-for="(item, i) in items")
           v-list-item(:key="item.id")
@@ -11,7 +12,7 @@
               v-list-item-subtitle {{ item.type }} : {{ item.amount }}
               v-list-item-subtitle
                 display-time(:time="item.actionTime")
-          v-divider(:key="i")
+          v-divider(:key="i" v-if="i < items.length - 1")
         v-list-item
           v-btn(v-if="lastDoc" @click="more" text block color="primary") more
 </template>

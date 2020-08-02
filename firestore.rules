@@ -54,7 +54,7 @@ service cloud.firestore {
       }
     }
     match /racks/{rackId} {
-      function incrementRackCounts (before, after) {
+      function incrementRackCount (before, after) {
         return before.coverUrl == after.coverUrl &&
                 before.qrCodeUrl == after.qrCodeUrl &&
                 before.rackId == after.rackId &&
@@ -64,15 +64,15 @@ service cloud.firestore {
                 before.title == after.title &&
                 before.position == after.position &&
                 before.uid == after.uid &&
-                (before.boxCount != after.boxCount || before.sampleSKU != after.sampleSKU || before.likeCount != after.likeCount || before.likeUids != after.likeUids)
+                (before.likeCount != after.likeCount || before.likeUids != after.likeUids)
       }
       allow read: if true
       allow create: if approvedLevel(0)
-      allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementRackCounts(resource.data, request.resource.data)
+      allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementRackCount(resource.data, request.resource.data)
       allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid
     }
     match /boxes/{boxId} {
-      function incrementBoxCounts (before, after) {
+      function incrementBoxCount (before, after) {
         return before.coverUrl == after.coverUrl &&
                 before.qrCodeUrl == after.qrCodeUrl &&
                 before.boxId == after.boxId &&
@@ -87,17 +87,17 @@ service cloud.firestore {
                 before.user.displayName == after.user.displayName &&
                 before.user.email == after.user.email &&
                 before.user.photoURL == after.user.photoURL &&
-                (before.count != after.count || before.sampleCount != after.sampleCount || before.likeCount != after.likeCount || before.likeUids != after.likeUids)
+                (before.likeCount != after.likeCount ||
+                  before.likeUids != after.likeUids)
       }
       allow read: if true
       allow create: if approvedLevel(5)
-      allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementBoxCounts(resource.data, request.resource.data)
+      allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementBoxCount(resource.data, request.resource.data)
       allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid
       match /samples/{sampleId} {
         function incrementSampleCount (before, after) {
           return before.url == after.url &&
                   before.qrCodeUrl == after.qrCodeUrl &&
-                  before.coverUrl == after.coverUrl
                   before.createdAt == after.createdAt &&
                   before.updatedAt == after.updatedAt &&
                   before.title == after.title &&
@@ -105,11 +105,14 @@ service cloud.firestore {
                   before.user.displayName == after.user.displayName &&
                   before.user.email == after.user.email &&
                   before.user.photoURL == after.user.photoURL &&
-                  (before.currentStock != after.currentStock || before.likeCount != after.likeCount || before.likeUids != after.likeUids || before.readCount != after.readCount)
+                  (before.readCount != after.readCount ||
+                    before.currentStock != after.currentStock ||
+                    before.likeCount != after.likeCount ||
+                    before.likeUids != after.likeUids)
         }
         allow read: if true
         allow create: if approvedLevel(5)
-        allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementSampleCounts(resource.data, request.resource.data)
+        allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementSampleCount(resource.data, request.resource.data)
         allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid
         match /comments/{commentId} {
           function incrementCommentCount (before, after) {

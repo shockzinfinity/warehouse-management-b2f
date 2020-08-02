@@ -1,9 +1,21 @@
 <template lang="pug">
   v-card(flat)
     v-card-title
-      v-textarea(v-model="comment" rows="3" outlined label="댓글 작성" append-icon="mdi-send" @click:append="save" @keypress.shift.enter="save" hide-details)
+      v-textarea(
+        v-model="comment"
+        rows="1"
+        outlined
+        label="댓글 작성"
+        placeholder="Ctrl + Enter 로 작성가능"
+        append-icon="mdi-send"
+        @click:append="save"
+        @keypress.ctrl.enter="save"
+        hide-details
+        auto-grow
+        clearable
+      )
     template(v-for="(item, i) in items")
-      v-list-item(:key="item.id" three-line)
+      v-list-item(:key="item.id")
         v-list-item-action
           display-user(:user="item.user")
         v-list-item-content
@@ -11,11 +23,11 @@
           v-list-item-subtitle.font-italic
             display-time(:time="item.createdAt")
         v-list-item-action
-          v-btn(icon @click="like(item)") <v-icon :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
+          v-btn(text @click="like(item)") <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
             span {{ item.likeCount }}
         v-list-item-action
           v-btn(icon @click="remove(item)") <v-icon>mdi-delete</v-icon>
-      v-divider(:key="i")
+      v-divider(:key="i" v-if="i < items.length - 1")
     v-list-item(v-if="lastDoc && items.length < article.commentCount")
       v-btn(v-intersect="onIntersect" @click="more" text color="primary" block) more
 </template>
@@ -43,6 +55,11 @@ export default {
     },
     user() {
       return this.$store.state.user
+    },
+  },
+  watch: {
+    docRef() {
+      this.subscribe()
     },
   },
   created() {

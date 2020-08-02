@@ -1,35 +1,50 @@
 <template lang="pug">
-  v-container(fluid)
-    v-card(v-if="sample")
-      v-toolbar(color="info" dark dense flat)
-        v-toolbar-title {{ sample.title }}
+  v-container(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
+    v-card(v-if="sample" outlined)
+      v-toolbar(color="transparent" dense flat)
+        v-toolbar-title
+          v-chip.mr-4(color="info" label) 포함박스
+        | {{ sample.title }}
         v-spacer
-        v-btn(@click="sampleWrite" icon) <v-icon>mdi-pencil</v-icon>
-        v-btn(@click="remove" icon) <v-icon>mdi-delete</v-icon>
+        template(v-if="(fireUser && fireUser.uid === sample.uid) || (user && user.level === 0)")
+          v-btn(@click="sampleWrite" icon) <v-icon>mdi-pencil</v-icon>
+          v-btn(@click="remove" icon) <v-icon>mdi-delete</v-icon>
         v-btn(@click="back" icon) <v-icon>mdi-close</v-icon>
-      v-card-text
-        v-row.no-gutters
+      v-divider
+      v-card-actions
+        v-row.no-gutters(justify="center" align="center")
           v-col.pb-2(lg="6" cols="sm")
             v-img.mx-auto(:src="sample.qrCodeUrl" max-width="200px")
           v-col.pb-2(lg="6" cols="sm")
-            v-row
+            v-row.no-gutters
               v-text-field(type="number" v-model="stockInOut" flat dense outlined label="Current stock")
               v-btn(icon @click="incomming") <v-icon>mdi-basket-fill</v-icon>
               v-btn(icon @click="outcomming") <v-icon>mdi-basket-unfill</v-icon>
-      v-card-text
+      v-divider
+      v-card-text Description
         viewer(v-if="content" :initialValue="content")
         v-container(v-else)
           v-row(justify="center" align="center")
             v-progress-circular(indeterminate)
       v-card-actions
         v-spacer
-        span.font-italic.caption 작성일: <display-time :time="sample.createdAt"></display-time>
+        span.font-italic.caption 등록일: <display-time :time="sample.createdAt"></display-time>
       v-card-actions
         v-spacer
         span.font-italic.caption 수정일: <display-time :time="sample.updatedAt"></display-time>
       v-card-actions
         v-spacer
-        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ sample.likeCount }}</span>
+        span.font-italic.caption.mr-2 등록자:
+        display-user(:user="sample.user")
+      v-card-actions
+        v-spacer
+        v-sheet.mr-4
+          v-icon(left) mdi-eye
+          span.body-2 {{ sample.readCount }}
+        v-sheet.mr-0
+          v-icon(left) mdi-comment
+          span.body-2 {{ sample.commentCount }}
+        v-btn(text @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ sample.likeCount }}</span>
       v-divider
       v-card-actions.py-0
         v-row.no-gutters
@@ -56,12 +71,14 @@ import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
 import DisplayHistory from '@/components/display-history'
+import DisplayUser from '@/components/display-user'
 
 export default {
   components: {
     DisplayTime,
     DisplayComment,
     DisplayHistory,
+    DisplayUser,
   },
   props: ['boxId', 'sampleId'],
   data() {

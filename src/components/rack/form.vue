@@ -49,6 +49,7 @@ export default {
         sampleSKU: 0,
         title: '',
         uid: '',
+        user: {},
       },
       exists: false,
       loading: false,
@@ -90,6 +91,10 @@ export default {
         this.form.uid = item.uid
         this.form.qrCodeUrl = item.qrCodeUrl
         this.form.coverUrl = item.coverUrl
+        this.form.user.displayName = item.user.displayName
+        this.form.user.email = item.user.email
+        this.form.user.level = item.user.level
+        this.form.user.photoURL = item.user.photoURL
       }
     },
     async save() {
@@ -116,6 +121,13 @@ export default {
           form.uid = this.$store.state.fireUser.uid
           form.likeCount = 0
           form.likeUids = []
+          form.user = {
+            displayName: this.user.displayName,
+            email: this.user.email,
+            photoURL: this.user.photoURL,
+            createdAt: new Date(),
+            level: this.user.level,
+          }
 
           if (!form.qrCodeUrl) {
             const qr = await this.codeGenration(form.rackId)

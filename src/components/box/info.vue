@@ -1,36 +1,41 @@
 <template lang="pug">
-  v-container(fluid)
-    v-card
-      v-toolbar(color="accent" dense flat dark)
-        v-toolbar-title(v-text="box.title")
+  v-container(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
+    v-card(outlined)
+      v-toolbar(color="transparent" dense flat)
+        v-toolbar-title
+          v-chip.mr-4(color="info" outlined label) 포함 랙
+        | {{ box.title }}
         v-spacer
+        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
         template(v-if="user")
           v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
           v-btn(icon @click="sampleWrite" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
       v-card-text(v-if="box.createdAt")
         v-alert(color="info" outlined dismissible)
-          v-row.no-gutters
-            v-col.pb-2(lg="6" cols="sm")
+          v-row.no-gutters(justify="center" align="center")
+            v-col(lg="6" cols="sm")
               v-img.mx-auto(:src="box.coverUrl" max-width="200px")
-            v-col.pb-2(lg="6" cols="sm")
+            v-col(lg="6" cols="sm")
               v-img.mx-auto(:src="box.qrCodeUrl" max-width="200px")
-          v-row
+          v-row.no-gutters
             v-col
               div(style="white-space: pre-line") {{ box.description }}
-              .text-right.font-italic.caption 작성일: {{ box.createdAt.toDate().toLocaleString() }}
-              .text-right.font-italic.caption 수정일: {{ box.updatedAt.toDate().toLocaleString() }}
-      v-card-actions
-        v-spacer
-        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
+                .text-right.font-italic.caption 작성일: {{ box.createdAt.toDate().toLocaleString() }}
+                .text-right.font-italic.caption 수정일: {{ box.updatedAt.toDate().toLocaleString() }}
+                .text-right.font-italic.caption 포함샘플수: {{ box.sampleCount }}
+                .text-right.font-italic.caption 등록자:
+                  display-user(:user="box.user")
       box-sample(:boxId="boxId" :box="box")
 </template>
 
 <script>
 import BoxSample from '@/components/sample/index'
+import DisplayUser from '@/components/display-user'
 
 export default {
   components: {
     BoxSample,
+    DisplayUser,
   },
   props: ['boxId'],
   data() {

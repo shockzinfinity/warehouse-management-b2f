@@ -1,12 +1,16 @@
 <template lang="pug">
-  v-container(fluid)
-    v-card
-      v-toolbar(color="accent" dense flat dark)
-        v-toolbar-title(v-text="rack.title")
+  v-container(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
+    v-card(outlined)
+      v-toolbar(color="transparent" dense flat)
+        v-toolbar-title
+          v-chip.mr-4(color="info" label outlined) {{ rack.position }}
+        | {{ rack.title }}
         v-spacer
+        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
         template(v-if="user")
           v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
           v-btn(icon @click="boxDialog = true" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
+      v-divider
       v-card-text(v-if="rack.createdAt")
         v-alert(color="info" outlined dismissible)
           v-row.no-gutters
@@ -20,9 +24,8 @@
               .text-right.font-italic.caption 작성일: {{ rack.createdAt.toDate().toLocaleString() }}
               .text-right.font-italic.caption 수정일: {{ rack.updatedAt.toDate().toLocaleString() }}
               .text-right.font-italic.caption 포함 박스 수: {{ rack.boxCount }}
-      v-card-actions
-        v-spacer
-        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
+              .text-right.font-italic.caption 등록자:
+                display-user(:user="rack.user")
       rack-box(v-if="rack.rackId" :rackId="rackId" :rack="rack")
     v-dialog(v-model="boxDialog" max-width="400")
       v-card
@@ -36,10 +39,12 @@
 
 <script>
 import RackBox from '@/components/box/index'
+import DisplayUser from '@/components/display-user'
 
 export default {
   components: {
     RackBox,
+    DisplayUser,
   },
   props: ['rackId'],
   data() {

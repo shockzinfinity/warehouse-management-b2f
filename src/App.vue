@@ -8,7 +8,7 @@
     v-navigation-drawer(app v-model='drawer' floating width='400')
       site-menu(:items='site.menu')
     v-main
-      v-container.px-4.py-0.fill-height(fluid)
+      v-container.fill-height(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
         v-row.fill-height
           v-col
             router-view

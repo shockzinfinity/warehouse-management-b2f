@@ -1,12 +1,16 @@
 <template lang="pug">
-  v-container(fluid)
-    v-card(v-if="article")
-      v-toolbar(color="info" dark dense flat)
-        v-toolbar-title {{ article.title }}
+  v-container(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
+    v-card(v-if="article" outlined)
+      v-toolbar(color="transparent" dense flat)
+        v-toolbar-title
+          v-chip.mr-4(color="info" label) feedback
+        | {{ article.title }}
         v-spacer
-        v-btn(@click="articleWrite" icon) <v-icon>mdi-pencil</v-icon>
-        v-btn(@click="remove" icon) <v-icon>mdi-delete</v-icon>
+        template(v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)")
+          v-btn(@click="articleWrite" icon) <v-icon>mdi-pencil</v-icon>
+          v-btn(@click="remove" icon) <v-icon>mdi-delete</v-icon>
         v-btn(@click="back" icon) <v-icon>mdi-close</v-icon>
+      v-divider
       v-card-text
         viewer(v-if="content" :initialValue="content")
         v-container(v-else)
@@ -20,7 +24,17 @@
         span.font-italic.caption 수정일: <display-time :time="article.updatedAt"></display-time>
       v-card-actions
         v-spacer
-        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ article.likeCount }}</span>
+        span.font-italic.caption.mr-2 작성자:
+        display-user(:user="article.user")
+      v-card-actions
+        v-spacer
+        v-sheet.mr-4
+          v-icon(left) mdi-eye
+          span.body-2 {{ article.readCount }}
+        v-sheet.mr-0
+          v-icon(left) mdi-comment
+          span.body-2 {{ article.commentCount }}
+        v-btn(text @click="like") <v-icon left :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ article.likeCount }}</span>
       v-divider
       v-card-actions.py-0
         v-row.no-gutters
@@ -44,11 +58,13 @@
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
+import DisplayUser from '@/components/display-user'
 
 export default {
   components: {
     DisplayTime,
     DisplayComment,
+    DisplayUser,
   },
   props: ['boardId', 'articleId'],
   data() {
