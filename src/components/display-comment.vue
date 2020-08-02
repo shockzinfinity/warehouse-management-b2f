@@ -75,13 +75,18 @@ export default {
       this.lastDoc = last(sn.docs)
 
       sn.docs.forEach(doc => {
-        const exists = this.items.some(item => doc.id === item.id)
-        if (!exists) {
-          const item = doc.data()
+        const findItem = this.items.find(item => doc.id === item.id)
+        const item = doc.data()
+        if (!findItem) {
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           this.items.push(item)
+        } else {
+          findItem.comment = item.comment
+          findItem.likeCount = item.likeCount
+          findItem.likeUids = item.likeUids
+          findItem.updatedAt = item.updatedAt.toDate()
         }
       })
 
@@ -173,6 +178,8 @@ export default {
           })
       }
 
+      // ??
+      if (this.items.findIndex(el => el.id === comment.id) < LIMIT) return
       const doc = await this.docRef
         .collection('comments')
         .doc(comment.id)

@@ -9,7 +9,11 @@
           v-btn(icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`")
             v-icon mdi-pencil
         v-card-title {{ item.title }}
-        v-card-text.text-content
+        v-card-text
+          viewer(v-if="item.summary" :initialValue="item.summary")
+          v-container(v-else)
+            v-row(justify="center" align="center")
+              v-progress-circular(indeterminate)
         v-card-actions
           display-user(:user="item.user")
           v-spacer
@@ -84,8 +88,13 @@ export default {
           item.updatedAt = item.updatedAt.toDate()
           this.items.push(item)
         } else {
+          if (findItem.summary !== item.summary) {
+            findItem.summary = ''
+            setTimeout(() => {
+              findItem.summary = item.summary
+            }, 1000)
+          }
           findItem.title = item.title
-          findItem.summary = item.summary
           findItem.readCount = item.readCount
           findItem.commentCount = item.commentCount
           findItem.likeCount = item.likeCount
