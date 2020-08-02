@@ -99,7 +99,7 @@ export default {
           findItem.commentCount = item.commentCount
           findItem.likeCount = item.likeCount
           findItem.likeUids = item.likeUids
-          findItem.categories = item.categories
+          findItem.category = item.category
           findItem.tags = item.tags
           findItem.createdAt = item.createdAt.toDate()
           findItem.updatedAt = item.updatedAt.toDate()
