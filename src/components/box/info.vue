@@ -3,7 +3,7 @@
     v-card(outlined :tile="$vuetify.breakpoint.xs" v-if="box")
       v-toolbar(color="transparent" dense flat)
         v-toolbar-title
-          v-chip.mr-4(color="info" outlined label) 포함랙: {{ box.parentRackId }}
+          v-chip.mr-4(color="info" outlined label) 포함랙: {{ box.parentRackName }}
         | {{ box.title }}
         v-spacer
         v-btn(text @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
@@ -88,6 +88,7 @@ export default {
       },
       loading: false,
       dialog: false,
+      parentRackName: '',
     }
   },
   watch: {
@@ -106,6 +107,9 @@ export default {
       if (!this.fireUser) return false
       return this.box.likeUids.includes(this.fireUser.uid)
     },
+    rackTitle() {
+      return this.$route.query.rackTitle
+    },
   },
   created() {
     this.subscribe()
@@ -113,14 +117,15 @@ export default {
   destroyed() {
     if (this.unsubscribe) this.unsubscribe()
   },
+  mounted() {},
   methods: {
-    subscribe() {
+    async subscribe() {
       if (this.unsubscribe) this.unsubscribe()
       this.ref = this.$firebase
         .firestore()
         .collection('boxes')
         .doc(this.boxId)
-      this.unsubscribe = this.ref.onSnapshot(
+      this.unsubscribe = await this.ref.onSnapshot(
         doc => {
           if (!doc.exists) {
             return this.write()

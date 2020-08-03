@@ -76,6 +76,9 @@ export default {
     parentRackPath() {
       return this.$route.query.parentRackPath
     },
+    parentRackName() {
+      return this.$route.query.parentRackName
+    },
   },
   watch: {
     boxId() {
@@ -97,6 +100,7 @@ export default {
         this.form.coverUrl = item.coverUrl
         this.form.description = item.description
         this.form.parentRackId = item.parentRackId
+        this.form.parentRackName = item.parentRackName
         this.form.qrCodeUrl = item.qrCodeUrl
         this.form.sampleCount = item.sampleCount
         this.form.title = item.title
@@ -128,6 +132,7 @@ export default {
           form.sampleCount = 0
           form.uid = this.fireUser.uid
           form.parentRackId = this.parentRackId
+          form.parentRackName = this.parentRackName
           form.user = {
             displayName: this.user.displayName,
             email: this.user.email,

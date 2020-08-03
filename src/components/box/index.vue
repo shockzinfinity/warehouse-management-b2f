@@ -117,7 +117,10 @@ export default {
       })
     },
     read(item) {
-      this.$router.push({ path: '/box/' + item.id })
+      this.$router.push({
+        path: '/box/' + item.id,
+        query: { rackTitle: this.rack.title },
+      })
     },
   },
 }

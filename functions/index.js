@@ -308,25 +308,7 @@ exports.onDeleteBox = functions
       .doc('boxes')
       .update({ count: admin.firestore.FieldValue.increment(-1) })
 
-    await admin
-      .storage()
-      .bucket()
-      .deleteFiles({ prefix: `boxes/${context.params.bid}` })
-      .catch(e => console.error('storage remove error: ' + e.message))
-
     const batch = fdb.batch()
-
-    const deletedValue = snap.data()
-    const rackSn = await fdb
-      .collection('racks')
-      .where('rackId', '==', deletedValue.parentRackId)
-      .get()
-    if (!rackSn.empty) {
-      const rack = rackSn.docs[0].id
-      batch.update(fdb.collection('racks').doc(rack), {
-        boxCount: admin.firestore.FieldValue.increment(-1),
-      })
-    }
     const sn = await fdb
       .collection('boxes')
       .doc(context.params.bid)
@@ -334,6 +316,17 @@ exports.onDeleteBox = functions
       .get()
     sn.docs.forEach(doc => batch.delete(doc.ref))
     await batch.commit()
+
+    const rackSn = await fdb
+      .collection('racks')
+      .where('rackId', '==', snap.data().parentRackId)
+      .get()
+    if (!rackSn.empty) {
+      const rack = rackSn.docs[0].id
+      batch.update(fdb.collection('racks').doc(rack), {
+        boxCount: admin.firestore.FieldValue.increment(-1),
+      })
+    }
 
     // remove storage (context, cover, qr)
     await admin
@@ -391,9 +384,10 @@ exports.onCreateBoxSample = functions
     const doc = snap.data()
     if (doc.category)
       set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
-    if (doc.tags) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
+    if (doc.tags.length)
+      set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
 
-    return fdb
+    await fdb
       .collection('boxes')
       .doc(context.params.bid)
       .update(set)

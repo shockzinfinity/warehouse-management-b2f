@@ -172,6 +172,7 @@ export default {
           action: 'write',
           parentRackId: this.rack.rackId,
           parentRackPath: this.rackId,
+          parentRackName: this.rack.title,
         },
       })
     },

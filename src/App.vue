@@ -6,7 +6,7 @@
       v-spacer
       site-sign
     v-navigation-drawer(app v-model='drawer' floating width='400')
-      site-menu(:items='site.menu')
+      site-menu(:items='site.menu' @close="drawer = false")
     v-main
       v-container.fill-height(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
         v-row.fill-height

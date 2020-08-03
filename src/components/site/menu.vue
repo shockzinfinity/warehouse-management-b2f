@@ -6,6 +6,7 @@
         v-list-item-subtitle Ver. 0.20.7.18 &copy; shockz.io
       v-list-item-action(v-model="$store.state.isAdmin")
         v-btn(@click="$store.commit('setEdit', !$store.state.editable)" icon) <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'"></v-icon>
+        v-btn(v-if="$vuetify.breakpoint.xs" @click="$emit('close')" icon) <v-icon>mdi-close</v-icon>
       //- v-list-item-action
         v-btn(@click="" icon) <v-icon>mdi-wrench</v-icon>
     v-divider
