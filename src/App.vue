@@ -11,7 +11,7 @@
       v-container.fill-height(fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''")
         v-row.fill-height
           v-col
-            router-view
+            router-view(:key="$route.fullPath")
     site-footer(:footer='site.footer')
 </template>
 
@@ -48,10 +48,19 @@ export default {
     },
   }),
   created() {
+    if (this.$workbox) {
+      this.$workbox.addEventListener('waiting', () => {
+        // this.showUpdateUI = true
+      })
+    }
     this.subscribe()
   },
   mounted() {},
   methods: {
+    async accept() {
+      // this.showUpdateUI = false
+      await this.$workbox.messageSW({ type: 'SKIP_WAITING' })
+    },
     subscribe() {
       this.$firebase
         .database()

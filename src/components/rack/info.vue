@@ -9,7 +9,7 @@
         //- v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
         v-btn(icon @click="dialog = true") <v-icon>mdi-information-outline</v-icon>
         template(v-if="user")
-          v-btn(icon @click="boxDialog = true" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>
+          v-btn(icon @click="boxDialog = true" :disabled="$store.state.userLevel > 4") <v-icon>mdi-plus</v-icon>
       v-divider
       rack-box(v-if="rack.rackId" :rackId="rackId" :rack="rack")
       v-dialog(v-model="dialog" max-width="500")
@@ -17,7 +17,7 @@
           v-toolbar(color="transparent" dense flat)
             v-toolbar-title 랙 정보
             v-spacer
-            v-btn(icon @click="write" :disabled="user.level > 0") <v-icon>mdi-pencil</v-icon>
+            v-btn(icon @click="write" :disabled="$store.state.userLevel > 0") <v-icon>mdi-pencil</v-icon>
             v-btn(icon @click="dialog = false") <v-icon>mdi-close</v-icon>
           v-divider
           v-list-item
@@ -87,6 +87,8 @@ export default {
         description: '',
         likeCount: 0,
         likeUids: [],
+        rackId: '',
+        id: '',
       },
       loading: false,
       boxDialog: false,
@@ -131,6 +133,7 @@ export default {
             return this.write()
           }
           const item = doc.data()
+          item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           this.rack = item

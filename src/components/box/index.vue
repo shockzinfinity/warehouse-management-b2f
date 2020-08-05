@@ -1,5 +1,5 @@
 <template lang="pug">
-  div
+  div(v-if="rack")
     v-data-table(
       :headers="headers"
       :items="items"
@@ -81,6 +81,7 @@ export default {
   methods: {
     subscribe(arrow) {
       if (this.unsubscribe) this.unsubscribe()
+      if (!this.rack) return
 
       const order = this.options.sortBy[0]
       const sort = this.options.sortDesc[0] ? 'desc' : 'asc'

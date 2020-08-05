@@ -10,8 +10,10 @@ import './plugins/moment'
 import './plugins/vue-qrcode'
 import './plugins/vee-validate'
 import './error'
+import wb from './registerServiceWorker'
 
 Vue.config.productionTip = false
+Vue.prototype.$workbox = wb
 
 new Vue({
   router,
