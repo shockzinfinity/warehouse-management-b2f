@@ -31,3 +31,4 @@ firebaseConfig.dev.js
 ctk-warehouse-management-firebase-adminsdk-saiw3-72dc70832f.json
 warehouse-management-b2f-firebase-adminsdk-agjta-51bbbde243.json
 /.firebase
+*.cache

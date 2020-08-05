@@ -36,8 +36,5 @@ module.exports = {
         },
       ],
     },
-    workboxOptions: {
-      offline: false,
-    },
   },
 }
