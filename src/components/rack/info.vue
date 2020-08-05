@@ -6,7 +6,7 @@
           v-chip.mr-4(color="info" label outlined) 위치: {{ rack.position }}
         | {{ rack.title }}
         v-spacer
-        v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
+        //- v-btn(icon @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
         v-btn(icon @click="dialog = true") <v-icon>mdi-information-outline</v-icon>
         template(v-if="user")
           v-btn(icon @click="boxDialog = true" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>

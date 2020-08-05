@@ -33,10 +33,9 @@ export default {
     return {
       headers: [
         { value: 'createdAt', text: '작성일' },
-        { value: 'boxId', text: 'id' },
-        { value: 'title', text: '제목' },
-        { value: 'user.displayName', text: '작성자' },
+        { value: 'title', text: '박스명' },
         { value: 'sampleCount', text: '샘플수' },
+        { value: 'user.displayName', text: '작성자' },
       ],
       items: [],
       docs: [],

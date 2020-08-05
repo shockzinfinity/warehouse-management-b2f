@@ -6,7 +6,7 @@
           v-chip.mr-4(color="info" outlined label) 포함랙: {{ box.parentRackName }}
         | {{ box.title }}
         v-spacer
-        v-btn(text @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
+        //- v-btn(text @click="like") <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ box.likeCount }}</span>
         v-btn(icon @click="dialog = true") <v-icon>mdi-information-outline</v-icon>
         template(v-if="user")
           v-btn(icon @click="sampleWrite" :disabled="user.level > 4") <v-icon>mdi-plus</v-icon>

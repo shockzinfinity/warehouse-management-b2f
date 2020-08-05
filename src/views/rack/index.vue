@@ -36,10 +36,10 @@
               v-col.display-3(cols="8" align="right") {{ rack.sampleSKU }}
           v-card-actions
             v-spacer
-            v-btn(icon @click="like(rack)") <v-icon :color="liked(rack) ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
+            //- v-btn(icon @click="like(rack)") <v-icon :color="liked(rack) ? 'success' : ''">mdi-thumb-up</v-icon> <span>{{ rack.likeCount }}</span>
             //- v-btn(icon) <v-icon>mdi-heart</v-icon>
-            v-btn(icon) <v-icon>mdi-bookmark</v-icon>
-            v-btn(icon) <v-icon>mdi-share-variant</v-icon>
+            //- v-btn(icon) <v-icon>mdi-bookmark</v-icon>
+            //- v-btn(icon) <v-icon>mdi-share-variant</v-icon>
 </template>
 
 <script>
